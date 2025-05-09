@@ -102,7 +102,7 @@ export default function VerifyAge() {
           DARE TO IMAGINE!
         </h2>
         <h2 className="text-4xl md:text-5xl font-bold text-yellow-400 drop-shadow-lg">
-          WIN AED 100 MILLION
+          WIN TRDO 100 MILLION
         </h2>
       </div>
       

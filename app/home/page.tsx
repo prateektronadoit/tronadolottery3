@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Footer from '@/components/Footer';
 import ImageCarousel from '@/components/ImageCarousel';
+import Header from '@/components/Header';
 
 export default function HomePage() {
   // Router for home page redirect
@@ -15,6 +15,7 @@ export default function HomePage() {
   const [selectedDays, setSelectedDays] = useState<number[]>([20, 28]);
   const [selectedMonth, setSelectedMonth] = useState<number>(5);
   const [ticketQuantity, setTicketQuantity] = useState<number>(1);
+  const [currentDate] = useState<Date>(new Date(2025, 4, 17)); // May 17, 2025
 
   // Redirect if necessary (using asPath instead of pathname in App Router)
   useEffect(() => {
@@ -59,11 +60,69 @@ export default function HomePage() {
     setTicketQuantity((prev) => Math.max(prev - 1, 1));
   };
 
+  // State to track animations for visual feedback
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  // Function to clear all selections (delete button)
+  const clearSelections = useCallback(() => {
+    // Add visual feedback
+    setIsDeleting(true);
+    
+    // Clear all selected days and month
+    setSelectedDays([]);
+    setSelectedMonth(0);
+    
+    console.log('All selections cleared');
+    
+    // Reset animation after 500ms
+    setTimeout(() => {
+      setIsDeleting(false);
+    }, 500);
+  }, []);
+  
+  // Easy Button: Randomly select 6 days and 1 month for lottery
+  const handleEasyButton = useCallback(() => {
+    // Add visual feedback
+    setIsAnimating(true);
+    
+    // 1. Generate 6 unique random days between 1 and 31
+    const getRandomDay = () => Math.floor(Math.random() * 31) + 1;
+    
+    // Ensure we get 6 unique days
+    const randomDays: number[] = [];
+    while (randomDays.length < 6) {
+      const day = getRandomDay();
+      if (!randomDays.includes(day)) {
+        randomDays.push(day);
+      }
+    }
+    
+    // Sort the days in ascending order
+    randomDays.sort((a, b) => a - b);
+    
+    // Update the selected days
+    setSelectedDays(randomDays);
+    
+    // 2. Generate 1 random month between 1 and 12
+    const randomMonth = Math.floor(Math.random() * 12) + 1;
+    
+    // Update the selected month
+    setSelectedMonth(randomMonth);
+    
+    console.log(`Easy Pick clicked! Randomly selected 6 days: ${randomDays.join(', ')} and month: ${randomMonth}`);
+    
+    // Reset animation after 500ms
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 500);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Combined Header and Hero with Carousel */}
+      {/* Full screen hero section with carousel */}
       <section className="relative h-screen overflow-hidden">
-        {/* Carousel Background */}
+        {/* Carousel Background running behind header */}
         <div className="absolute inset-0 z-0">
           <ImageCarousel 
             images={[
@@ -75,69 +134,16 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-b from-cyan-900/70 via-cyan-700/40 to-transparent"></div>
         </div>
         
-        {/* Header Navigation */}
-        <div className="relative z-10 pt-4">
-          <div className="container mx-auto px-4">
-            <div className="flex justify-between items-center">
-              {/* Logo and brand name */}
-              <Link href="/home" className="flex items-center">
-                <Image 
-                  src="/Logo.png" 
-                  alt="Tronado Lottery Logo" 
-                  width={50} 
-                  height={50} 
-                />
-                <div className="ml-2 text-white">
-                  <div className="font-bold text-lg uppercase">THE TRONADO</div>
-                  <div className="text-xs uppercase">LOTTERY</div>
-                </div>
-              </Link>
-              
-              {/* Main navigation */}
-              <div className="hidden md:flex items-center space-x-6">
-                <nav className="text-white">
-                  <ul className="flex space-x-6">
-                    <li className="relative group">
-                      <Link href="#" className="flex items-center py-1 hover:text-yellow-300 transition-colors font-medium">
-                        <span>Play</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </Link>
-                    </li>
-                    <li><Link href="#" className="py-1 hover:text-yellow-300 transition-colors font-medium">Draws</Link></li>
-                    <li><Link href="#" className="py-1 hover:text-yellow-300 transition-colors font-medium">FAQs</Link></li>
-                    <li><Link href="#" className="py-1 hover:text-yellow-300 transition-colors font-medium">Play Responsibly</Link></li>
-                  </ul>
-                </nav>
-                
-                <div className="flex items-center space-x-2">
-                  <button className="flex items-center text-sm bg-transparent px-2 py-1 rounded border border-white/30 hover:bg-white/10 transition-colors text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    <span className="text-xs">En</span>
-                  </button>
-                  
-                  <button className="bg-transparent border border-white/70 hover:bg-white/10 text-white px-4 py-1 rounded transition-colors text-sm">
-                    Login
-                  </button>
-                  
-                  <button className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-1 rounded transition-colors text-sm font-medium">
-                    Register
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Transparent header overlaid on carousel */}
+        <div className="absolute top-0 left-0 right-0 z-20 w-full">
+          <Header />
         </div>
 
         {/* Hero Content */}
         <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center text-center relative z-10 -mt-20">
           <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-lg max-w-4xl">
             DARE TO IMAGINE!<br /> 
-            <span className="text-yellow-400">WIN AED 100 MILLION</span>
+            <span className="text-yellow-400">WIN TRDO 100 MILLION</span>
           </h2>
           <button className="bg-white hover:bg-yellow-400 hover:text-white text-cyan-800 px-12 py-3 rounded-full font-bold text-xl transition-colors mt-6 shadow-lg">
             Play Now
@@ -163,7 +169,7 @@ export default function HomePage() {
                 
                 <h2 className="text-3xl font-bold text-[#333333] mt-2 mb-1">JACKPOT</h2>
                 <div>
-                  <div className="text-[#333333] text-xl font-bold inline-block mr-2">AED</div>
+                  <div className="text-[#333333] text-xl font-bold inline-block mr-2">TRDO</div>
                   <div className="text-[#e85d4b] text-5xl md:text-6xl font-bold inline-block">
                     100,000,000
                   </div>
@@ -174,11 +180,11 @@ export default function HomePage() {
                 </div>
                 
                 <div className="text-[#c17d19] text-lg font-semibold mb-4">
-                  AED 100,000 * 7 Winners
+                  TRDO 100,000 * 7 Winners
                 </div>
                 
                 <div className="text-sm text-gray-600 mb-6">
-                  1 Entry for AED 50
+                  1 Entry for TRDO 50
                 </div>
                 
                 <button className="w-full bg-[#ffd670] hover:bg-[#ffc440] text-gray-800 font-bold py-3 rounded-full transition-colors">
@@ -188,75 +194,59 @@ export default function HomePage() {
               
               {/* Right Side - Ticket Selection */}
               <div className="md:col-span-7 bg-white p-4 sm:p-5 md:p-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 space-y-3 md:space-y-0">
-                  <div>
-                    <div className="text-xs text-gray-500 mb-1">Draw Date: Saturday 22:00, 17/05/2025</div>
-                    <div className="flex gap-1">
-                      <div className="text-center">
-                        <div className="bg-gray-100 px-2 py-1 rounded">
-                          <span className="font-bold text-gray-800">08</span>
-                          <span className="text-xs text-gray-500 block">D</span>
-                        </div>
-                      </div>
-                      <div className="text-gray-400 flex items-center">:</div>
-                      <div className="text-center">
-                        <div className="bg-gray-100 px-2 py-1 rounded">
-                          <span className="font-bold text-gray-800">20</span>
-                          <span className="text-xs text-gray-500 block">H</span>
-                        </div>
-                      </div>
-                      <div className="text-gray-400 flex items-center">:</div>
-                      <div className="text-center">
-                        <div className="bg-gray-100 px-2 py-1 rounded">
-                          <span className="font-bold text-gray-800">16</span>
-                          <span className="text-xs text-gray-500 block">M</span>
-                        </div>
-                      </div>
-                      <div className="text-gray-400 flex items-center">:</div>
-                      <div className="text-center">
-                        <div className="bg-gray-100 px-2 py-1 rounded">
-                          <span className="font-bold text-gray-800">20</span>
-                          <span className="text-xs text-gray-500 block">S</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center mt-4 md:mt-0">
-                    <h3 className="text-sm font-bold text-gray-700 mr-2">Buy A Ticket Quickly</h3>
-                    <button className="flex items-center border border-gray-200 rounded-full px-3 py-1 text-gray-600 hover:bg-gray-100 transition-colors">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                <div className="flex justify-between items-center mb-8">
+                  <div className="text-xl font-medium text-[#333]">Buy A Ticket Quickly</div>
+                  <div className="flex items-center space-x-4">
+                    <button 
+                      className={`p-2 ${isDeleting ? 'text-red-500' : 'text-gray-400 hover:text-gray-500'} transition-colors`}
+                      onClick={clearSelections}
+                      style={{ transform: isDeleting ? 'scale(0.95)' : 'scale(1)', transition: 'all 0.2s ease' }}
+                      aria-label="Clear all selections"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v10M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16" />
                       </svg>
-                      <span className="text-xs">Easy Pick</span>
+                    </button>
+                    <button 
+                      className={`flex items-center space-x-2 border border-[#d4a017] text-[#333] rounded-full px-4 py-2 hover:bg-gray-50 transition-colors ${isAnimating ? 'bg-gray-100' : ''}`}
+                      onClick={handleEasyButton}
+                      style={{ transition: 'all 0.2s ease' }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#d4a017]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      <span className="font-medium">Easy Pick</span>
                     </button>
                   </div>
                 </div>
                 
+                <div className="text-xs text-gray-500 mb-4 hidden">
+                  Draw Date: Saturday 22:00, {currentDate.toLocaleDateString('en-GB')}
+                </div>
+                
                 {/* Days Selection */}
-                <div className="mb-6">
-                  <div className="mb-3 flex justify-between items-center">
-                    <div>
-                      <span className="text-lg font-medium text-[#555]">Days</span>
-                      <span className="text-sm text-[#997950] ml-3">Pick 6 numbers</span>
+                <div className="mb-8">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-baseline">
+                      <span className="text-[#555] text-xl font-medium">Days</span>
+                      <span className="text-[#997950] text-sm ml-4">Pick 6 numbers</span>
                     </div>
                     {selectedDays.length < 6 && (
-                      <div className="text-xs bg-[#fff8e8] text-[#997950] px-2 py-1 rounded-md">
+                      <div className="text-xs text-[#997950]">
                         {6 - selectedDays.length} more required
                       </div>
                     )}
                   </div>
-                  <div className="grid grid-cols-7 xs:grid-cols-8 gap-1">
+                  <div className="grid grid-cols-7 sm:grid-cols-8 gap-4">
                     {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                       <button 
                         key={day} 
                         onClick={() => handleDaySelect(day)}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${!selectedDays.includes(day) ? 'text-[#997950] hover:bg-gray-50 border border-[#e9e9e9]' : ''}`}
+                        className={`w-12 h-12 rounded-full flex items-center justify-center text-base transition-all duration-200`}
                         style={{
-                          background: selectedDays.includes(day) ? '#d4a017' : '#fff',
-                          border: selectedDays.includes(day) ? 'none' : '1px solid #e9e9e9',
-                          color: selectedDays.includes(day) ? 'white' : '#997950'
+                          background: selectedDays.includes(day) ? '#d4a017' : 'white',
+                          border: selectedDays.includes(day) ? 'none' : '1px solid rgba(0,0,0,0.1)',
+                          color: selectedDays.includes(day) ? 'white' : '#555'
                         }}
                       >
                         {day.toString().padStart(2, '0')}
@@ -266,28 +256,28 @@ export default function HomePage() {
                 </div>
                 
                 {/* Months Selection */}
-                <div className="mb-6">
-                  <div className="mb-3 flex justify-between items-center">
-                    <div>
-                      <span className="text-lg font-medium text-[#555]">Months</span>
-                      <span className="text-sm text-[#997950] ml-3">Pick 1 number</span>
+                <div className="mb-8">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-baseline">
+                      <span className="text-[#555] text-xl font-medium">Months</span>
+                      <span className="text-[#997950] text-sm ml-4">Pick 1 number</span>
                     </div>
                     {selectedMonth === 0 && (
-                      <div className="text-xs bg-[#fff8e8] text-[#997950] px-2 py-1 rounded-md">
-                        1 more required
+                      <div className="text-xs text-[#997950]">
+                        1 required
                       </div>
                     )}
                   </div>
-                  <div className="grid grid-cols-6 xs:grid-cols-8 gap-1">
+                  <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
                     {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                       <button 
                         key={month} 
                         onClick={() => handleMonthSelect(month)}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${month !== selectedMonth ? 'text-[#997950] hover:bg-gray-50 border border-[#e9e9e9]' : ''}`}
+                        className={`w-12 h-12 rounded-full flex items-center justify-center text-base transition-all duration-200`}
                         style={{
-                          background: month === selectedMonth ? '#d4a017' : '#fff',
-                          border: month === selectedMonth ? 'none' : '1px solid #e9e9e9',
-                          color: month === selectedMonth ? 'white' : '#997950'
+                          background: month === selectedMonth ? '#c42428' : 'white',
+                          border: month === selectedMonth ? 'none' : '1px solid rgba(0,0,0,0.1)',
+                          color: month === selectedMonth ? 'white' : '#555'
                         }}
                       >
                         {month.toString().padStart(2, '0')}
@@ -296,25 +286,27 @@ export default function HomePage() {
                   </div>
                 </div>
                 
-                {/* Quantity and Quick Buy */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
-                  <div className="flex items-center">
-                    <div className="flex items-center border border-[#e5e5e5] rounded-full overflow-hidden bg-white shadow-sm w-[120px] h-[50px]">
-                      <button 
-                        onClick={decrementTicket}
-                        className="w-10 h-10 text-[#999] flex items-center justify-center hover:bg-gray-50 transition-colors text-xl">
-                        −
-                      </button>
-                      <span className="w-10 text-center text-[#555] text-xl font-medium">{ticketQuantity}</span>
-                      <button 
-                        onClick={incrementTicket}
-                        className="w-10 h-10 text-[#999] flex items-center justify-center hover:bg-gray-50 transition-colors text-xl">
-                        +
-                      </button>
+                {/* Quantity and Buy Button */}
+                <div className="flex items-center justify-between mt-10">
+                  <div className="flex items-center border border-gray-200 rounded-full overflow-hidden">
+                    <button 
+                      onClick={decrementTicket}
+                      className="w-10 h-10 flex items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors"
+                    >
+                      −
+                    </button>
+                    <div className="w-10 h-10 flex items-center justify-center bg-white text-gray-800 font-medium">
+                      {ticketQuantity}
                     </div>
+                    <button 
+                      onClick={incrementTicket}
+                      className="w-10 h-10 flex items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors"
+                    >
+                      +
+                    </button>
                   </div>
                   
-                  <button className="bg-[#ffd670] hover:bg-[#ffc440] text-[#333] font-bold py-3 px-12 rounded-full transition-colors text-lg shadow-sm">
+                  <button className="bg-[#ffc14a] hover:bg-[#edb445] text-[#333] font-bold py-3 px-8 rounded-full transition-colors text-lg">
                     Quick Buy
                   </button>
                 </div>
@@ -324,161 +316,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Scratch Cards Section */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">UPCOMSCRATCH CARDS</h2>
-          <div className="game-hulm-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {/* Mission Million */}
-            <div className="hulm-item-outer">
-              <div className="hulm-item bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] cursor-pointer relative group">
-                <div className="absolute top-2 left-2 w-14 h-14 z-10">
-                  <Image src="/scratch-cards/new-tag.png" alt="New" width={56} height={56} className="tag-icon" />
-                </div>
-                <div className="icon-container relative h-48 overflow-hidden">
-                  <Image src="/scratch-cards/mission-million.png" alt="Mission Million" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
-                </div>
-                <div className="game-price text-center font-extrabold text-white py-2 px-4 text-xl" 
-                  style={{WebkitTextStroke: '4px #267399', textShadow: '0 0 10px rgba(0,0,0,0.2)'}}>
-                  <span className="">AED</span>
-                  <span className="">50</span>
-                </div>
-                <div className="game-aed text-center font-bold text-white py-2 text-sm" style={{backgroundColor: '#267399'}}>
-                  WIN AED 1,000,000
-                </div>
-              </div>
-            </div>
 
-            {/* Golden Dynasty */}
-            <div className="hulm-item-outer">
-              <div className="hulm-item bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] cursor-pointer relative group">
-                <div className="absolute top-2 left-2 w-14 h-14 z-10">
-                  <Image src="/scratch-cards/new-tag.png" alt="New" width={56} height={56} className="tag-icon" />
-                </div>
-                <div className="icon-container relative h-48 overflow-hidden">
-                  <Image src="/scratch-cards/golden-dynasty.png" alt="Golden Dynasty" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
-                </div>
-                <div className="game-price text-center font-extrabold text-white py-2 px-4 text-xl" 
-                  style={{WebkitTextStroke: '4px #43438b', textShadow: '0 0 10px rgba(0,0,0,0.2)'}}>
-                  <span className="">AED</span>
-                  <span className="">20</span>
-                </div>
-                <div className="game-aed text-center font-bold text-white py-2 text-sm" style={{backgroundColor: '#43438b'}}>
-                  WIN AED 300,000
-                </div>
-              </div>
-            </div>
-
-            {/* Fortune Festival */}
-            <div className="hulm-item-outer">
-              <div className="hulm-item bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] cursor-pointer relative group">
-                <div className="absolute top-2 left-2 w-14 h-14 z-10">
-                  <Image src="/scratch-cards/new-tag.png" alt="New" width={56} height={56} className="tag-icon" />
-                </div>
-                <div className="icon-container relative h-48 overflow-hidden">
-                  <Image src="/scratch-cards/fortune-festival.png" alt="Fortune Festival" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
-                </div>
-                <div className="game-price text-center font-extrabold text-white py-2 px-4 text-xl" 
-                  style={{WebkitTextStroke: '4px #db3a33', textShadow: '0 0 10px rgba(0,0,0,0.2)'}}>
-                  <span className="">AED</span>
-                  <span className="">10</span>
-                </div>
-                <div className="game-aed text-center font-bold text-white py-2 text-sm" style={{backgroundColor: '#db3a33'}}>
-                  WIN AED 100,000
-                </div>
-              </div>
-            </div>
-
-            {/* Karak Kash */}
-            <div className="hulm-item-outer">
-              <div className="hulm-item bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] cursor-pointer relative group">
-                <div className="absolute top-2 left-2 w-14 h-14 z-10">
-                  <Image src="/scratch-cards/new-tag.png" alt="New" width={56} height={56} className="tag-icon" />
-                </div>
-                <div className="icon-container relative h-48 overflow-hidden">
-                  <Image src="/scratch-cards/karak-kash.png" alt="Karak Kash" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
-                </div>
-                <div className="game-price text-center font-extrabold text-white py-2 px-4 text-xl" 
-                  style={{WebkitTextStroke: '4px #d27e15', textShadow: '0 0 10px rgba(0,0,0,0.2)'}}>
-                  <span className="">AED</span>
-                  <span className="">5</span>
-                </div>
-                <div className="game-aed text-center font-bold text-white py-2 text-sm" style={{backgroundColor: '#d27e15'}}>
-                  WIN AED 50,000
-                </div>
-              </div>
-            </div>
-            
-            {/* Lucky 7 */}
-            <div className="hulm-item-outer">
-              <div className="hulm-item bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] cursor-pointer relative group">
-                <div className="icon-container relative h-48 overflow-hidden">
-                  <Image src="/scratch-cards/lucky-7.jpg" alt="Lucky 7" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
-                </div>
-                <div className="game-price text-center font-extrabold text-white py-2 px-4 text-xl" 
-                  style={{WebkitTextStroke: '4px #af3719', textShadow: '0 0 10px rgba(0,0,0,0.2)'}}>
-                  <span className="">AED</span>
-                  <span className="">50</span>
-                </div>
-                <div className="game-aed text-center font-bold text-white py-2 text-sm" style={{backgroundColor: '#af3719'}}>
-                  WIN AED 1,000,000
-                </div>
-              </div>
-            </div>
-
-            {/* Mega Sajjs */}
-            <div className="hulm-item-outer">
-              <div className="hulm-item bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] cursor-pointer relative group">
-                <div className="icon-container relative h-48 overflow-hidden">
-                  <Image src="/scratch-cards/mega-sajjs.jpg" alt="Mega Sajjs" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
-                </div>
-                <div className="game-price text-center font-extrabold text-white py-2 px-4 text-xl" 
-                  style={{WebkitTextStroke: '4px #1671d0', textShadow: '0 0 10px rgba(0,0,0,0.2)'}}>
-                  <span className="">AED</span>
-                  <span className="">20</span>
-                </div>
-                <div className="game-aed text-center font-bold text-white py-2 text-sm" style={{backgroundColor: '#1671d0'}}>
-                  WIN AED 300,000
-                </div>
-              </div>
-            </div>
-
-            {/* Copper Cups */}
-            <div className="hulm-item-outer">
-              <div className="hulm-item bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] cursor-pointer relative group">
-                <div className="icon-container relative h-48 overflow-hidden">
-                  <Image src="/scratch-cards/copper-cups.jpg" alt="Copper Cups" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
-                </div>
-                <div className="game-price text-center font-extrabold text-white py-2 px-4 text-xl" 
-                  style={{WebkitTextStroke: '4px #66553d', textShadow: '0 0 10px rgba(0,0,0,0.2)'}}>
-                  <span className="">AED</span>
-                  <span className="">10</span>
-                </div>
-                <div className="game-aed text-center font-bold text-white py-2 text-sm" style={{backgroundColor: '#66553d'}}>
-                  WIN AED 100,000
-                </div>
-              </div>
-            </div>
-
-            {/* Oasis Bonanza */}
-            <div className="hulm-item-outer">
-              <div className="hulm-item bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] cursor-pointer relative group">
-                <div className="icon-container relative h-48 overflow-hidden">
-                  <Image src="/scratch-cards/oasis-bonanza.jpg" alt="Oasis Bonanza" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
-                </div>
-                <div className="game-price text-center font-extrabold text-white py-2 px-4 text-xl" 
-                  style={{WebkitTextStroke: '4px #198c0b', textShadow: '0 0 10px rgba(0,0,0,0.2)'}}>
-                  <span className="">AED</span>
-                  <span className="">5</span>
-                </div>
-                <div className="game-aed text-center font-bold text-white py-2 text-sm" style={{backgroundColor: '#198c0b'}}>
-                  WIN AED 50,000
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Jackpot Section with Oil Platform removed as requested */}
 
@@ -559,15 +397,15 @@ export default function HomePage() {
                   <div className="space-y-3 px-2 sm:px-0">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-800 font-medium text-sm sm:text-base">DG8391804</span>
-                      <span className="text-yellow-600 font-semibold text-sm sm:text-base">AED 100,000</span>
+                      <span className="text-yellow-600 font-semibold text-sm sm:text-base">TRDO 100,000</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-800 font-medium">CT7084766</span>
-                      <span className="text-yellow-600 font-semibold">AED 100,000</span>
+                      <span className="text-yellow-600 font-semibold">TRDO 100,000</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-800 font-medium">BB2695605</span>
-                      <span className="text-yellow-600 font-semibold">AED 100,000</span>
+                      <span className="text-yellow-600 font-semibold">TRDO 100,000</span>
                     </div>
                     <div className="text-center text-gray-600 mt-2">...</div>
                   </div>
