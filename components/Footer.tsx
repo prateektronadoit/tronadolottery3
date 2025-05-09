@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="bg-gray-700 text-white py-16">
       <div className="container mx-auto px-4">
         {/* Main footer content - links and contact */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           {/* Column 1 - About/Info links */}
           <div className="space-y-4">
             <Link href="/about" className="block hover:text-gray-300">About Us</Link>
@@ -50,8 +50,8 @@ export default function Footer() {
           </div>
           
           {/* Column 4 - Social media links */}
-          <div>
-            <div className="flex space-x-4 mb-4">
+          <div className="text-center sm:text-left">
+            <div className="flex space-x-4 mb-4 justify-center sm:justify-start">
               <Link href="#" className="bg-gray-600 hover:bg-gray-500 rounded-full p-2 transition duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
@@ -75,7 +75,7 @@ export default function Footer() {
             </div>
             
             {/* Age verification badge */}
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 justify-center sm:justify-start">
               <div className="bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm mr-2">
                 18+
               </div>
@@ -94,8 +94,8 @@ export default function Footer() {
         </div>
         
         {/* Bottom footer with logo and copyright */}
-        <div className="pt-8 border-t border-gray-600 flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center mb-4 md:mb-0">
+        <div className="pt-8 border-t border-gray-600 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center mb-4 md:mb-0 justify-center">
             <Image 
               src="/Logo.png" 
               alt="Tronado Lottery Logo" 
@@ -110,7 +110,7 @@ export default function Footer() {
             </div>
           </div>
           
-          <div className="text-xs text-gray-300 text-center md:text-right">
+          <div className="text-xs text-gray-300 text-center md:text-right max-w-xs mx-auto md:mx-0">
             <div className="flex items-center justify-end mb-2">
               <span className="mr-1">En</span>
             </div>

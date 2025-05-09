@@ -94,7 +94,7 @@ export default function HomePage() {
               </Link>
               
               {/* Main navigation */}
-              <div className="flex items-center space-x-6">
+              <div className="hidden md:flex items-center space-x-6">
                 <nav className="text-white">
                   <ul className="flex space-x-6">
                     <li className="relative group">
@@ -135,7 +135,7 @@ export default function HomePage() {
 
         {/* Hero Content */}
         <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center text-center relative z-10 -mt-20">
-          <h2 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-lg max-w-4xl">
+          <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-lg max-w-4xl">
             DARE TO IMAGINE!<br /> 
             <span className="text-yellow-400">WIN AED 100 MILLION</span>
           </h2>
@@ -151,7 +151,7 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto bg-white rounded-lg overflow-hidden shadow-sm">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
               {/* Left Side - Jackpot Information */}
-              <div className="md:col-span-5 p-6 flex flex-col justify-center items-center text-center bg-[#fffdf9]">
+              <div className="md:col-span-5 p-4 sm:p-6 flex flex-col justify-center items-center text-center bg-[#fffdf9]">
                 <div className="mb-3">
                   <Image 
                     src="/Logo.png" 
@@ -187,8 +187,8 @@ export default function HomePage() {
               </div>
               
               {/* Right Side - Ticket Selection */}
-              <div className="md:col-span-7 bg-white p-5 md:p-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-5">
+              <div className="md:col-span-7 bg-white p-4 sm:p-5 md:p-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 space-y-3 md:space-y-0">
                   <div>
                     <div className="text-xs text-gray-500 mb-1">Draw Date: Saturday 22:00, 17/05/2025</div>
                     <div className="flex gap-1">
@@ -247,7 +247,7 @@ export default function HomePage() {
                       </div>
                     )}
                   </div>
-                  <div className="grid grid-cols-8 gap-1">
+                  <div className="grid grid-cols-7 xs:grid-cols-8 gap-1">
                     {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                       <button 
                         key={day} 
@@ -278,7 +278,7 @@ export default function HomePage() {
                       </div>
                     )}
                   </div>
-                  <div className="grid grid-cols-8 gap-1">
+                  <div className="grid grid-cols-6 xs:grid-cols-8 gap-1">
                     {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                       <button 
                         key={month} 
@@ -297,7 +297,7 @@ export default function HomePage() {
                 </div>
                 
                 {/* Quantity and Quick Buy */}
-                <div className="flex items-center justify-between mt-8">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
                   <div className="flex items-center">
                     <div className="flex items-center border border-[#e5e5e5] rounded-full overflow-hidden bg-white shadow-sm w-[120px] h-[50px]">
                       <button 
@@ -327,8 +327,8 @@ export default function HomePage() {
       {/* Scratch Cards Section */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">SCRATCH CARDS</h2>
-          <div className="game-hulm-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">UPCOMSCRATCH CARDS</h2>
+          <div className="game-hulm-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {/* Mission Million */}
             <div className="hulm-item-outer">
               <div className="hulm-item bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] cursor-pointer relative group">
@@ -513,9 +513,9 @@ export default function HomePage() {
                 </div>
                 
                 <div className="space-y-4">
-                  <div className="flex justify-between pb-2 border-b border-gray-200">
+                  <div className="flex flex-wrap justify-between pb-2 border-b border-gray-200">
                     <span className="text-gray-600">Match 6+1</span>
-                    <div className="flex gap-8">
+                    <div className="flex gap-4 sm:gap-8">
                       <span className="text-gray-600">Winners</span>
                       <span className="text-gray-800 font-semibold">0</span>
                     </div>
@@ -523,7 +523,7 @@ export default function HomePage() {
                   
                   <div className="flex justify-between pb-2 border-b border-gray-200">
                     <span className="text-gray-600">Match 6+0</span>
-                    <div className="flex gap-8">
+                    <div className="flex gap-4 sm:gap-8">
                       <span className="text-gray-600">Winners</span>
                       <span className="text-gray-800 font-semibold">1</span>
                     </div>
@@ -531,7 +531,7 @@ export default function HomePage() {
                   
                   <div className="flex justify-between pb-2 border-b border-gray-200">
                     <span className="text-gray-600">Match 5+1</span>
-                    <div className="flex gap-8">
+                    <div className="flex gap-4 sm:gap-8">
                       <span className="text-gray-600">Winners</span>
                       <span className="text-gray-800 font-semibold">3</span>
                     </div>
@@ -539,7 +539,7 @@ export default function HomePage() {
                   
                   <div className="flex justify-between pb-2 border-b border-gray-200">
                     <span className="text-gray-600">Match 5+0, 4+1</span>
-                    <div className="flex gap-8">
+                    <div className="flex gap-4 sm:gap-8">
                       <span className="text-gray-600">Winners</span>
                       <span className="text-gray-800 font-semibold">61</span>
                     </div>
@@ -547,7 +547,7 @@ export default function HomePage() {
                   
                   <div className="flex justify-between pb-2 border-b border-gray-200">
                     <span className="text-gray-600">Match 3+1, 2+1, 1+1, 0+1</span>
-                    <div className="flex gap-8">
+                    <div className="flex gap-4 sm:gap-8">
                       <span className="text-gray-600">Winners</span>
                       <span className="text-gray-800 font-semibold">5,697</span>
                     </div>
@@ -556,10 +556,10 @@ export default function HomePage() {
                 
                 <div className="mt-8">
                   <h3 className="text-xl font-bold text-center text-yellow-600 mb-4">LUCKY CHANCE RESULTS</h3>
-                  <div className="space-y-3">
+                  <div className="space-y-3 px-2 sm:px-0">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-800 font-medium">DG8391804</span>
-                      <span className="text-yellow-600 font-semibold">AED 100,000</span>
+                      <span className="text-gray-800 font-medium text-sm sm:text-base">DG8391804</span>
+                      <span className="text-yellow-600 font-semibold text-sm sm:text-base">AED 100,000</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-800 font-medium">CT7084766</span>
