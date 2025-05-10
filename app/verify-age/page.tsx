@@ -68,8 +68,8 @@ export default function VerifyAge() {
           </div>
         </div>
       )}
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
+      {/* Background Image with Light/Dark Contrast */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
         <Image
           src="/3d-ship-sailing-blue-ocean.png"
           alt="Ocean Background"
@@ -78,7 +78,31 @@ export default function VerifyAge() {
           quality={100}
           priority
         />
-        <div className="absolute inset-0 bg-blue-900/60 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/80 via-indigo-900/70 to-black/80 backdrop-blur-[2px]"></div>
+        
+        {/* Light particles effect */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-0 left-0 w-full h-full">
+            {[...Array(20)].map((_, i) => (
+              <div 
+                key={i}
+                className="absolute rounded-full bg-white animate-pulse"
+                style={{
+                  width: `${Math.random() * 4 + 2}px`,
+                  height: `${Math.random() * 4 + 2}px`,
+                  top: `${Math.random() * 100}%`,
+                  left: `${Math.random() * 100}%`,
+                  opacity: Math.random() * 0.5 + 0.3,
+                  animationDuration: `${Math.random() * 3 + 2}s`,
+                  animationDelay: `${Math.random() * 2}s`
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Light rays from top */}
+        <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-[120%] h-[40%] bg-gradient-to-b from-blue-300/20 to-transparent rotate-180 opacity-50 rounded-full blur-2xl"></div>
       </div>
       
       {/* Logo */}
@@ -105,47 +129,53 @@ export default function VerifyAge() {
         </div>
         
         {/* Age Verification Box */}
-        <div className="text-center px-4 w-full mt-16">
-          <h2 className="text-3xl font-bold mb-4 text-yellow-400">AGE VERIFICATION</h2>
-          <p className="mb-8">You must be 18 years or older to enter this website</p>
+        <div className="text-center w-full mt-16 relative">
+          {/* Light glow behind the verification section */}
+          <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"></div>
           
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={() => handleVerify(true)}
-              className="px-10 py-3 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-full transition-colors"
-            >
-              I am 18 or older
-            </button>
+          {/* Verification content */}
+          <div className="relative bg-gradient-to-b from-white/10 to-transparent backdrop-blur-sm px-8 py-10 rounded-xl border border-white/10 shadow-2xl">
+            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-yellow-200 to-yellow-500 bg-clip-text text-transparent drop-shadow-md">AGE VERIFICATION</h2>
+            <p className="mb-8 text-white/80 text-lg">You must be 18 years or older to enter this website</p>
             
-            <button
-              onClick={() => handleVerify(false)}
-              className="px-10 py-3 bg-transparent border border-white/50 hover:border-white text-white font-bold rounded-full transition-colors"
-            >
-              Exit
-            </button>
-          </div>
-          
-          <div className="flex flex-col xs:flex-row gap-4 justify-center mt-4 px-4 xs:px-0">
-            <div className="flex items-center">
-              <div className="bg-red-600 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center mr-1">18</div>
-              <span className="text-xs">PLAY RIGHT BE SAFEGUARDED</span>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => handleVerify(true)}
+                className="px-10 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold rounded-full transition-all duration-300 shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 transform hover:-translate-y-0.5"
+              >
+                I am 18 or older
+              </button>
+              
+              <button
+                onClick={() => handleVerify(false)}
+                className="px-10 py-3 bg-transparent border border-white/30 hover:border-white/70 text-white font-bold rounded-full transition-all duration-300 hover:bg-white/5"
+              >
+                Exit
+              </button>
             </div>
-            <p className="text-xs md:border-l md:border-white/20 md:pl-2">THE GAME L.L.C. - GCGRA Licensed Operator</p>
-          </div>
-          
-          <div className="mt-2 flex flex-col items-center">
-            <p className="text-xs text-white/60 max-w-lg mt-4">
-              When using this Tronado Lottery website, kindly note that we employ cookies to gather your personal information, ensuring proper website functionality and enhancing the quality of our services for your benefit.
-            </p>
             
-            {/* <div className="flex gap-4 mt-4">
-              <button className="px-4 py-1 rounded-full bg-transparent border border-white/20 text-xs hover:bg-white/10 transition-colors">
-                COOKIES POLICY
-              </button>
-              <button className="px-6 py-1 rounded-full bg-yellow-500 text-black text-xs font-semibold hover:bg-yellow-600 transition-colors">
-                ACCEPT ALL
-              </button>
-            </div> */}
+            <div className="flex flex-col xs:flex-row gap-4 justify-center mt-4 px-4 xs:px-0">
+              <div className="flex items-center">
+                <div className="bg-red-600 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center mr-1">18</div>
+                <span className="text-xs text-white/90">PLAY RIGHT BE SAFEGUARDED</span>
+              </div>
+              <p className="text-xs text-white/90 md:border-l md:border-white/20 md:pl-2">THE GAME L.L.C. - GCGRA Licensed Operator</p>
+            </div>
+            
+            <div className="mt-2 flex flex-col items-center">
+              <p className="text-xs text-white/70 max-w-lg mt-4">
+                When using this Tronado Lottery website, kindly note that we employ cookies to gather your personal information, ensuring proper website functionality and enhancing the quality of our services for your benefit.
+              </p>
+              
+              {/* <div className="flex gap-4 mt-4">
+                <button className="px-4 py-1 rounded-full bg-transparent border border-white/20 text-xs hover:bg-white/10 transition-colors">
+                  COOKIES POLICY
+                </button>
+                <button className="px-6 py-1 rounded-full bg-yellow-500 text-black text-xs font-semibold hover:bg-yellow-600 transition-colors">
+                  ACCEPT ALL
+                </button>
+              </div> */}
+            </div>
           </div>
         </div>
       </div>
