@@ -70,15 +70,8 @@ export default function VerifyAge() {
       )}
       {/* Background Image with Light/Dark Contrast */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <Image
-          src="/3d-ship-sailing-blue-ocean.png"
-          alt="Ocean Background"
-          fill
-          style={{ objectFit: 'cover', objectPosition: 'center' }}
-          quality={100}
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/80 via-indigo-900/70 to-black/80 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-[var(--tronado-dark)] bg-opacity-95"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/50 via-indigo-900/40 to-black/70"></div>
         
         {/* Light particles effect */}
         <div className="absolute inset-0 opacity-20">

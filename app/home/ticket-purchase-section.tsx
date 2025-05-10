@@ -313,14 +313,14 @@ export default function EnhancedTicketPurchaseSection() {
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 {/* Left Column - Jackpot Information */}
                 <div className="md:col-span-4 p-4 sm:p-6 flex flex-col justify-center items-center text-center bg-gradient-to-b from-indigo-900/60 to-blue-900/70 border-r border-indigo-300/20 rounded-l-lg shadow-inner">
-                  <div className="mb-3 relative">
+                  <div className="mb-8 relative -mt-6">
                     <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-yellow-300 to-amber-500 opacity-40 blur-sm"></div>
                     <Image 
                       src="/Logo.png" 
                       alt="Tronado Lottery Logo" 
-                      width={130} 
-                      height={65} 
-                      className="mx-auto relative z-10"
+                      width={280} 
+                      height={140} 
+                      className="mx-auto relative z-10 -mt-8"
                     />
                   </div>
                   

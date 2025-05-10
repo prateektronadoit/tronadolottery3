@@ -81,8 +81,8 @@ export default function Header() {
             <Image 
               src="/Logo.png" 
               alt="Tronado Lottery Logo" 
-              width={120} 
-              height={120} 
+              width={150} 
+              height={150} 
               className="drop-shadow-[0_0_15px_rgba(255,215,0,0.5)] transition-transform hover:scale-105 duration-300"
             />
             <div className="ml-2 text-white">
