@@ -86,68 +86,67 @@ export default function VerifyAge() {
         <Image 
           src="/Logo.png" 
           alt="Tronado Lottery Logo" 
-          width={100} 
-          height={100} 
-          className="mx-auto"
+          width={150} 
+          height={75} 
+          className="mx-auto drop-shadow-[0_0_15px_rgba(255,215,0,0.5)]"
         />
-        <div className="text-center mt-2">
-          <h1 className="text-xl font-bold text-yellow-400">TRONADO LOTTERY</h1>
-          {/* Removed Arabic text */}
+      </div>
+      
+      {/* Main Content Container with flex column layout */}
+      <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-md mx-auto px-4 space-y-12 mt-20">
+        {/* Hero Text */}
+        <div className="text-center">
+          <h2 className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg mb-3">
+            DARE TO IMAGINE!
+          </h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-yellow-400 drop-shadow-lg">
+            WIN TRDO 100 MILLION
+          </h2>
         </div>
-      </div>
-      
-      {/* Hero Text */}
-      <div className="absolute top-48 left-1/2 transform -translate-x-1/2 z-10 text-center w-full px-4">
-        <h2 className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg mb-2">
-          DARE TO IMAGINE!
-        </h2>
-        <h2 className="text-4xl md:text-5xl font-bold text-yellow-400 drop-shadow-lg">
-          WIN TRDO 100 MILLION
-        </h2>
-      </div>
-      
-      {/* Age Verification Box */}
-      <div className="relative z-10 text-center px-4 mt-32 pt-32">
-        <h2 className="text-3xl font-bold mb-4 text-yellow-400">AGE VERIFICATION</h2>
-        <p className="mb-8">You must be 18 years or older to enter this website</p>
         
-        <div className="flex gap-4 justify-center">
-          <button
-            onClick={() => handleVerify(true)}
-            className="px-10 py-3 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-full transition-colors"
-          >
-            I am 18 or older
-          </button>
+        {/* Age Verification Box */}
+        <div className="text-center px-4 w-full mt-16">
+          <h2 className="text-3xl font-bold mb-4 text-yellow-400">AGE VERIFICATION</h2>
+          <p className="mb-8">You must be 18 years or older to enter this website</p>
           
-          <button
-            onClick={() => handleVerify(false)}
-            className="px-10 py-3 bg-transparent border border-white/50 hover:border-white text-white font-bold rounded-full transition-colors"
-          >
-            Exit
-          </button>
-        </div>
-        
-        <div className="mt-16 flex flex-col md:flex-row gap-2 items-center justify-center">
-          <div className="flex items-center">
-            <div className="bg-red-600 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center mr-1">18</div>
-            <span className="text-xs">PLAY RIGHT BE SAFEGUARDED</span>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => handleVerify(true)}
+              className="px-10 py-3 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-full transition-colors"
+            >
+              I am 18 or older
+            </button>
+            
+            <button
+              onClick={() => handleVerify(false)}
+              className="px-10 py-3 bg-transparent border border-white/50 hover:border-white text-white font-bold rounded-full transition-colors"
+            >
+              Exit
+            </button>
           </div>
-          <p className="text-xs md:border-l md:border-white/20 md:pl-2">THE GAME L.L.C. - GCGRA Licensed Operator</p>
-        </div>
-        
-        <div className="mt-2 flex flex-col items-center">
-          <p className="text-xs text-white/60 max-w-lg mt-4">
-            When using this Tronado Lottery website, kindly note that we employ cookies to gather your personal information, ensuring proper website functionality and enhancing the quality of our services for your benefit.
-          </p>
           
-          {/* <div className="flex gap-4 mt-4">
-            <button className="px-4 py-1 rounded-full bg-transparent border border-white/20 text-xs hover:bg-white/10 transition-colors">
-              COOKIES POLICY
-            </button>
-            <button className="px-6 py-1 rounded-full bg-yellow-500 text-black text-xs font-semibold hover:bg-yellow-600 transition-colors">
-              ACCEPT ALL
-            </button>
-          </div> */}
+          <div className="flex flex-col xs:flex-row gap-4 justify-center mt-4 px-4 xs:px-0">
+            <div className="flex items-center">
+              <div className="bg-red-600 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center mr-1">18</div>
+              <span className="text-xs">PLAY RIGHT BE SAFEGUARDED</span>
+            </div>
+            <p className="text-xs md:border-l md:border-white/20 md:pl-2">THE GAME L.L.C. - GCGRA Licensed Operator</p>
+          </div>
+          
+          <div className="mt-2 flex flex-col items-center">
+            <p className="text-xs text-white/60 max-w-lg mt-4">
+              When using this Tronado Lottery website, kindly note that we employ cookies to gather your personal information, ensuring proper website functionality and enhancing the quality of our services for your benefit.
+            </p>
+            
+            {/* <div className="flex gap-4 mt-4">
+              <button className="px-4 py-1 rounded-full bg-transparent border border-white/20 text-xs hover:bg-white/10 transition-colors">
+                COOKIES POLICY
+              </button>
+              <button className="px-6 py-1 rounded-full bg-yellow-500 text-black text-xs font-semibold hover:bg-yellow-600 transition-colors">
+                ACCEPT ALL
+              </button>
+            </div> */}
+          </div>
         </div>
       </div>
       

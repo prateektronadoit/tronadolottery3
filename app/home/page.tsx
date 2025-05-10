@@ -135,32 +135,78 @@ export default function HomePage() {
         </div>
 
         {/* Hero Content */}
-        <div className="container mx-auto px-4 h-full flex items-center justify-between relative z-10 -mt-20">
-          <div className="text-left max-w-xl md:max-w-2xl lg:ml-8">
-            <h2 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-2 text-white leading-tight">
-              DARE TO IMAGINE
-            </h2>
-            <h3 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-[var(--tronado-gold)]">
-              WIN TRDO 100 MILLION
-            </h3>
-          
+        <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative z-10">
+          {/* Center positioned PLAY NOW button for mobile - displays at top for better visibility */}
+          <div className="md:hidden w-full flex justify-center mb-6 mt-20">
+            <div className="group relative inline-flex">
+              <div className="absolute -inset-px rounded-lg bg-gradient-to-r from-[var(--tronado-gold)] via-yellow-300 to-[var(--tronado-gold)] opacity-70 blur group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-gradient-x"></div>
+              <button className="relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-black bg-white rounded-lg leading-none">
+                PLAY NOW
+                <svg className="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+              </button>
+            </div>
           </div>
           
-          {/* Single large Roll.png image */}
-          <div className="hidden md:block relative h-[570px] w-[570px] lg:h-[600px] lg:w-[600px] xl:h-[650px] xl:w-[650px]">
-            <Image
-              src="/Roll.png"
-              alt="Roulette Wheel"
-              fill
-              className="object-contain"
-              priority
-            />
+          {/* Gaming elements - better positioned and sized for mobile */}
+          <div className="relative h-[400px] w-full max-w-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] mx-auto mb-10 md:mb-0">
+            {/* Slot machine and casino elements */}
+            <div className="absolute w-full h-full top-0 left-0">
+              <Image
+                src="/casino.png"
+                alt="Casino Elements"
+                fill
+                className="object-contain drop-shadow-[0_0_15px_rgba(255,188,0,0.5)]"
+                style={{ zIndex: 2 }}
+                priority
+              />
+            </div>
+            
+            {/* Roulette wheel with more subtle animation for mobile */}
+            <div className="absolute w-full h-full bottom-0 left-0 animate-spin-slow">
+              <Image
+                src="/Roll.png"
+                alt="Roulette Wheel"
+                fill
+                className="object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                priority
+              />
+            </div>
+          </div>
+          
+          {/* Text content positioned below for mobile, to side for desktop */}
+          <div className="text-center md:absolute md:left-8 md:top-1/2 md:-translate-y-1/2 md:text-left md:max-w-xl lg:max-w-2xl w-full z-20 md:mb-0">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-gray-300 bg-[length:200%_100%]">
+              DARE TO IMAGINE
+            </h2>
+            <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-[var(--tronado-gold)]">
+              WIN TRDO 100 MILLION
+            </h3>
+            {/* Play Now button (desktop only) */}
+            <div className="hidden md:inline-block group relative mt-4">
+              <div className="absolute -inset-px rounded-lg bg-gradient-to-r from-[var(--tronado-gold)] via-yellow-300 to-[var(--tronado-gold)] opacity-70 blur group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+              <button className="relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-black bg-white rounded-lg leading-none">
+                PLAY NOW
+                <svg className="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Mobile-only heading - "going above" */}
+      <div className="md:hidden relative z-20 bg-gradient-to-r from-[var(--tronado-gold)] to-yellow-500 py-3 px-4 text-center">
+        <h2 className="text-2xl font-bold text-[var(--tronado-dark)] uppercase tracking-wider">going above</h2>
+      </div>
+
+
       {/* Lottery Ticket Selection Section - styled to exactly match the reference image */}
       <section className="bg-gray-900 py-8" style={{ backgroundImage: "linear-gradient(to bottom, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.95)), url('/home-luckday-bg.jpg')", backgroundSize: "cover" }}>
+        {/* Floating elements */}
+        <div className="absolute right-0 top-1/4 hidden lg:block animate-pulse-slow">
+          <div className="w-40 h-40 relative opacity-60">
+            <Image src="/casino.png" alt="Casino decoration" width={160} height={160} className="transform -rotate-12" />
+          </div>
+        </div>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto bg-[var(--tronado-dark)] rounded-lg overflow-hidden shadow-lg border border-[var(--tronado-gold)]/20">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
@@ -326,8 +372,6 @@ export default function HomePage() {
 
 
 
-      {/* Jackpot Section with Oil Platform removed as requested */}
-
       {/* Latest Draw Result and FAQs Section */}
       <section className="py-16 bg-gradient-to-b from-gray-900 to-[var(--tronado-dark)] text-white">
         <div className="container mx-auto px-4">
@@ -344,8 +388,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      
-      {/* Results Button section removed as requested */}
       
       {/* Next Draw Section removed as requested */}
       

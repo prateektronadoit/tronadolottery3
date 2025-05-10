@@ -6,11 +6,19 @@ import Image from 'next/image';
 // Canvas-based background effect component for the ticket purchase section
 const LotteryBackgroundEffect = ({ className = '' }: { className?: string }) => {
   return (
-    <canvas 
-      id="lotteryCanvas"
-      className={`absolute inset-0 z-0 ${className}`}
-      style={{ pointerEvents: 'none' }}
-    />
+    <div className="absolute inset-0 z-0 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-indigo-400/15 to-purple-500/20"></div>
+      <div className="absolute inset-0" style={{ 
+        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)',
+        backgroundSize: '20px 20px, 40px 40px',
+        backgroundPosition: '0 0, 10px 10px' 
+      }}></div>
+      <canvas 
+        id="lotteryCanvas"
+        className={`absolute inset-0 ${className}`}
+        style={{ pointerEvents: 'none' }}
+      />
+    </div>
   );
 };
 
@@ -39,149 +47,92 @@ const CanvasScript = () => {
         
         // Create particles
         const particles = [];
-        const particleCount = 30;
+        const particleCount = 50;
         
-        // Gold color palette
-        const goldColors = [
+        // Lighter color palette with gold and lucky-themed colors
+        const colorPalette = [
           '#FFD700', // Gold
           '#F5DEB3', // Wheat
-          '#DAA520', // GoldenRod
-          '#B8860B', // DarkGoldenRod
-          '#CD7F32'  // Bronze
+          '#87CEEB', // Sky Blue
+          '#E6E6FA', // Lavender
+          '#98FB98', // Pale Green
+          '#FFA07A', // Light Salmon
+          '#FFFACD'  // Lemon Chiffon
         ];
         
         class Particle {
+          x: number;
+          y: number;
+          radius: number;
+          color: string;
+          speedX: number;
+          speedY: number;
+          opacity: number;
+          shape: string;
+          rotate: number;
+          rotateSpeed: number;
+          
           constructor() {
             this.x = Math.random() * canvas.width;
             this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 5 + 2;
-            this.speedX = (Math.random() - 0.5) * 0.5;
-            this.speedY = (Math.random() - 0.5) * 0.5;
-            this.color = goldColors[Math.floor(Math.random() * goldColors.length)];
-            this.rotation = Math.random() * Math.PI * 2;
-            this.rotationSpeed = (Math.random() - 0.5) * 0.01;
-            this.opacity = Math.random() * 0.6 + 0.2;
-            
-            // Random shapes: circle, diamond, card suits, etc.
-            const shapes = ['circle', 'diamond', 'spade', 'heart', 'club', 'star'];
-            this.shape = shapes[Math.floor(Math.random() * shapes.length)];
+            this.radius = Math.random() * 4 + 2;
+            this.color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+            this.speedX = (Math.random() - 0.5) * 0.7;
+            this.speedY = (Math.random() - 0.5) * 0.7;
+            this.opacity = 0.3 + Math.random() * 0.4;
+            this.shape = Math.random() > 0.3 ? 'circle' : (Math.random() > 0.5 ? 'star' : 'diamond');
+            this.rotate = Math.random() * Math.PI * 2;
+            this.rotateSpeed = (Math.random() - 0.5) * 0.02;
           }
           
           update() {
             this.x += this.speedX;
             this.y += this.speedY;
-            this.rotation += this.rotationSpeed;
+            this.rotate += this.rotateSpeed;
             
-            // Wrap around the screen
-            if (this.x < 0) this.x = canvas.width;
-            if (this.x > canvas.width) this.x = 0;
-            if (this.y < 0) this.y = canvas.height;
-            if (this.y > canvas.height) this.y = 0;
+            // Boundary check with wrap-around
+            if (this.x < -this.radius * 2) this.x = canvas.width + this.radius;
+            if (this.x > canvas.width + this.radius * 2) this.x = -this.radius;
+            if (this.y < -this.radius * 2) this.y = canvas.height + this.radius;
+            if (this.y > canvas.height + this.radius * 2) this.y = -this.radius;
           }
           
           draw() {
             ctx.save();
             ctx.globalAlpha = this.opacity;
-            ctx.translate(this.x, this.y);
-            ctx.rotate(this.rotation);
             ctx.fillStyle = this.color;
-            ctx.strokeStyle = this.color;
-            ctx.lineWidth = 1;
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rotate);
             
-            switch (this.shape) {
-              case 'circle':
-                ctx.beginPath();
-                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                break;
-              case 'diamond':
-                ctx.beginPath();
-                ctx.moveTo(0, -this.size);
-                ctx.lineTo(this.size, 0);
-                ctx.lineTo(0, this.size);
-                ctx.lineTo(-this.size, 0);
-                ctx.closePath();
-                ctx.fill();
-                break;
-              case 'spade':
-                drawCardSymbol('spade', this.size);
-                break;
-              case 'heart':
-                drawCardSymbol('heart', this.size);
-                break;
-              case 'club':
-                drawCardSymbol('club', this.size);
-                break;
-              case 'star':
-                drawStar(0, 0, 5, this.size, this.size/2);
-                break;
+            if (this.shape === 'circle') {
+              ctx.beginPath();
+              ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+              ctx.fill();
+            } else if (this.shape === 'star') {
+              // Draw a small star
+              this.drawStar(0, 0, this.radius * 1.5, this.radius * 0.6, 5);
+            } else if (this.shape === 'diamond') {
+              // Draw a diamond
+              ctx.beginPath();
+              ctx.moveTo(0, -this.radius * 1.5);
+              ctx.lineTo(this.radius, 0);
+              ctx.lineTo(0, this.radius * 1.5);
+              ctx.lineTo(-this.radius, 0);
+              ctx.closePath();
+              ctx.fill();
             }
             
             ctx.restore();
-          }
-        }
-        
-        // Helper function to draw a star
-        function drawStar(cx, cy, spikes, outerRadius, innerRadius) {
-          let rot = Math.PI / 2 * 3;
-          let x = cx;
-          let y = cy;
-          const step = Math.PI / spikes;
-          
-          ctx.beginPath();
-          
-          for (let i = 0; i < spikes; i++) {
-            x = cx + Math.cos(rot) * outerRadius;
-            y = cy + Math.sin(rot) * outerRadius;
-            ctx.lineTo(x, y);
-            rot += step;
-            
-            x = cx + Math.cos(rot) * innerRadius;
-            y = cy + Math.sin(rot) * innerRadius;
-            ctx.lineTo(x, y);
-            rot += step;
+            ctx.globalAlpha = 1;
           }
           
-          ctx.closePath();
-          ctx.fill();
-        }
-        
-        // Helper function to draw card symbols
-        function drawCardSymbol(symbol, size) {
-          const scale = size / 10;
-          
-          if (symbol === 'heart') {
+          drawStar(x, y, outerRadius, innerRadius, points) {
             ctx.beginPath();
-            ctx.moveTo(0, 2 * scale);
-            ctx.bezierCurveTo(0, 0, -5 * scale, -3 * scale, -10 * scale, 2 * scale);
-            ctx.bezierCurveTo(-10 * scale, 8 * scale, 0, 12 * scale, 0, 12 * scale);
-            ctx.bezierCurveTo(0, 12 * scale, 10 * scale, 8 * scale, 10 * scale, 2 * scale);
-            ctx.bezierCurveTo(10 * scale, -3 * scale, 5 * scale, 0, 0, 2 * scale);
-            ctx.fill();
-          } else if (symbol === 'spade') {
-            ctx.beginPath();
-            ctx.moveTo(0, -10 * scale);
-            ctx.bezierCurveTo(5 * scale, -5 * scale, 10 * scale, 0, 10 * scale, 5 * scale);
-            ctx.bezierCurveTo(10 * scale, 10 * scale, 5 * scale, 10 * scale, 0, 5 * scale);
-            ctx.bezierCurveTo(-5 * scale, 10 * scale, -10 * scale, 10 * scale, -10 * scale, 5 * scale);
-            ctx.bezierCurveTo(-10 * scale, 0, -5 * scale, -5 * scale, 0, -10 * scale);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.moveTo(0, 5 * scale);
-            ctx.lineTo(3 * scale, 12 * scale);
-            ctx.lineTo(-3 * scale, 12 * scale);
-            ctx.closePath();
-            ctx.fill();
-          } else if (symbol === 'club') {
-            ctx.beginPath();
-            ctx.arc(-5 * scale, -5 * scale, 5 * scale, 0, Math.PI * 2);
-            ctx.arc(5 * scale, -5 * scale, 5 * scale, 0, Math.PI * 2);
-            ctx.arc(0, 5 * scale, 5 * scale, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(3 * scale, 12 * scale);
-            ctx.lineTo(-3 * scale, 12 * scale);
+            for (let i = 0; i < points * 2; i++) {
+              const radius = i % 2 === 0 ? outerRadius : innerRadius;
+              const angle = (i * Math.PI) / points;
+              ctx.lineTo(x + radius * Math.sin(angle), y + radius * Math.cos(angle));
+            }
             ctx.closePath();
             ctx.fill();
           }
@@ -192,35 +143,40 @@ const CanvasScript = () => {
           particles.push(new Particle());
         }
         
-        // Animation loop
         function animate() {
+          // Clear canvas
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           
-          // Draw gradient background
+          // Add light background with gradient
           const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-          gradient.addColorStop(0, 'rgba(0, 0, 0, 0.8)');
-          gradient.addColorStop(1, 'rgba(30, 30, 30, 0.8)');
+          gradient.addColorStop(0, 'rgba(245, 245, 255, 0.01)');
+          gradient.addColorStop(1, 'rgba(230, 230, 250, 0.01)');
           ctx.fillStyle = gradient;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // Add some faded gold lines
-          ctx.strokeStyle = 'rgba(218, 165, 32, 0.15)';
-          ctx.lineWidth = 2;
+          // Add some light grid lines
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+          ctx.lineWidth = 1;
           
-          // Horizontal lines
-          for (let i = 0; i < canvas.height; i += 40) {
-            ctx.beginPath();
-            ctx.moveTo(0, i);
-            ctx.lineTo(canvas.width, i);
-            ctx.stroke();
+          // Draw lucky clover pattern in background
+          for (let x = 0; x < canvas.width; x += 80) {
+            for (let y = 0; y < canvas.height; y += 80) {
+              if (Math.random() > 0.85) {
+                ctx.fillStyle = 'rgba(255, 215, 0, 0.03)';
+                drawClover(x + 40 * Math.random(), y + 40 * Math.random(), 5 + Math.random() * 5);
+              }
+            }
           }
           
-          // Vertical lines
-          for (let i = 0; i < canvas.width; i += 40) {
-            ctx.beginPath();
-            ctx.moveTo(i, 0);
-            ctx.lineTo(i, canvas.height);
-            ctx.stroke();
+          function drawClover(x, y, size) {
+            for (let i = 0; i < 4; i++) {
+              ctx.beginPath();
+              const angle = (i * Math.PI) / 2;
+              const leafX = x + Math.cos(angle) * size;
+              const leafY = y + Math.sin(angle) * size;
+              ctx.arc(leafX, leafY, size, 0, Math.PI * 2);
+              ctx.fill();
+            }
           }
           
           // Update and draw particles
@@ -356,40 +312,36 @@ export default function EnhancedTicketPurchaseSection() {
             <div className="relative z-10 p-6 md:p-8">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 {/* Left Column - Jackpot Information */}
-                <div className="md:col-span-4 bg-black/60 backdrop-blur-sm p-5 rounded-lg border border-amber-900/30 flex flex-col items-center">
-                  <div className="mb-4 p-3 rounded-full bg-gradient-to-br from-black to-gray-900 border border-amber-700/30">
+                <div className="md:col-span-4 p-4 sm:p-6 flex flex-col justify-center items-center text-center bg-gradient-to-b from-indigo-900/60 to-blue-900/70 border-r border-indigo-300/20 rounded-l-lg shadow-inner">
+                  <div className="mb-3 relative">
+                    <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-yellow-300 to-amber-500 opacity-40 blur-sm"></div>
                     <Image 
-                      src="/jackpot-icon.svg" 
-                      alt="Jackpot" 
-                      width={64} 
-                      height={64}
-                      className="object-contain"
-                      onError={(e) => {
-                        // Fallback if image doesn't exist
-                        const target = e.target as HTMLImageElement;
-                        target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI0ZGRDcwMCI+PHBhdGggZD0iTTEyIDJsMS44NSA2LjhIMjBsLTUuMjMgMy44IDIgNi44TDEyIDE1LjhsLTQuNzcgMy44IDItNi44TDQgOC44aDYuMTVMMTIgMnoiLz48L3N2Zz4=';
-                      }}
+                      src="/Logo.png" 
+                      alt="Tronado Lottery Logo" 
+                      width={130} 
+                      height={65} 
+                      className="mx-auto relative z-10"
                     />
                   </div>
                   
-                  <h3 className="text-center text-xl font-bold text-gray-300 mb-1">JACKPOT</h3>
-                  <p className="text-center text-lg font-bold text-amber-500 mb-4">TRDO</p>
-                  <p className="text-center text-4xl md:text-5xl font-bold text-amber-500 mb-2">100,000,000</p>
+                  <h3 className="text-center text-xl font-bold text-gray-200 mb-1 drop-shadow-md">JACKPOT</h3>
+                  <p className="text-center text-lg font-bold text-amber-300 mb-4 drop-shadow-md">TRDO</p>
+                  <p className="text-center text-4xl md:text-5xl font-bold text-amber-300 mb-2 drop-shadow-lg">100,000,000</p>
                   
-                  <div className="mt-4 py-1 px-4 rounded-full bg-amber-900/30 border border-amber-700/50">
-                    <p className="text-center text-sm text-amber-300">Guaranteed Lucky Chance Draw</p>
+                  <div className="mt-4 py-1 px-4 rounded-full bg-amber-500/20 border border-amber-300/50 shadow-inner">
+                    <p className="text-center text-sm text-amber-200 font-medium">Guaranteed Lucky Chance Draw</p>
                   </div>
                   
-                  <p className="mt-4 text-center text-sm text-amber-500">TRDO 100,000 * 7 Winners</p>
-                  <p className="mt-2 text-center text-xs text-gray-400">1 Entry for TRDO 50</p>
+                  <p className="mt-4 text-center text-sm text-amber-300 font-medium drop-shadow-md">TRDO 100,000 * 7 Winners</p>
+                  <p className="mt-2 text-center text-xs text-gray-300">1 Entry for TRDO 50</p>
                   
-                  <button className="mt-6 w-full py-3 rounded-md bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 transition-colors text-black font-bold">
+                  <button className="mt-6 w-full py-3 rounded-md bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-black font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
                     PLAY
                   </button>
                 </div>
                 
                 {/* Right Column - Ticket Selection */}
-                <div className="md:col-span-8 rounded-lg border border-gray-800 bg-black/30 backdrop-blur-sm p-5">
+                <div className="md:col-span-8 rounded-lg border border-indigo-200/30 bg-white/10 backdrop-blur-sm p-5 shadow-xl">
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-bold text-white">Buy A Ticket Quickly</h2>
                     <div className="flex items-center space-x-3">

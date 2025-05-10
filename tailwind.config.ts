@@ -22,11 +22,16 @@ const config: Config = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       animation: {
-        'spin-slow': 'spin 30s linear infinite',
+        'spin-slow': 'spin-slow 30s linear infinite',
         'float': 'floating 6s ease-in-out infinite',
+        'float-slow': 'float-slow 8s ease-in-out infinite',
         'float-chips': 'floatingChips 8s ease-in-out infinite',
         'float-chips-reverse': 'floatingChipsReverse 7s ease-in-out infinite',
         'ping-slow': 'pingSlow 3s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'pulse-slow': 'pulse-slow 4s ease-in-out infinite',
+        'shimmer': 'shimmer 3s ease-in-out infinite',
+        'gradient-x': 'gradient-x 5s ease infinite',
+        'bounce': 'bounce 2s infinite',
       },
       keyframes: {
         floating: {

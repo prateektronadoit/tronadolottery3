@@ -200,9 +200,9 @@ const CryptoFooter = () => {
             <Image 
               src="/Logo.png" 
               alt="Tronado Lottery Logo" 
-              width={100} 
-              height={100} 
-              className="mr-3"
+              width={130} 
+              height={130} 
+              className="mr-3 drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]"
             />
             <div className="text-sm">
               {/* Removed Arabic text */}
