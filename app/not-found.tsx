@@ -30,7 +30,7 @@ export default function NotFound() {
         />
         <div className="text-center mt-2">
           <h1 className="text-xl font-bold text-yellow-400">TRONADO LOTTERY</h1>
-          <p className="text-sm text-yellow-400 opacity-80">النصيب</p>
+          {/* Removed Arabic text */}
         </div>
       </div>
       

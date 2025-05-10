@@ -1,0 +1,75 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import Image from 'next/image';
+
+export default function BuildingBackground() {
+  const rollRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    // Create rotation animation
+    const animateRoll = () => {
+      if (!rollRef.current) return;
+      
+      const currentRotation = parseFloat(rollRef.current.style.getPropertyValue('--roll-rotate') || '0');
+      const newRotation = (currentRotation + 0.2) % 360;
+      
+      rollRef.current.style.setProperty('--roll-rotate', `${newRotation}deg`);
+      requestAnimationFrame(animateRoll);
+    };
+    
+    const animationFrame = requestAnimationFrame(animateRoll);
+    
+    return () => {
+      cancelAnimationFrame(animationFrame);
+    };
+  }, []);
+  
+  return (
+    <div className="relative w-full h-full overflow-hidden">
+      {/* Static background layer with darker gradient overlay */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/bg.jpg"
+          alt="Luxury building background"
+          fill
+          style={{ 
+            objectFit: 'cover', 
+            objectPosition: 'center',
+            filter: 'brightness(0.7) contrast(1.2)'
+          }}
+          priority
+          quality={100}
+        />
+      </div>
+      
+      {/* Gradient overlay to match the design */}
+      <div className="absolute inset-0 z-5 bg-gradient-to-r from-[var(--tronado-gradient-start)] to-[var(--tronado-gradient-end)] opacity-80"></div>
+      
+      {/* Static large Roll.png on the right side */}
+      <div 
+        ref={rollRef} 
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10"
+        style={{
+          width: '450px',
+          height: '450px',
+          marginRight: '80px',
+        }}
+      >
+        <Image
+          src="/Roll.png"
+          alt="Lottery Roll"
+          width={450}
+          height={450}
+          className="object-contain"
+          priority
+        />
+      </div>
+      
+      {/* Simple overlay for gradient effect */}
+      <div className="absolute inset-0 z-20">
+        <div className="w-full h-full bg-gradient-to-b from-black/40 via-transparent to-black/30"></div>
+      </div>
+    </div>
+  );
+}

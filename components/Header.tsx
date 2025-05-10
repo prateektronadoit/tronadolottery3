@@ -8,7 +8,9 @@ export default function Header() {
   const [playDropdownOpen, setPlayDropdownOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('En');
   const [websiteLanguage, setWebsiteLanguage] = useState('english'); // 'english' or 'dubai'
-  const langDropdownRef = useRef<HTMLDivElement>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const mobileLangDropdownRef = useRef<HTMLDivElement>(null);
+  const desktopLangDropdownRef = useRef<HTMLDivElement>(null);
   const playDropdownRef = useRef<HTMLLIElement>(null);
   
   // Close mobile menu when resizing to desktop
@@ -22,8 +24,20 @@ export default function Header() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [mobileMenuOpen]);
-  
-  // No scroll handler needed anymore as header is separate from home carousel
+
+  // Add scroll event listener to change header appearance
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check if we've scrolled past the hero section (height of the viewport)
+      const isScrolled = window.scrollY > window.innerHeight - 100;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [scrolled]);
   
   // Close dropdowns when clicking outside - only needed for play dropdown now
   useEffect(() => {
@@ -51,34 +65,28 @@ export default function Header() {
     setPlayDropdownOpen(!playDropdownOpen);
     // Close other dropdown if open
     if (languageDropdownOpen) setLanguageDropdownOpen(false);
-    console.log('Play dropdown toggled:', !playDropdownOpen ? 'opened' : 'closed');
   };
-  
-  // We're using CSS hover for language dropdown instead of JS handlers
   
   const changeLanguage = (lang: string, langCode: string) => {
     setSelectedLanguage(lang);
     setWebsiteLanguage(langCode);
     setLanguageDropdownOpen(false);
-    
-    // Here you would normally update the app's language context/state
-    console.log(`Language changed to: ${lang} (${langCode})`);
   };
   return (
     <>
       {/* Mobile Navigation Bar - Only visible on mobile */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 ">
+      <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[var(--tronado-dark)]/90 backdrop-blur-sm' : 'bg-transparent'}`}>
         <div className="flex justify-between items-center px-4 py-3">
           <Link href="/home" className="flex items-center">
             <Image 
               src="/Logo.png" 
               alt="Tronado Lottery Logo" 
-              width={40} 
-              height={40} 
+              width={100} 
+              height={100} 
+              className="drop-shadow-[0_0_10px_rgba(255,215,0,0.4)] transition-transform hover:scale-105 duration-300"
             />
             <div className="ml-2 text-white">
-              <div className="font-bold text-base uppercase">THE TRONADO</div>
-              <div className="text-xs uppercase">LOTTERY</div>
+              <div className="font-bold text-base"></div>
             </div>
           </Link>
           
@@ -155,7 +163,21 @@ export default function Header() {
             </nav>
             
             <div className="flex flex-wrap items-center justify-between w-full gap-3 py-4 mt-2 border-t border-cyan-600">
-              <div className="relative" ref={langDropdownRef}>
+              {/* Connect Wallet Button for Mobile */}
+              <button 
+                className="w-full bg-[var(--tronado-gold)] hover:bg-[var(--tronado-gold-hover)] text-[var(--tronado-dark)] font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
+                onClick={() => {
+                  console.log('Connecting wallet...');
+                  // Implement wallet connection logic here
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Connect Wallet
+              </button>
+              
+              <div className="relative" ref={mobileLangDropdownRef}>
                 <button 
                   className="flex items-center text-sm bg-transparent px-3 py-2 rounded border border-white/30 hover:bg-white/10 transition-colors text-white"
                   onClick={toggleLanguageDropdown}
@@ -189,44 +211,31 @@ export default function Header() {
                   </div>
                 )}
               </div>
-              
-              <button className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-full transition-colors text-sm font-medium flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Connect Wallet
-              </button>
             </div>
           </div>
         </div>
       </div>
       
-      {/* Desktop Header - Hidden on mobile */}
-      <header className="hidden md:block sticky top-0 z-50 bg-transparent text-white">
-        
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center relative z-10">
-          {/* Logo and brand name */}
-          <Link href="/home" className="flex items-center">
-            <Image 
-              src="/Logo.png" 
-              alt="Tronado Lottery Logo" 
-              width={50} 
-              height={50} 
-            />
-            <div className="ml-2">
-              <div className="font-bold text-lg uppercase">THE TRONADO</div>
-              <div className="text-xs uppercase">LOTTERY</div>
-            </div>
-          </Link>
-          
-          {/* Main navigation for desktop */}
-          <div className="flex items-center space-x-6 justify-between w-full">
-            <nav>
-              <ul className="flex space-x-6">
+      {/* Desktop Navigation Bar - Only visible on desktop */}
+      <header className={`hidden md:block fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[var(--tronado-dark)]/90 backdrop-blur-sm' : 'bg-transparent'}`}>
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <Link href="/home" className="flex items-center">
+              <Image 
+                src="/Logo.png" 
+                alt="Tronado Lottery Logo" 
+                width={100} 
+                height={100} 
+                className="drop-shadow-[0_0_10px_rgba(255,215,0,0.4)] transition-transform hover:scale-105 duration-300"
+              />
+            </Link>
+            
+            <nav className="hidden md:block">
+              <ul className="flex space-x-8">
                 <li className="relative" ref={playDropdownRef}>
                   <button 
                     onClick={togglePlayDropdown}
-                    className="flex items-center py-1 hover:text-yellow-300 active:text-yellow-400 transition-colors font-medium bg-transparent focus:outline-none text-white"
+                    className="flex items-center py-1 hover:text-[var(--tronado-gold)] active:text-[var(--tronado-gold)] transition-colors font-medium bg-transparent focus:outline-none text-white"
                     aria-expanded={playDropdownOpen}
                   >
                     <span>Play</span>
@@ -235,16 +244,16 @@ export default function Header() {
                     </svg>
                   </button>
                   <div 
-                    className={`absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-50 transition-all duration-200 ${playDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                    className={`absolute left-0 mt-2 w-48 bg-[var(--tronado-dark)] rounded-md shadow-lg overflow-hidden z-50 transition-all duration-200 ${playDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
                   >
                     <div className="py-1">
-                      <Link href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-cyan-600 hover:text-white">
+                      <Link href="#" className="block px-4 py-2 text-sm text-white hover:bg-[var(--tronado-gold)] hover:text-[var(--tronado-dark)]">
                         Lucky Day Lottery
                       </Link>
-                      <Link href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-cyan-600 hover:text-white">
+                      <Link href="#" className="block px-4 py-2 text-sm text-white hover:bg-[var(--tronado-gold)] hover:text-[var(--tronado-dark)]">
                         Scratch Cards
                       </Link>
-                      <Link href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-cyan-600 hover:text-white">
+                      <Link href="#" className="block px-4 py-2 text-sm text-white hover:bg-[var(--tronado-gold)] hover:text-[var(--tronado-dark)]">
                         Special Draws
                       </Link>
                     </div>
@@ -257,26 +266,10 @@ export default function Header() {
             </nav>
             
             <div className="flex items-center space-x-4 ml-auto">
-              {/* Support Icon */}
-              <button 
-                className="flex items-center justify-center text-white bg-transparent p-2 rounded-full hover:bg-white/10 active:bg-white/20 transition-colors"
-                onClick={() => {
-                  alert('Connecting to helpline...');
-                  console.log('Support helpline called');
-                  // In a real implementation, this could open a chat window or initiate a phone call
-                }}
-                aria-label="Get Support"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01" />
-                </svg>
-              </button>
-              
               {/* Language Selector */}
               <div 
                 className="relative group" 
-                ref={langDropdownRef}
+                ref={desktopLangDropdownRef}
               >
                 <button 
                   className="flex items-center text-sm px-3 py-1 rounded border border-white/30 hover:bg-white/10 transition-colors"
@@ -309,15 +302,16 @@ export default function Header() {
                 </div>
               </div>
               
+              {/* Connect Wallet Button */}
               <button 
-                className="bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-700 text-white px-4 py-1 rounded-full transition-all duration-200 text-sm font-medium flex items-center shadow-md hover:shadow-lg"
+                className="bg-[var(--tronado-gold)] hover:bg-[var(--tronado-gold-hover)] text-[var(--tronado-dark)] font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
                 onClick={() => {
-                  console.log('Connect wallet clicked');
-                  alert('Wallet connection initiated');
+                  console.log('Connecting wallet...');
+                  // Implement wallet connection logic here
                 }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 Connect Wallet
               </button>
@@ -328,15 +322,6 @@ export default function Header() {
       
       {/* Mobile Header Spacer - Creates space for fixed header on mobile */}
       <div className="md:hidden h-[64px]"></div>
-      
-      {/* Mobile menu overlay background - darkens the rest of the page when menu is open */}
-      {mobileMenuOpen && (
-        <div 
-          className="md:hidden fixed inset-0 bg-black/50 z-40" 
-          onClick={toggleMobileMenu}
-          aria-hidden="true"
-        ></div>
-      )}
     </>
   );
 }
