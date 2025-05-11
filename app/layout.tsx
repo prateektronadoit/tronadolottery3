@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title: "Tronado Lottery",
   description: "The leading lottery platform in the UAE",
   icons: {
-    icon: "/Logo.png",
+    icon: "/t-golden.svg",
   },
 };
 
