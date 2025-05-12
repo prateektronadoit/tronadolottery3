@@ -76,9 +76,9 @@ export default function NotFound() {
           <div className="bg-red-600 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center mr-1">18</div>
           <span className="text-xs">PLAY RIGHT BE SAFEGUARDED</span>
         </div>
-        <p className="text-xs text-white/60">
+        {/* <p className="text-xs text-white/60">
           THE GAME L.L.C. - GCGRA Licensed Operator
-        </p>
+        </p> */}
       </div>
     </div>
   );

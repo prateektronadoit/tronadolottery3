@@ -152,7 +152,7 @@ export default function VerifyAge() {
                 <div className="bg-red-600 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center mr-1">18</div>
                 <span className="text-xs text-white/90">PLAY RIGHT BE SAFEGUARDED</span>
               </div>
-              <p className="text-xs text-white/90 md:border-l md:border-white/20 md:pl-2">THE GAME L.L.C. - GCGRA Licensed Operator</p>
+              {/* <p className="text-xs text-white/90 md:border-l md:border-white/20 md:pl-2">THE GAME L.L.C. - GCGRA Licensed Operator</p> */}
             </div>
             
             <div className="mt-2 flex flex-col items-center">
