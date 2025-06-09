@@ -20,6 +20,7 @@ export default function Header() {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
+  const [fullname, setFullname] = useState('');
   
   // Close mobile menu when resizing to desktop
   useEffect(() => {
@@ -61,8 +62,12 @@ export default function Header() {
   
   useEffect(() => {
     setAuth(!!localStorage.getItem('token'));
+    setFullname(localStorage.getItem('fullname') || '');
     // Listen for storage changes (e.g., logout from another tab)
-    const handleStorage = () => setAuth(!!localStorage.getItem('token'));
+    const handleStorage = () => {
+      setAuth(!!localStorage.getItem('token'));
+      setFullname(localStorage.getItem('fullname') || '');
+    };
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
@@ -100,7 +105,7 @@ export default function Header() {
   return (
     <>
       {/* Mobile Navigation Bar - Only visible on mobile */}
-      <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[var(--tronado-dark)]/90 backdrop-blur-sm' : 'bg-transparent'}`}>
+      <div className={`md:hidden top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[var(--tronado-dark)]/90 backdrop-blur-sm' : 'bg-transparent'}`}>
         <div className="flex justify-between items-center px-4 py-3">
           <Link href="/home" className="flex items-center">
             <Image 
@@ -200,7 +205,7 @@ export default function Header() {
                   Register Now
                 </button>
               ) : (
-                <div className="relative flex flex-col items-center w-full gap-2">
+                <div className="relative flex flex-col items-end w-full gap-2">
                   <button
                     className="w-10 h-10 rounded-full bg-white flex items-center justify-center focus:outline-none border-2 border-[var(--tronado-gold)]"
                     onClick={() => setProfileMenuOpen((open) => !open)}
@@ -220,11 +225,11 @@ export default function Header() {
                       >
                         &times;
                       </button>
-                      {isConnected && address ? (
+                      {fullname && (
                         <div className="px-4 py-2 text-sm text-gray-200 border-b border-gray-800">
-                          <span className="block font-mono truncate">{address}</span>
+                          <span className="block font-semibold truncate">{fullname}</span>
                         </div>
-                      ) : null}
+                      )}
                       <button
                         className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-800"
                         onClick={handleLogout}
@@ -241,7 +246,7 @@ export default function Header() {
       </div>
       
       {/* Desktop Navigation Bar - Only visible on desktop */}
-      <header className={`hidden md:block fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[var(--tronado-dark)]/90 backdrop-blur-sm' : 'bg-transparent'}`}>
+      <header className={`hidden md:block top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[var(--tronado-dark)]/90 backdrop-blur-sm' : 'bg-transparent'}`}>
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <Link href="/home" className="flex items-center">
@@ -302,7 +307,7 @@ export default function Header() {
                   Register Now
                 </button>
               ) : (
-                <div className="relative flex flex-col items-center gap-2">
+                <div className="relative flex flex-col items-end gap-2 ml-auto">
                   <button
                     className="w-10 h-10 rounded-full bg-white flex items-center justify-center focus:outline-none border-2 border-[var(--tronado-gold)]"
                     onClick={() => setProfileMenuOpen((open) => !open)}
@@ -322,11 +327,11 @@ export default function Header() {
                       >
                         &times;
                       </button>
-                      {isConnected && address ? (
+                      {fullname && (
                         <div className="px-4 py-2 text-sm text-gray-200 border-b border-gray-800">
-                          <span className="block font-mono truncate">{address}</span>
+                          <span className="block font-semibold truncate">{fullname}</span>
                         </div>
-                      ) : null}
+                      )}
                       <button
                         className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-800"
                         onClick={handleLogout}
@@ -341,9 +346,6 @@ export default function Header() {
           </div>
         </div>
       </header>
-      
-      {/* Mobile Header Spacer - Creates space for fixed header on mobile */}
-      <div className="md:hidden h-[64px]"></div>
     </>
   );
 }

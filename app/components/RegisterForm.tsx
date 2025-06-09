@@ -136,6 +136,7 @@ export default function RegisterForm() {
 
         // Registration successful
         localStorage.setItem('token', result.access_token);
+        localStorage.setItem('fullname', data.fullname as string);
         setShowSignUp(false);
         setAuthSuccess(true);
         router.push('/home');
