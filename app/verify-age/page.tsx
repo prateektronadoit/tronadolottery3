@@ -3,10 +3,13 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+const ReCAPTCHA = dynamic(() => import('react-google-recaptcha'), { ssr: false });
 
 export default function VerifyAge() {
   const router = useRouter();
   const [showNotification, setShowNotification] = useState(true);
+  const [verificado, setVerificado] = useState(false);
 
   useEffect(() => {
     // Check if they've already verified their age
@@ -27,6 +30,16 @@ export default function VerifyAge() {
   
   const handleNotificationOk = () => {
     setShowNotification(false);
+  };
+
+  const handleRecaptcha = (valor: string | null) => {
+    if (valor) setVerificado(true);
+  };
+
+  const handleContinue = () => {
+    if (verificado) {
+      router.push('/home');
+    }
   };
 
   return (
@@ -131,10 +144,16 @@ export default function VerifyAge() {
             <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-yellow-200 to-yellow-500 bg-clip-text text-transparent drop-shadow-md">AGE VERIFICATION</h2>
             <p className="mb-8 text-white/80 text-lg">You must be 18 years or older to enter this website</p>
             
+            <ReCAPTCHA
+              sitekey="6LdblVorAAAAALy6WqqQF70KXVQIxFHBK_yodjE3"
+              onChange={handleRecaptcha}
+            />
+            
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => handleVerify(true)}
                 className="px-10 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold rounded-full transition-all duration-300 shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 transform hover:-translate-y-0.5"
+                disabled={!verificado}
+                onClick={handleContinue}
               >
                 I am 18 or older
               </button>
