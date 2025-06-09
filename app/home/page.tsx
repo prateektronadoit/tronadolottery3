@@ -8,6 +8,7 @@ import BuildingBackground from '@/components/BuildingMotionBackground';
 import Header from '@/components/Header';
 import EnhancedLotteryResults from '@/components/EnhancedLotteryResults';
 import EnhancedFAQ from '@/components/EnhancedFAQ';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export default function HomePage() {
   // Router for home page redirect
@@ -18,6 +19,7 @@ export default function HomePage() {
   const [selectedMonth, setSelectedMonth] = useState<number>(5);
   const [ticketQuantity, setTicketQuantity] = useState<number>(1);
   const [currentDate] = useState<Date>(new Date(2025, 4, 17)); // May 17, 2025
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Redirect if necessary (using asPath instead of pathname in App Router)
   useEffect(() => {
@@ -25,6 +27,10 @@ export default function HomePage() {
     if (typeof window !== 'undefined' && window.location.pathname === '/') {
       router.push('/home');
     }
+    setIsAuthenticated(!!localStorage.getItem('token'));
+    const handleStorage = () => setIsAuthenticated(!!localStorage.getItem('token'));
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, [router]);
 
   // Handle day selection with exactly 6 selections required
@@ -120,6 +126,10 @@ export default function HomePage() {
     }, 500);
   }, []);
 
+  const handleRegisterClick = () => {
+    router.push('/register');
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Full screen hero section with carousel */}
@@ -136,17 +146,6 @@ export default function HomePage() {
 
         {/* Hero Content */}
         <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative z-10">
-          {/* Center positioned PLAY NOW button for mobile - displays at top for better visibility */}
-          <div className="md:hidden w-full flex justify-center mb-6 mt-20">
-            <div className="group relative inline-flex">
-              <div className="absolute -inset-px rounded-lg bg-gradient-to-r from-[var(--tronado-gold)] via-yellow-300 to-[var(--tronado-gold)] opacity-70 blur group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-gradient-x"></div>
-              <button className="relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-black bg-white rounded-lg leading-none">
-                PLAY NOW
-                <svg className="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-              </button>
-            </div>
-          </div>
-          
           {/* Gaming elements - better positioned and sized for mobile */}
           <div className="relative h-[400px] w-full max-w-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] mx-auto mb-10 md:mb-0">
             {/* Slot machine and casino elements */}
@@ -179,16 +178,8 @@ export default function HomePage() {
               DARE TO IMAGINE
             </h2>
             <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-[var(--tronado-gold)]">
-              WIN TRDO 100 MILLION
+              WIN $100 MILLION TRDO
             </h3>
-            {/* Play Now button (desktop only) */}
-            <div className="hidden md:inline-block group relative mt-4">
-              <div className="absolute -inset-px rounded-lg bg-gradient-to-r from-[var(--tronado-gold)] via-yellow-300 to-[var(--tronado-gold)] opacity-70 blur group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-              <button className="relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-black bg-white rounded-lg leading-none">
-                PLAY NOW
-                <svg className="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-              </button>
-            </div>
           </div>
         </div>
       </section>

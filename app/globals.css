@@ -1,10 +1,12 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --tronado-gold: #ffbc00;
-  --tronado-gold-hover: #ffcb3d;
+  --tronado-gold: #FFD700;
+  --tronado-gold-hover: #FFC800;
   --tronado-dark: #0d0d15;
   --tronado-blue: #01589F;
   --tronado-blue-light: #0979d9;

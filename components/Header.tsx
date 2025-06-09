@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAccount, useDisconnect } from 'wagmi';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -12,6 +15,11 @@ export default function Header() {
   const mobileLangDropdownRef = useRef<HTMLDivElement>(null);
   const desktopLangDropdownRef = useRef<HTMLDivElement>(null);
   const playDropdownRef = useRef<HTMLLIElement>(null);
+  const router = useRouter();
+  const [auth, setAuth] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
   
   // Close mobile menu when resizing to desktop
   useEffect(() => {
@@ -51,6 +59,14 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   
+  useEffect(() => {
+    setAuth(!!localStorage.getItem('token'));
+    // Listen for storage changes (e.g., logout from another tab)
+    const handleStorage = () => setAuth(!!localStorage.getItem('token'));
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+  
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -72,6 +88,15 @@ export default function Header() {
     setWebsiteLanguage(langCode);
     setLanguageDropdownOpen(false);
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setAuth(false);
+    setProfileMenuOpen(false);
+    disconnect();
+    router.push('/home');
+  };
+
   return (
     <>
       {/* Mobile Navigation Bar - Only visible on mobile */}
@@ -163,54 +188,53 @@ export default function Header() {
             </nav>
             
             <div className="flex flex-wrap items-center justify-between w-full gap-3 py-4 mt-2 border-t border-cyan-600">
-              {/* Connect Wallet Button for Mobile */}
-              <button 
-                className="w-full bg-[var(--tronado-gold)] hover:bg-[var(--tronado-gold-hover)] text-[var(--tronado-dark)] font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
-                onClick={() => {
-                  console.log('Connecting wallet...');
-                  // Implement wallet connection logic here
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                Connect Wallet
-              </button>
-              
-              <div className="relative" ref={mobileLangDropdownRef}>
+              {/* Register Now Button for Mobile or Profile Icon */}
+              {!auth ? (
                 <button 
-                  className="flex items-center text-sm bg-transparent px-3 py-2 rounded border border-white/30 hover:bg-white/10 transition-colors text-white"
-                  onClick={toggleLanguageDropdown}
+                  className="w-full bg-[var(--tronado-gold)] hover:bg-[var(--tronado-gold-hover)] text-[var(--tronado-dark)] font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
+                  onClick={() => router.push('/register')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
-                  <span>{selectedLanguage}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+                  Register Now
                 </button>
-                
-                {/* Language dropdown */}
-                {languageDropdownOpen && (
-                  <div className="absolute left-0 mt-1 w-32 bg-white rounded-md shadow-lg overflow-hidden z-20">
-                    <div className="py-1">
-                      <button 
-                        onClick={() => changeLanguage('En', 'english')} 
-                        className={`block w-full text-left px-4 py-2 text-sm ${websiteLanguage === 'english' ? 'bg-cyan-600 text-white' : 'text-gray-700 hover:bg-cyan-600 hover:text-white'}`}
+              ) : (
+                <div className="relative flex flex-col items-center w-full gap-2">
+                  <button
+                    className="w-10 h-10 rounded-full bg-white flex items-center justify-center focus:outline-none border-2 border-[var(--tronado-gold)]"
+                    onClick={() => setProfileMenuOpen((open) => !open)}
+                    aria-label="Profile"
+                  >
+                    <Image src="/profile.png" alt="Profile" width={32} height={32} className="rounded-full object-cover" />
+                  </button>
+                  <div className="mt-2 w-full flex justify-center">
+                    <ConnectButton />
+                  </div>
+                  {profileMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-gray-900 border border-gray-700 rounded-lg shadow-lg z-30 py-2">
+                      <button
+                        className="absolute top-2 right-2 text-gray-400 hover:text-white text-xl font-bold focus:outline-none"
+                        onClick={() => setProfileMenuOpen(false)}
+                        aria-label="Close"
                       >
-                        En
+                        &times;
                       </button>
-                      <button 
-                        onClick={() => changeLanguage('Dubai', 'dubai')} 
-                        className={`block w-full text-left px-4 py-2 text-sm ${websiteLanguage === 'dubai' ? 'bg-cyan-600 text-white' : 'text-gray-700 hover:bg-cyan-600 hover:text-white'}`}
+                      {isConnected && address ? (
+                        <div className="px-4 py-2 text-sm text-gray-200 border-b border-gray-800">
+                          <span className="block font-mono truncate">{address}</span>
+                        </div>
+                      ) : null}
+                      <button
+                        className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-800"
+                        onClick={handleLogout}
                       >
-                        Dubai
+                        Log out
                       </button>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -266,55 +290,53 @@ export default function Header() {
             </nav>
             
             <div className="flex items-center space-x-4 ml-auto">
-              {/* Language Selector */}
-              <div 
-                className="relative group" 
-                ref={desktopLangDropdownRef}
-              >
+              {/* Register Now Button for Desktop or Profile Icon */}
+              {!auth ? (
                 <button 
-                  className="flex items-center text-sm px-3 py-1 rounded border border-white/30 hover:bg-white/10 transition-colors"
+                  className="bg-[var(--tronado-gold)] hover:bg-[var(--tronado-gold-hover)] text-[var(--tronado-dark)] font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
+                  onClick={() => router.push('/register')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
-                  <span>{selectedLanguage}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+                  Register Now
                 </button>
-                
-                {/* Language dropdown - using CSS hover for reliability */}
-                <div className="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg overflow-hidden z-50 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible">
-                  <div className="py-1">
-                    <button 
-                      onClick={() => changeLanguage('En', 'english')} 
-                      className={`block w-full text-left px-4 py-2 text-sm ${websiteLanguage === 'english' ? 'bg-cyan-600 text-white' : 'text-gray-700 hover:bg-cyan-600 hover:text-white'}`}
-                    >
-                      En
-                    </button>
-                    <button 
-                      onClick={() => changeLanguage('Dubai', 'dubai')} 
-                      className={`block w-full text-left px-4 py-2 text-sm ${websiteLanguage === 'dubai' ? 'bg-cyan-600 text-white' : 'text-gray-700 hover:bg-cyan-600 hover:text-white'}`}
-                    >
-                      Dubai
-                    </button>
+              ) : (
+                <div className="relative flex flex-col items-center gap-2">
+                  <button
+                    className="w-10 h-10 rounded-full bg-white flex items-center justify-center focus:outline-none border-2 border-[var(--tronado-gold)]"
+                    onClick={() => setProfileMenuOpen((open) => !open)}
+                    aria-label="Profile"
+                  >
+                    <Image src="/profile.png" alt="Profile" width={32} height={32} className="rounded-full object-cover" />
+                  </button>
+                  <div className="mt-2 w-full flex justify-center">
+                    <ConnectButton />
                   </div>
+                  {profileMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-gray-900 border border-gray-700 rounded-lg shadow-lg z-30 py-2">
+                      <button
+                        className="absolute top-2 right-2 text-gray-400 hover:text-white text-xl font-bold focus:outline-none"
+                        onClick={() => setProfileMenuOpen(false)}
+                        aria-label="Close"
+                      >
+                        &times;
+                      </button>
+                      {isConnected && address ? (
+                        <div className="px-4 py-2 text-sm text-gray-200 border-b border-gray-800">
+                          <span className="block font-mono truncate">{address}</span>
+                        </div>
+                      ) : null}
+                      <button
+                        className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-800"
+                        onClick={handleLogout}
+                      >
+                        Log out
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </div>
-              
-              {/* Connect Wallet Button */}
-              <button 
-                className="bg-[var(--tronado-gold)] hover:bg-[var(--tronado-gold-hover)] text-[var(--tronado-dark)] font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
-                onClick={() => {
-                  console.log('Connecting wallet...');
-                  // Implement wallet connection logic here
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                Connect Wallet
-              </button>
+              )}
             </div>
           </div>
         </div>

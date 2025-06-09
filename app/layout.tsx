@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
-const poppins = Poppins({
+const inter = Inter({
   subsets: ["latin"],
   weight: ['300', '400', '500', '600', '700'],
   display: "swap",
-  variable: "--font-poppins",
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
   title: "Tronado Lottery",
-  description: "The leading lottery platform in the UAE",
+  description: "A decentralized lottery platform",
   icons: {
     icon: "/t-golden.svg",
   },
@@ -19,17 +20,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${poppins.variable} font-sans antialiased`}>
-        <div className="flex flex-col min-h-screen">
-          <main className="flex-grow">
-            {children}
-          </main>
-        </div>
+      <body className={`${inter.variable} font-sans antialiased`}>
+        <Providers>
+          <div className="flex flex-col min-h-screen">
+            <main className="flex-grow">
+              {children}
+            </main>
+          </div>
+        </Providers>
       </body>
     </html>
   );
