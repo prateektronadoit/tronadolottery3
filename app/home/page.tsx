@@ -149,32 +149,28 @@ export default function HomePage() {
         </div>
 
         {/* Hero Content */}
-        <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative z-10">
-          {/* Gaming elements - better positioned and sized for mobile */}
-          <div className="relative h-[400px] w-full max-w-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] mx-auto mb-10 md:mb-0">
-            {/* Rotating wheel at the bottom with CSS module */}
-            {/* <div className="absolute w-[300px] h-[300px] left-1/2 -translate-x-1/2 bottom-[-40px] md:bottom-[-80px] z-20">
-              <div className={styles.wheelRotation}>
-                <Image
-                  src="/wheel.png"
-                  alt="Roulette Wheel"
-                  width={300}
-                  height={300}
-                  className="object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-                  priority
-                />
-              </div>
-            </div> */}
-          </div>
-          
-          {/* Text content positioned below for mobile, to side for desktop */}
-          <div className="text-center md:absolute md:left-8 md:top-1/2 md:-translate-y-1/2 md:text-left md:max-w-xl lg:max-w-2xl w-full z-20 md:mb-0">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-gray-300 bg-[length:200%_100%]">
-              DARE TO IMAGINE
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+          <div className="w-full flex flex-col items-center justify-center">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 leading-tight text-center text-white">
+            Win Big with <span className="text-purple-400">Blockchain Lottery</span>
             </h2>
-            <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-[var(--tronado-gold)]">
-              WIN $100 MILLION TRDO
-            </h3>
+            
+            <p className="text-base sm:text-lg md:text-xl text-gray-300 text-center max-w-2xl mx-auto mb-10">
+            Experience the future of lottery gaming with transparent, secure, and decentralized draws powered by smart contracts
+            </p>
+            <button
+              className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-12 rounded-full text-lg shadow-lg transition-all"
+              onClick={() => {}}
+            >
+              Explore Products
+            </button>
+          </div>
+          {/* Purple wave SVG at the bottom */}
+          <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
+            <svg viewBox="0 0 1440 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-32 md:h-40 lg:h-48">
+              <path fill="#6D28D9" fillOpacity="0.2" d="M0,160L60,149.3C120,139,240,117,360,117.3C480,117,600,139,720,154.7C840,171,960,181,1080,181.3C1200,181,1320,171,1380,165.3L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z" />
+              <path fill="#A78BFA" fillOpacity="0.3" d="M0,192L60,186.7C120,181,240,171,360,154.7C480,139,600,117,720,117.3C840,117,960,139,1080,149.3C1200,160,1320,160,1380,160L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z" />
+            </svg>
           </div>
         </div>
       </section>
