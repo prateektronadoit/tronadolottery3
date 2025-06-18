@@ -10,6 +10,9 @@ import EnhancedLotteryResults from '@/components/EnhancedLotteryResults';
 import EnhancedFAQ from '@/components/EnhancedFAQ';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import styles from './wheel.module.css';
+import PlatformFeatures from '@/components/PlatformFeatures';
+import HowItWorks from '@/components/HowItWorks';
+import PlatformStatistics from '@/components/PlatformStatistics';
 
 export default function HomePage() {
   // Router for home page redirect
@@ -176,11 +179,19 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Platform Statistics Section */}
+      <PlatformStatistics />
+
+      {/* Platform Features Section */}
+      <PlatformFeatures />
+
+      {/* How It Works Section */}
+      <HowItWorks />
+
       {/* Mobile-only heading - "going above" */}
       <div className="md:hidden relative z-20 bg-gradient-to-r from-[var(--tronado-gold)] to-yellow-500 py-3 px-4 text-center">
         <h2 className="text-2xl font-bold text-[var(--tronado-dark)] uppercase tracking-wider">going above</h2>
       </div>
-
 
       {/* Lottery Ticket Selection Section - styled to exactly match the reference image */}
       <section className="bg-gray-900 py-8" style={{ backgroundImage: "linear-gradient(to bottom, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.95)), url('/home-luckday-bg.jpg')", backgroundSize: "cover" }}>
@@ -352,8 +363,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-
 
       {/* Latest Draw Result and FAQs Section */}
       <section className="py-16 bg-gradient-to-b from-gray-900 to-[var(--tronado-dark)] text-white">
