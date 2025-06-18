@@ -7,14 +7,14 @@ export default function BuildingBackground() {
   const rollRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    // Create rotation animation
+    // Create floating animation
     const animateRoll = () => {
       if (!rollRef.current) return;
       
-      const currentRotation = parseFloat(rollRef.current.style.getPropertyValue('--roll-rotate') || '0');
-      const newRotation = (currentRotation + 0.2) % 360;
+      const currentY = parseFloat(rollRef.current.style.getPropertyValue('--roll-y') || '0');
+      const newY = Math.sin(Date.now() / 1000) * 20; // 20px up and down movement
       
-      rollRef.current.style.setProperty('--roll-rotate', `${newRotation}deg`);
+      rollRef.current.style.setProperty('--roll-y', `${newY}px`);
       requestAnimationFrame(animateRoll);
     };
     
@@ -54,6 +54,8 @@ export default function BuildingBackground() {
           width: '450px',
           height: '450px',
           marginRight: '80px',
+          transform: `translateY(calc(-50% + var(--roll-y, 0px)))`,
+          transition: 'transform 0.1s ease-out'
         }}
       >
         <Image

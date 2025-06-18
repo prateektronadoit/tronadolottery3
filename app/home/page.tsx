@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import EnhancedLotteryResults from '@/components/EnhancedLotteryResults';
 import EnhancedFAQ from '@/components/EnhancedFAQ';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import styles from './wheel.module.css';
 
 export default function HomePage() {
   // Router for home page redirect
@@ -148,27 +149,18 @@ export default function HomePage() {
         <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative z-10">
           {/* Gaming elements - better positioned and sized for mobile */}
           <div className="relative h-[400px] w-full max-w-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] mx-auto mb-10 md:mb-0">
-            {/* Slot machine and casino elements */}
-            <div className="absolute w-full h-full top-0 left-0">
-              <Image
-                src="/casino.png"
-                alt="Casino Elements"
-                fill
-                className="object-contain drop-shadow-[0_0_15px_rgba(255,188,0,0.5)]"
-                style={{ zIndex: 2 }}
-                priority
-              />
-            </div>
-            
-            {/* Roulette wheel with more subtle animation for mobile */}
-            <div className="absolute w-full h-full bottom-0 left-0 animate-spin-slow">
-              <Image
-                src="/Roll.png"
-                alt="Roulette Wheel"
-                fill
-                className="object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-                priority
-              />
+            {/* Rotating wheel at the bottom with CSS module */}
+            <div className="absolute w-[300px] h-[300px] left-1/2 -translate-x-1/2 bottom-[-40px] md:bottom-[-80px] z-20">
+              <div className={styles.wheelRotation}>
+                <Image
+                  src="/wheel.png"
+                  alt="Roulette Wheel"
+                  width={300}
+                  height={300}
+                  className="object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                  priority
+                />
+              </div>
             </div>
           </div>
           

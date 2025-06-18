@@ -23,6 +23,8 @@ const config: Config = {
       },
       animation: {
         'spin-slow': 'spin-slow 30s linear infinite',
+        'spin-clockwise': 'spinClockwise 8s linear infinite',
+        'spin-clockwise-fast': 'spinClockwise 4s linear infinite',
         'float': 'floating 6s ease-in-out infinite',
         'float-slow': 'float-slow 8s ease-in-out infinite',
         'float-chips': 'floatingChips 8s ease-in-out infinite',
@@ -34,6 +36,10 @@ const config: Config = {
         'bounce': 'bounce 2s infinite',
       },
       keyframes: {
+        spinClockwise: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
         floating: {
           '0%, 100%': { transform: 'translateY(0) scale(1)' },
           '50%': { transform: 'translateY(-10px) scale(1.01)' },
