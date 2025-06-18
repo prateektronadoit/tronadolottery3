@@ -30,7 +30,7 @@ export default function BuildingBackground() {
       {/* Static background layer with darker gradient overlay */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/bg.jpg"
+          src="/ibg.png"
           alt="Luxury building background"
           fill
           style={{ 
@@ -44,10 +44,10 @@ export default function BuildingBackground() {
       </div>
       
       {/* Gradient overlay to match the design */}
-      <div className="absolute inset-0 z-5 bg-gradient-to-r from-[var(--tronado-gradient-start)] to-[var(--tronado-gradient-end)] opacity-80"></div>
+      {/* <div className="absolute inset-0 z-5 bg-gradient-to-r from-[var(--tronado-gradient-start)] to-[var(--tronado-gradient-end)] opacity-80"></div> */}
       
       {/* Static large Roll.png on the right side */}
-      <div 
+      {/* <div 
         ref={rollRef} 
         className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10"
         style={{
@@ -66,7 +66,7 @@ export default function BuildingBackground() {
           className="object-contain"
           priority
         />
-      </div>
+      </div> */}
       
       {/* Simple overlay for gradient effect */}
       <div className="absolute inset-0 z-20">

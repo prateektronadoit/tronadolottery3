@@ -9,7 +9,7 @@ import Header from '@/components/Header';
 import EnhancedLotteryResults from '@/components/EnhancedLotteryResults';
 import EnhancedFAQ from '@/components/EnhancedFAQ';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import styles from './wheel.module.css';
+// import styles from './wheel.module.css';
 import PlatformFeatures from '@/components/PlatformFeatures';
 import HowItWorks from '@/components/HowItWorks';
 import PlatformStatistics from '@/components/PlatformStatistics';
@@ -153,7 +153,7 @@ export default function HomePage() {
           {/* Gaming elements - better positioned and sized for mobile */}
           <div className="relative h-[400px] w-full max-w-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] mx-auto mb-10 md:mb-0">
             {/* Rotating wheel at the bottom with CSS module */}
-            <div className="absolute w-[300px] h-[300px] left-1/2 -translate-x-1/2 bottom-[-40px] md:bottom-[-80px] z-20">
+            {/* <div className="absolute w-[300px] h-[300px] left-1/2 -translate-x-1/2 bottom-[-40px] md:bottom-[-80px] z-20">
               <div className={styles.wheelRotation}>
                 <Image
                   src="/wheel.png"
@@ -164,7 +164,7 @@ export default function HomePage() {
                   priority
                 />
               </div>
-            </div>
+            </div> */}
           </div>
           
           {/* Text content positioned below for mobile, to side for desktop */}
@@ -194,13 +194,13 @@ export default function HomePage() {
       </div>
 
       {/* Lottery Ticket Selection Section - styled to exactly match the reference image */}
-      <section className="bg-gray-900 py-8" style={{ backgroundImage: "linear-gradient(to bottom, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.95)), url('/home-luckday-bg.jpg')", backgroundSize: "cover" }}>
+      <section className="bg-gray-900 py-8" style={{ backgroundImage: "linear-gradient(to bottom, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.95)), url('/ibg.png')", backgroundSize: "cover" }}>
         {/* Floating elements */}
-        <div className="absolute right-0 top-1/4 hidden lg:block animate-pulse-slow">
+        {/* <div className="absolute right-0 top-1/4 hidden lg:block animate-pulse-slow">
           <div className="w-40 h-40 relative opacity-60">
             <Image src="/casino.png" alt="Casino decoration" width={160} height={160} className="transform -rotate-12" />
           </div>
-        </div>
+        </div> */}
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto bg-[var(--tronado-dark)] rounded-lg overflow-hidden shadow-lg border border-[var(--tronado-gold)]/20">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
