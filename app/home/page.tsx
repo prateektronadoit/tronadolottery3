@@ -152,21 +152,26 @@ export default function HomePage() {
           <BuildingBackground />
         </div>
 
+        {/* Animated circle1 at bottom left */}
+        <div className="absolute left-0 bottom-0 z-40 mb-12 ml-8">
+          <Image src="/circle1.png" alt="Sphere 1" width={400} height={400} className="w-[18rem] h-[18rem] md:w-[28rem] md:h-[28rem] lg:w-[36rem] lg:h-36rem]" />
+        </div>
+
         {/* Coin decorations */}
         {/* Left Bottom Coin */}
         <div className="absolute left-0 bottom-0 z-30 mb-8 ml-4">
-          <Image src="/coinL.png" alt="Coin Left" width={180} height={180} className="hidden sm:block w-40 h-40 md:w-56 md:h-56 lg:w-72 lg:h-72" />
-          <Image src="/coinL.png" alt="Coin Left" width={80} height={80} className="block sm:hidden w-20 h-20" />
+          <Image src="/coinL.png" alt="Coin Left" width={700} height={700} className="hidden sm:block w-[32rem] h-[32rem] md:w-[44rem] md:h-[44rem] lg:w-[56rem] lg:h-[56rem]" />
+          <Image src="/coinL.png" alt="Coin Left" width={320} height={320} className="block sm:hidden w-64 h-64" />
         </div>
         {/* Right Top Coin */}
         <div className="absolute right-0 top-0 z-30 mt-8 mr-4">
-          <Image src="/coinR.png" alt="Coin Right" width={180} height={180} className="hidden sm:block w-40 h-40 md:w-56 md:h-56 lg:w-72 lg:h-72" />
-          <Image src="/coinR.png" alt="Coin Right" width={80} height={80} className="block sm:hidden w-20 h-20" />
+          <Image src="/coinR.png" alt="Coin Right" width={700} height={700} className="hidden sm:block w-[32rem] h-[32rem] md:w-[44rem] md:h-[44rem] lg:w-[56rem] lg:h-[56rem]" />
+          <Image src="/coinR.png" alt="Coin Right" width={320} height={320} className="block sm:hidden w-64 h-64" />
         </div>
         {/* Center Top Coin above heading */}
-        <div className="absolute left-1/2 z-30" style={{ top: '8%', transform: 'translateX(-50%)' }}>
-          <Image src="/coinM.png" alt="Coin Middle" width={160} height={160} className="hidden sm:block w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56" />
-          <Image src="/coinM.png" alt="Coin Middle" width={70} height={70} className="block sm:hidden w-16 h-16" />
+        <div className="absolute left-1/2 z-30" style={{ top: '0%', transform: 'translateX(-50%)' }}>
+          <Image src="/coinM.png" alt="Coin Middle" width={600} height={600} className="hidden sm:block w-[28rem] h-[28rem] md:w-[40rem] md:h-[40rem] lg:w-[52rem] lg:h-[52rem]" />
+          <Image src="/coinM.png" alt="Coin Middle" width={260} height={260} className="block sm:hidden w-52 h-52" />
         </div>
         
         {/* Transparent header overlaid on carousel */}
@@ -180,7 +185,7 @@ export default function HomePage() {
             <div className="flex flex-col items-center justify-center mb-4">
               <span className="uppercase text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-widest text-white mb-2 text-center mt-8 drop-shadow-lg" style={{textShadow: '0 8px 24px rgba(0,0,0,0.5)'}}>WIN BIG WITH</span>
               <span
-                className={`uppercase text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold italic text-center transition-all duration-1000 ${isPurple ? 'bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 bg-clip-text text-transparent' : 'text-white'}`}
+                className={`uppercase text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold italic text-center transition-all duration-1000 ${isPurple ? 'bg-gradient-to-r from-[#0F0448] via-[#0F0448] to-[#0F0448] bg-clip-text text-transparent' : 'text-white'}`}
               >
                 BLOCKCHAIN LOTTERY
               </span>
@@ -189,9 +194,9 @@ export default function HomePage() {
             <p className="text-base sm:text-lg md:text-xl text-gray-300 text-center max-w-2xl mx-auto mb-10">
             Experience the future of lottery gaming with transparent, secure, and decentralized draws powered by smart contracts
             </p>
-            <div className="flex flex-row gap-6 justify-center w-full max-w-xl mt-4">
+            <div className="flex flex-row gap-6 justify-center w-full max-w-xl mt-4 relative">
               <button
-                className="flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg transition-all"
+                className="flex items-center justify-center bg-[#0F0448] hover:bg-blue-400 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg transition-all duration-200 cursor-pointer"
                 onClick={() => {
                   const howItWorksSection = document.getElementById('how-it-works-section');
                   if (howItWorksSection) howItWorksSection.scrollIntoView({ behavior: 'smooth' });
@@ -200,7 +205,7 @@ export default function HomePage() {
                 <span className="mr-2 text-2xl">🎯</span> How It Works
               </button>
               <button
-                className="flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg transition-all"
+                className="flex items-center justify-center bg-[#0F0448] hover:bg-blue-400 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg transition-all duration-200 cursor-pointer"
                 onClick={() => {
                   const ticketSection = document.querySelector('section.bg-gray-900');
                   if (ticketSection) ticketSection.scrollIntoView({ behavior: 'smooth' });
@@ -208,6 +213,10 @@ export default function HomePage() {
               >
                 <span className="mr-2 text-2xl">🎫</span> Buy Tickets Now
               </button>
+              {/* Sphere2 to the right of the buttons */}
+              <div className="absolute right-[-10rem] top-1/2 -translate-y-1/2 z-40 rounded-full overflow-hidden">
+                <Image src="/circle2.png" alt="Sphere 2" width={400} height={400} className="w-[18rem] h-[18rem] md:w-[28rem] md:h-[28rem] lg:w-[36rem] lg:h-[36rem] object-cover" />
+              </div>
             </div>
           </div>
         </div>
@@ -420,6 +429,17 @@ export default function HomePage() {
       {/* Play Responsibly Section removed as requested */}
       
       <Footer />
+
+      {/* Custom animation for slow spin */}
+      <style jsx global>{`
+        .animate-spin-slow {
+          animation: spin 16s linear infinite;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
