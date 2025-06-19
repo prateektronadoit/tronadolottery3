@@ -28,7 +28,7 @@ const PlatformStatistics = () => (
         {stats.map((stat, idx) => (
           <div key={idx} className="bg-black rounded-2xl shadow-lg p-8 flex flex-col items-center text-center border border-gray-800 hover:shadow-2xl transition-all group">
             <div className="text-4xl mb-2">{stat.icon}</div>
-            <div className="text-3xl font-bold mb-1 opacity-0 group-hover:opacity-100 transition-opacity text-blue-400">{stat.value}</div>
+            <div className="text-3xl font-bold mb-1 text-purple-400">{stat.value}</div>
             <div className="text-base text-gray-300">{stat.label}</div>
           </div>
         ))}

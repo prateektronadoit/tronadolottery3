@@ -32,17 +32,17 @@ const steps = [
 ];
 
 const HowItWorks = () => (
-  <section className="py-16 bg-gradient-to-b from-gray-800 to-gray-900 text-white">
+  <section className="py-16 bg-gradient-to-b from-black via-blue-900/20 to-black text-white" id="how-it-works-section">
     <div className="container mx-auto px-4">
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
         How It Works
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-5 gap-8 max-w-6xl mx-auto">
         {steps.map((step, idx) => (
-          <div key={idx} className="bg-gray-900 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center border border-yellow-400/20 hover:shadow-2xl transition-all">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-400 text-gray-900 font-bold text-xl mb-4">{step.number}</div>
-            <div className="text-4xl mb-2">{step.icon}</div>
-            <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
+          <div key={idx} className="bg-black rounded-2xl shadow-lg p-8 flex flex-col items-center text-center border border-purple-400/30 hover:shadow-2xl hover:-translate-y-3 hover:scale-105 transition-all duration-300 group">
+            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-purple-400 text-black font-bold text-xl mb-4 group-hover:bg-purple-300 group-hover:scale-110 transition-all duration-300">{step.number}</div>
+            <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">{step.icon}</div>
+            <h3 className="text-lg font-semibold mb-2 group-hover:text-purple-300 transition-colors duration-300">{step.title}</h3>
             <p className="text-gray-300 text-base">{step.description}</p>
           </div>
         ))}
