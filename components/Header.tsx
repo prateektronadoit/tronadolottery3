@@ -143,22 +143,6 @@ export default function Header() {
           <div className="px-4 py-5 space-y-4 shadow-inner">
             <nav>
               <ul className="space-y-4">
-                <li className="relative">
-                  <Link href="#" className="flex items-center justify-between py-2 px-3 text-white hover:text-yellow-300 hover:bg-cyan-600 transition-all rounded-md font-medium group">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-cyan-500 mr-3 group-hover:bg-yellow-400 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <span>Play Now</span>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                </li>
                 <li>
                   <Link href="#" className="flex items-center py-2 px-3 text-white hover:text-yellow-300 hover:bg-cyan-600 transition-all rounded-md font-medium group">
                     <div className="w-8 h-8 flex items-center justify-center rounded-full bg-cyan-500 mr-3 group-hover:bg-yellow-400 transition-colors">
@@ -169,26 +153,6 @@ export default function Header() {
                     <span>Results & Draws</span>
                   </Link>
                 </li>
-                <li>
-                  <Link href="#" className="flex items-center py-2 px-3 text-white hover:text-yellow-300 hover:bg-cyan-600 transition-all rounded-md font-medium group">
-                    <div className="w-8 h-8 flex items-center justify-center rounded-full bg-cyan-500 mr-3 group-hover:bg-yellow-400 transition-colors">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <span>FAQs</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="flex items-center py-2 px-3 text-white hover:text-yellow-300 hover:bg-cyan-600 transition-all rounded-md font-medium group">
-                    <div className="w-8 h-8 flex items-center justify-center rounded-full bg-cyan-500 mr-3 group-hover:bg-yellow-400 transition-colors">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
-                    </div>
-                    <span>Play Responsibly</span>
-                  </Link>
-                </li>
               </ul>
             </nav>
             
@@ -196,7 +160,7 @@ export default function Header() {
               {/* Register Now Button for Mobile or Profile Icon */}
               {!auth ? (
                 <button 
-                  className="w-full bg-[var(--tronado-gold)] hover:bg-[var(--tronado-gold-hover)] text-[var(--tronado-dark)] font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
+                  className="w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
                   onClick={() => router.push('/register')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -259,46 +223,11 @@ export default function Header() {
               />
             </Link>
             
-            <nav className="hidden md:block">
-              <ul className="flex space-x-8">
-                <li className="relative" ref={playDropdownRef}>
-                  <button 
-                    onClick={togglePlayDropdown}
-                    className="flex items-center py-1 hover:text-[var(--tronado-gold)] active:text-[var(--tronado-gold)] transition-colors font-medium bg-transparent focus:outline-none text-white"
-                    aria-expanded={playDropdownOpen}
-                  >
-                    <span>Play</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  <div 
-                    className={`absolute left-0 mt-2 w-48 bg-[var(--tronado-dark)] rounded-md shadow-lg overflow-hidden z-50 transition-all duration-200 ${playDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
-                  >
-                    <div className="py-1">
-                      <Link href="#" className="block px-4 py-2 text-sm text-white hover:bg-[var(--tronado-gold)] hover:text-[var(--tronado-dark)]">
-                        Lucky Day Lottery
-                      </Link>
-                      <Link href="#" className="block px-4 py-2 text-sm text-white hover:bg-[var(--tronado-gold)] hover:text-[var(--tronado-dark)]">
-                        Scratch Cards
-                      </Link>
-                      <Link href="#" className="block px-4 py-2 text-sm text-white hover:bg-[var(--tronado-gold)] hover:text-[var(--tronado-dark)]">
-                        Special Draws
-                      </Link>
-                    </div>
-                  </div>
-                </li>
-                <li><Link href="#" className="py-1 hover:text-yellow-300 transition-colors font-medium">Draws</Link></li>
-                <li><Link href="#" className="py-1 hover:text-yellow-300 transition-colors font-medium">FAQs</Link></li>
-                <li><Link href="#" className="py-1 hover:text-yellow-300 transition-colors font-medium">Play Responsibly</Link></li>
-              </ul>
-            </nav>
-            
             <div className="flex items-center space-x-4 ml-auto">
               {/* Register Now Button for Desktop or Profile Icon */}
               {!auth ? (
                 <button 
-                  className="bg-[var(--tronado-gold)] hover:bg-[var(--tronado-gold-hover)] text-[var(--tronado-dark)] font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
+                  className="bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
                   onClick={() => router.push('/register')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

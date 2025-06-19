@@ -134,6 +134,15 @@ export default function HomePage() {
     router.push('/register');
   };
 
+  // Animation for BLOCKCHAIN LOTTERY color
+  const [isPurple, setIsPurple] = useState(false);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsPurple(prev => !prev);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Full screen hero section with carousel */}
@@ -141,6 +150,23 @@ export default function HomePage() {
         {/* Building Background */}
         <div className="absolute inset-0 z-0">
           <BuildingBackground />
+        </div>
+
+        {/* Coin decorations */}
+        {/* Left Bottom Coin */}
+        <div className="absolute left-0 bottom-0 z-30 mb-8 ml-4">
+          <Image src="/coinL.png" alt="Coin Left" width={180} height={180} className="hidden sm:block w-40 h-40 md:w-56 md:h-56 lg:w-72 lg:h-72" />
+          <Image src="/coinL.png" alt="Coin Left" width={80} height={80} className="block sm:hidden w-20 h-20" />
+        </div>
+        {/* Right Top Coin */}
+        <div className="absolute right-0 top-0 z-30 mt-8 mr-4">
+          <Image src="/coinR.png" alt="Coin Right" width={180} height={180} className="hidden sm:block w-40 h-40 md:w-56 md:h-56 lg:w-72 lg:h-72" />
+          <Image src="/coinR.png" alt="Coin Right" width={80} height={80} className="block sm:hidden w-20 h-20" />
+        </div>
+        {/* Center Top Coin above heading */}
+        <div className="absolute left-1/2 z-30" style={{ top: '8%', transform: 'translateX(-50%)' }}>
+          <Image src="/coinM.png" alt="Coin Middle" width={160} height={160} className="hidden sm:block w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56" />
+          <Image src="/coinM.png" alt="Coin Middle" width={70} height={70} className="block sm:hidden w-16 h-16" />
         </div>
         
         {/* Transparent header overlaid on carousel */}
@@ -151,26 +177,38 @@ export default function HomePage() {
         {/* Hero Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
           <div className="w-full flex flex-col items-center justify-center">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 leading-tight text-center text-white">
-            Win Big with <span className="text-purple-400">Blockchain Lottery</span>
-            </h2>
+            <div className="flex flex-col items-center justify-center mb-4">
+              <span className="uppercase text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-widest text-white mb-2 text-center mt-8 drop-shadow-lg" style={{textShadow: '0 8px 24px rgba(0,0,0,0.5)'}}>WIN BIG WITH</span>
+              <span
+                className={`uppercase text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold italic text-center transition-all duration-1000 ${isPurple ? 'bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 bg-clip-text text-transparent' : 'text-white'}`}
+              >
+                BLOCKCHAIN LOTTERY
+              </span>
+            </div>
             
             <p className="text-base sm:text-lg md:text-xl text-gray-300 text-center max-w-2xl mx-auto mb-10">
             Experience the future of lottery gaming with transparent, secure, and decentralized draws powered by smart contracts
             </p>
-            <button
-              className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-12 rounded-full text-lg shadow-lg transition-all"
-              onClick={() => {}}
-            >
-              Explore Products
-            </button>
-          </div>
-          {/* Purple wave SVG at the bottom */}
-          <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
-            <svg viewBox="0 0 1440 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-32 md:h-40 lg:h-48">
-              <path fill="#6D28D9" fillOpacity="0.2" d="M0,160L60,149.3C120,139,240,117,360,117.3C480,117,600,139,720,154.7C840,171,960,181,1080,181.3C1200,181,1320,171,1380,165.3L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z" />
-              <path fill="#A78BFA" fillOpacity="0.3" d="M0,192L60,186.7C120,181,240,171,360,154.7C480,139,600,117,720,117.3C840,117,960,139,1080,149.3C1200,160,1320,160,1380,160L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z" />
-            </svg>
+            <div className="flex flex-row gap-6 justify-center w-full max-w-xl mt-4">
+              <button
+                className="flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg transition-all"
+                onClick={() => {
+                  const howItWorksSection = document.getElementById('how-it-works-section');
+                  if (howItWorksSection) howItWorksSection.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                <span className="mr-2 text-2xl">🎯</span> How It Works
+              </button>
+              <button
+                className="flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg transition-all"
+                onClick={() => {
+                  const ticketSection = document.querySelector('section.bg-gray-900');
+                  if (ticketSection) ticketSection.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                <span className="mr-2 text-2xl">🎫</span> Buy Tickets Now
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -190,7 +228,7 @@ export default function HomePage() {
       </div>
 
       {/* Lottery Ticket Selection Section - styled to exactly match the reference image */}
-      <section className="bg-gray-900 py-8" style={{ backgroundImage: "linear-gradient(to bottom, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.95)), url('/ibg.png')", backgroundSize: "cover" }}>
+      <section className="bg-gray-900 py-8" style={{ backgroundImage: "linear-gradient(to bottom, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.95)), url('/m.png')", backgroundSize: "cover" }}>
         {/* Floating elements */}
         {/* <div className="absolute right-0 top-1/4 hidden lg:block animate-pulse-slow">
           <div className="w-40 h-40 relative opacity-60">

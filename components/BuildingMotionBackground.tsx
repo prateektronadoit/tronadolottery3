@@ -69,9 +69,9 @@ export default function BuildingBackground() {
       </div> */}
       
       {/* Simple overlay for gradient effect */}
-      <div className="absolute inset-0 z-20">
+      {/* <div className="absolute inset-0 z-20">
         <div className="w-full h-full bg-gradient-to-b from-black/40 via-transparent to-black/30"></div>
-      </div>
+      </div> */}
     </div>
   );
 }
