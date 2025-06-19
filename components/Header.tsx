@@ -160,7 +160,7 @@ export default function Header() {
               {/* Register Now Button for Mobile or Profile Icon */}
               {!auth ? (
                 <button 
-                  className="w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
                   onClick={() => router.push('/register')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -227,7 +227,7 @@ export default function Header() {
               {/* Register Now Button for Desktop or Profile Icon */}
               {!auth ? (
                 <button 
-                  className="bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center"
                   onClick={() => router.push('/register')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

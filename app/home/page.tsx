@@ -88,7 +88,7 @@ export default function HomePage() {
 
 
 
-
+        
         {/* Transparent header overlaid on carousel */}
         <div className="absolute top-0 left-0 right-0 z-20 w-full">
           <Header />
@@ -132,7 +132,7 @@ export default function HomePage() {
               <div className="absolute right-[-10rem] top-1/2 -translate-y-1/2 z-40 rounded-full overflow-hidden">
                 <Image src="/circle2.png" alt="Sphere 2" width={400} height={400} className="w-[18rem] h-[18rem] md:w-[28rem] md:h-[28rem] lg:w-[36rem] lg:h-[36rem] object-cover" />
               </div>
-            </div>
+          </div>
           </div>
         </div>
       </section>
@@ -147,9 +147,9 @@ export default function HomePage() {
       <HowItWorks />
 
       {/* Mobile-only heading - "going above" */}
-      <div className="md:hidden relative z-20 bg-gradient-to-r from-[var(--tronado-gold)] to-yellow-500 py-3 px-4 text-center">
+      {/* <div className="md:hidden relative z-20 bg-gradient-to-r from-[var(--tronado-gold)] to-yellow-500 py-3 px-4 text-center">
         <h2 className="text-2xl font-bold text-[var(--tronado-dark)] uppercase tracking-wider">going above</h2>
-      </div>
+      </div> */}
 
 
       
