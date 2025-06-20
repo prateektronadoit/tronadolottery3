@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
 
 // Sidebar component
 const Sidebar = ({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) => {
@@ -60,21 +60,27 @@ interface StatCardProps {
   value: string | number;
   subtitle: string;
   bgClass?: string;
+  iconSize?: number;
 }
 
-const StatCard = ({ icon, iconImage, title, value, subtitle, bgClass = "bg-gradient-to-b from-blue-900 to-blue-700" }: StatCardProps) => {
+const StatCard = ({ icon, iconImage, title, value, subtitle, bgClass = "bg-opacity-0", iconSize = 80 }: StatCardProps) => {
   return (
-    <div className={`${bgClass} rounded-lg p-6 text-center shadow-lg border border-blue-700`}>
-      <div className="text-center text-gray-200 mb-2 flex items-center justify-center space-x-2">
+    <div className={`relative rounded-xl p-6 border-2 border-blue-500 bg-blue-900/10 ${bgClass} group overflow-hidden transition-all duration-300 hover:border-blue-400 stat-card-fluid`}>
+      <div className="stat-card-background"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-700/20 via-blue-500/10 to-blue-600/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 animate-pulse"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 to-blue-600/20 opacity-0 group-hover:opacity-100 group-hover:animate-fluid transition-opacity duration-500 ease-in-out"></div>
+      <div className="flex items-center mb-4 gap-4">
         {iconImage ? (
-          <Image src={`/${iconImage}`} alt={title} width={40} height={40} className="inline-block mb-1" />
+          <Image src={`/${iconImage}`} alt={title} width={iconSize} height={iconSize} className="flex-shrink-0" />
         ) : (
-          <span className="text-2xl">{icon}</span>
+          <span className="text-3xl flex-shrink-0">{icon}</span>
         )}
-        <span>{title}</span>
+        <div>
+          <div className="text-lg text-gray-200 font-medium">{title}</div>
+          <div className="text-5xl font-bold text-white mb-1">{value}</div>
+          <div className="text-sm text-gray-300">{subtitle}</div>
+        </div>
       </div>
-      <div className="text-4xl font-bold text-white mb-1">{value}</div>
-      <div className="text-sm text-gray-300">{subtitle}</div>
     </div>
   );
 };
@@ -126,7 +132,7 @@ export default function Dashboard() {
               <span className="mr-2">🏆</span> Dashboard
             </h1>
           </div>
-          <button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-2 px-3 md:px-4 rounded-md text-xs md:text-sm transition-all duration-200">
+          <button className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-red-600 text-white py-2 px-3 md:px-4 rounded-md text-xs md:text-sm transition-all duration-200">
             Connect Wallet
           </button>
         </header>
@@ -147,7 +153,8 @@ export default function Dashboard() {
               iconImage="15.png"
               title="Total Tickets" 
               value="100" 
-              subtitle="Available in current round" 
+              subtitle="Available in current round"
+              iconSize={100} 
             />
             <StatCard 
               icon=""
@@ -178,8 +185,7 @@ export default function Dashboard() {
               iconImage="16.png"
               title="My Tickets" 
               value={myTickets.length} 
-              subtitle="In current round" 
-              bgClass="bg-gradient-to-b from-blue-900 to-blue-700"
+              subtitle="In current round"
             />
           </div>
           

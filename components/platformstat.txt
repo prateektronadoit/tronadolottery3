@@ -1,27 +1,29 @@
 import { motion, Variants } from 'framer-motion';
-import Image from 'next/image';
-import '../styles/fluid-animation.css';
 
 const stats = [
   {
-    iconImage: '12.png',
+    icon: '🎫',
     value: '50,000',
     label: 'Tickets Sold',
+    color: 'from-purple-500 to-indigo-600'
   },
   {
-    iconImage: '11.png',
+    icon: '🏆',
     value: '1,250',
     label: 'Happy Winners',
+    color: 'from-blue-500 to-indigo-600'
   },
   {
-    iconImage: '10.png',
+    icon: '💰',
     value: '500,000',
     label: 'USDT Distributed',
+    color: 'from-green-500 to-emerald-600'
   },
   {
-    iconImage: '20.png',
+    icon: '🎰',
     value: '125',
     label: 'Rounds Completed',
+    color: 'from-amber-500 to-orange-600'
   },
 ];
 
@@ -75,9 +77,8 @@ const PlatformStatistics = () => {
                 key={idx}
                 className="bg-gradient-to-br from-[#120d32] to-[#0c0424] rounded-2xl shadow-lg p-4 flex flex-col items-center text-center border border-gray-800 transform transition-all duration-300"
               >
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center mb-2 shadow-lg stat-card-fluid overflow-hidden">
-                  <div className="stat-card-background"></div>
-                  <Image src={`/${stat.iconImage}`} alt={stat.label} width={64} height={64} className="z-10" />
+                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl mb-2 shadow-lg`}>
+                  {stat.icon}
                 </div>
                 <div className="text-xl font-bold mb-1 bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
                   {stat.value}
@@ -105,9 +106,8 @@ const PlatformStatistics = () => {
                 variants={itemVariants}
                 className="bg-gradient-to-br from-[#120d32] to-[#0c0424] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center border border-gray-800 transform transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(123,104,238,0.4)]"
               >
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center mb-4 shadow-lg stat-card-fluid overflow-hidden">
-                  <div className="stat-card-background"></div>
-                  <Image src={`/${stat.iconImage}`} alt={stat.label} width={80} height={80} className="z-10" />
+                <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${stat.color} flex items-center justify-center text-3xl mb-4 shadow-lg`}>
+                  {stat.icon}
                 </div>
                 <div className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
                   {stat.value}

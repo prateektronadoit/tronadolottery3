@@ -48,9 +48,9 @@ const HowItWorks = () => (
               key={idx} 
               className="flex items-center justify-center w-full"
             >
-              <div className="bg-black rounded-full shadow-xl w-[320px] h-[320px] flex flex-col items-center justify-between py-8 text-center border border-purple-400/30 relative">
+              <div className="bg-black rounded-full shadow-xl w-[320px] h-[320px] flex flex-col items-center justify-between py-8 text-center border border-blue-500/30 relative">
                 <div className="mt-2">
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent px-2">
+                  <h3 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent px-2">
                     {step.number} - {step.title.toUpperCase()}
                   </h3>
                 </div>
@@ -78,7 +78,7 @@ const HowItWorks = () => (
           {/* First row - 3 pills */}
           <div className="flex flex-wrap justify-center gap-5 w-full">
             {steps.slice(0, 2).map((step, idx) => (
-              <div key={idx} className="bg-black rounded-full shadow-xl w-full sm:w-[450px] md:w-[550px] px-12 py-6 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300">
+              <div key={idx} className="bg-black rounded-full shadow-xl w-full sm:w-[450px] md:w-[550px] px-12 py-6 flex items-center space-x-4 border border-blue-500/30 hover:border-blue-500/60 transition-all duration-300">
                 <div className="flex-shrink-0 w-24 h-24 relative mt-[-10px]">
                   <Image 
                     src={step.image} 
@@ -89,14 +89,14 @@ const HowItWorks = () => (
                   />
                 </div>
                 <div className="flex-1 text-left">
-                  <h3 className="text-lg font-bold text-purple-400 mb-1">{step.number} - {step.title.toUpperCase()}</h3>
+                  <h3 className="text-lg font-bold text-blue-400 mb-1">{step.number} - {step.title.toUpperCase()}</h3>
                   <p className="text-gray-300 text-sm">{step.description}</p>
                 </div>
               </div>
             ))}
             
             {/* Step 3 - Buy Tickets - Higher and Bigger */}
-            <div className="bg-black rounded-full shadow-xl w-full sm:w-[480px] md:w-[580px] px-12 py-7 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300 mt-[-15px]">
+            <div className="bg-black rounded-full shadow-xl w-full sm:w-[480px] md:w-[580px] px-12 py-7 flex items-center space-x-4 border border-blue-500/30 hover:border-blue-500/60 transition-all duration-300 mt-[-15px]">
               <div className="flex-shrink-0 w-28 h-28 relative mt-[-15px]">
                 <Image 
                   src={steps[2].image} 
@@ -107,7 +107,7 @@ const HowItWorks = () => (
                 />
               </div>
               <div className="flex-1 text-left">
-                <h3 className="text-xl font-bold text-purple-400 mb-1">{steps[2].number} - {steps[2].title.toUpperCase()}</h3>
+                <h3 className="text-xl font-bold text-blue-400 mb-1">{steps[2].number} - {steps[2].title.toUpperCase()}</h3>
                 <p className="text-gray-300 text-sm">{steps[2].description}</p>
               </div>
             </div>
@@ -116,7 +116,7 @@ const HowItWorks = () => (
           {/* Second row - 2 pills */}
           <div className="flex flex-wrap justify-center gap-5 w-full">
             {/* Step 4 - Wait for Draw - Bigger and Higher */}
-            <div className="bg-black rounded-full shadow-xl w-full sm:w-[480px] md:w-[580px] px-12 py-7 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300 mt-[-10px]">
+            <div className="bg-black rounded-full shadow-xl w-full sm:w-[480px] md:w-[580px] px-12 py-7 flex items-center space-x-4 border border-blue-500/30 hover:border-blue-500/60 transition-all duration-300 mt-[-10px]">
               <div className="flex-shrink-0 w-28 h-28 relative mt-[-15px]">
                 <Image 
                   src={steps[3].image} 
@@ -127,13 +127,13 @@ const HowItWorks = () => (
                 />
               </div>
               <div className="flex-1 text-left">
-                <h3 className="text-xl font-bold text-purple-400 mb-1">{steps[3].number} - {steps[3].title.toUpperCase()}</h3>
+                <h3 className="text-xl font-bold text-blue-400 mb-1">{steps[3].number} - {steps[3].title.toUpperCase()}</h3>
                 <p className="text-gray-300 text-sm">{steps[3].description}</p>
               </div>
             </div>
             
             {/* Step 5 - Claim Prizes - Lower */}
-            <div className="bg-black rounded-full shadow-xl w-full sm:w-[450px] md:w-[550px] px-12 py-6 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300 mt-[10px]">
+            <div className="bg-black rounded-full shadow-xl w-full sm:w-[450px] md:w-[550px] px-12 py-6 flex items-center space-x-4 border border-blue-500/30 hover:border-blue-500/60 transition-all duration-300 mt-[10px]">
               <div className="flex-shrink-0 w-24 h-24 relative mt-[-5px]">
                 <Image 
                   src={steps[4].image} 
@@ -144,7 +144,7 @@ const HowItWorks = () => (
                 />
               </div>
               <div className="flex-1 text-left">
-                <h3 className="text-lg font-bold text-purple-400 mb-1">{steps[4].number} - {steps[4].title.toUpperCase()}</h3>
+                <h3 className="text-lg font-bold text-blue-400 mb-1">{steps[4].number} - {steps[4].title.toUpperCase()}</h3>
                 <p className="text-gray-300 text-sm">{steps[4].description}</p>
               </div>
             </div>

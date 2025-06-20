@@ -49,11 +49,11 @@ const PlatformFeatures = () => (
     
     <div className="container mx-auto px-4 relative z-10">
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
-        Why Choose <span className="text-purple-400">CryptoLottery?</span>
+        Why Choose <span className="text-blue-400">CryptoLottery?</span>
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 max-w-6xl mx-auto">
         {features.map((feature) => (
-          <div key={feature.title} className="bg-black rounded-2xl p-4 md:p-8 flex flex-col items-center text-center border border-purple-400/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+          <div key={feature.title} className="bg-black rounded-2xl p-4 md:p-8 flex flex-col items-center text-center border border-blue-500/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 hover:shadow-blue-500/20">
             <div className="relative w-24 h-32 md:w-40 md:h-64 mb-0">
               <Image
                 src={feature.icon}
