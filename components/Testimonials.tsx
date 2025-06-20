@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import '../styles/fluid-animation.css';
 
 const Testimonials = () => {
@@ -20,7 +21,13 @@ const Testimonials = () => {
           {/* Testimonial 1 */}
           <div className="bg-black rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
             <div className="flex justify-center mb-4">
-              <span className="text-4xl">🎯</span>
+              <Image 
+                src="/bullseye.png" 
+                alt="Bullseye Target" 
+                width={96} 
+                height={96} 
+                className="object-contain" 
+              />
             </div>
             <p className="text-gray-300 italic mb-6 text-center">
               "I won 5000 USDT in my first week! The transparency and instant payout made me a believer. This is the future of lottery gaming."
@@ -34,7 +41,13 @@ const Testimonials = () => {
           {/* Testimonial 2 */}
           <div className="bg-black rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
             <div className="flex justify-center mb-4">
-              <span className="text-4xl">💎</span>
+              <Image 
+                src="/diamond.png" 
+                alt="Diamond" 
+                width={96} 
+                height={96} 
+                className="object-contain" 
+              />
             </div>
             <p className="text-gray-300 italic mb-6 text-center">
               "Finally, a lottery system I can trust! Being able to verify everything on blockchain gives me complete confidence in the fairness."
@@ -48,7 +61,13 @@ const Testimonials = () => {
           {/* Testimonial 3 */}
           <div className="bg-black rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
             <div className="flex justify-center mb-4">
-              <span className="text-4xl">🚀</span>
+              <Image 
+                src="/rocket.png" 
+                alt="Rocket" 
+                width={96} 
+                height={96} 
+                className="object-contain" 
+              />
             </div>
             <p className="text-gray-300 italic mb-6 text-center">
               "The user experience is amazing! Simple to use, fast transactions, and when I won, the payout was instant. Love this platform!"
