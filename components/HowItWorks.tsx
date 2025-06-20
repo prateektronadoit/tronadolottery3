@@ -34,28 +34,54 @@ const steps = [
 ];
 
 const HowItWorks = () => (
-  <section className="py-16 bg-gradient-to-b from-black via-blue-900/20 to-black text-white" id="how-it-works-section">
+  <section className="py-16 bg-transparent text-white" id="how-it-works-section">
     <div className="container mx-auto px-4">
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
         How It Works
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-8 max-w-6xl mx-auto">
-        {steps.map((step, idx) => (
-          <div key={idx} className="bg-black rounded-2xl shadow-lg p-8 flex flex-col items-center text-center border border-purple-400/30 hover:shadow-2xl hover:-translate-y-3 hover:scale-105 transition-all duration-300 group">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-purple-400 text-black font-bold text-xl mb-4 group-hover:bg-purple-300 group-hover:scale-110 transition-all duration-300">{step.number}</div>
-            <div className={`${idx === 2 || idx === 3 ? 'w-40 h-40' : 'w-32 h-32'} mb-6 group-hover:scale-110 transition-transform duration-300`}>
-              <Image 
-                src={step.image} 
-                alt={step.title} 
-                width={idx === 2 || idx === 3 ? 200 : 160} 
-                height={idx === 2 || idx === 3 ? 200 : 160} 
-                className="w-full h-full object-contain" 
-              />
+      
+      <div className="flex flex-col items-center gap-6 max-w-6xl mx-auto">
+        {/* First row - 3 pills */}
+        <div className="flex flex-wrap justify-center gap-5 w-full">
+          {steps.slice(0, 3).map((step, idx) => (
+            <div key={idx} className="bg-black rounded-full shadow-xl w-full sm:w-[350px] md:w-[400px] px-8 py-6 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300">
+              <div className="flex-shrink-0 w-16 h-16 relative">
+                <Image 
+                  src={step.image} 
+                  alt={step.title} 
+                  width={80} 
+                  height={80} 
+                  className="object-contain" 
+                />
+              </div>
+              <div className="flex-1 text-left">
+                <h3 className="text-lg font-bold text-purple-400 mb-1">{step.number} - {step.title.toUpperCase()}</h3>
+                <p className="text-gray-300 text-sm">{step.description}</p>
+              </div>
             </div>
-            <h3 className="text-lg font-semibold mb-2 group-hover:text-purple-300 transition-colors duration-300">{step.title}</h3>
-            <p className="text-gray-300 text-base">{step.description}</p>
-          </div>
-        ))}
+          ))}
+        </div>
+        
+        {/* Second row - 2 pills */}
+        <div className="flex flex-wrap justify-center gap-5 w-full">
+          {steps.slice(3, 5).map((step, idx) => (
+            <div key={idx + 3} className="bg-black rounded-full shadow-xl w-full sm:w-[350px] md:w-[400px] px-8 py-6 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300">
+              <div className="flex-shrink-0 w-16 h-16 relative">
+                <Image 
+                  src={step.image} 
+                  alt={step.title} 
+                  width={80} 
+                  height={80} 
+                  className="object-contain" 
+                />
+              </div>
+              <div className="flex-1 text-left">
+                <h3 className="text-lg font-bold text-purple-400 mb-1">{step.number} - {step.title.toUpperCase()}</h3>
+                <p className="text-gray-300 text-sm">{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   </section>

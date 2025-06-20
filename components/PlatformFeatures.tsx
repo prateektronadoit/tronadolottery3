@@ -51,10 +51,10 @@ const PlatformFeatures = () => (
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
         Why Choose <span className="text-purple-400">CryptoLottery?</span>
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 max-w-6xl mx-auto">
         {features.map((feature) => (
-          <div key={feature.title} className="bg-black rounded-2xl p-8 flex flex-col items-center text-center border border-purple-400/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-            <div className="relative w-40 h-64 mb-0">
+          <div key={feature.title} className="bg-black rounded-2xl p-4 md:p-8 flex flex-col items-center text-center border border-purple-400/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+            <div className="relative w-24 h-32 md:w-40 md:h-64 mb-0">
               <Image
                 src={feature.icon}
                 alt={feature.title}
@@ -62,8 +62,8 @@ const PlatformFeatures = () => (
                 className={`object-contain ${feature.icon === '/3.png' ? 'mt-0 -translate-y-3' : 'mt-2'}`}
               />
             </div>
-            <h3 className="text-xl font-semibold mb-2 -mt-6">{feature.title}</h3>
-            <p className="text-gray-300">{feature.description}</p>
+            <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 -mt-2 md:-mt-6">{feature.title}</h3>
+            <p className="text-gray-300 text-xs md:text-base">{feature.description}</p>
           </div>
         ))}
       </div>
