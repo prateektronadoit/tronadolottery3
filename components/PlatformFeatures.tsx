@@ -34,14 +34,25 @@ const features = [
 ];
 
 const PlatformFeatures = () => (
-  <section className="py-16 bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-    <div className="container mx-auto px-4">
+  <section className="relative py-16 bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+    {/* Background Image */}
+    <div className="absolute inset-0 z-0">
+      <Image 
+        src="/bg2.png" 
+        alt="Background" 
+        fill 
+        style={{ objectFit: 'cover' }}
+        priority
+      />
+    </div>
+    
+    <div className="container mx-auto px-4 relative z-10">
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
         Why Choose <span className="text-purple-400">CryptoLottery?</span>
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        {features.map((feature, idx) => (
-          <div key={idx} className="bg-black rounded-2xl shadow-lg p-8 flex flex-col items-center text-center border border-purple-400/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+        {features.map((feature) => (
+          <div key={feature.title} className="bg-black rounded-2xl p-8 flex flex-col items-center text-center border border-purple-400/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
             <div className="relative w-24 h-24 mb-4">
               <Image
                 src={feature.icon}
@@ -51,7 +62,7 @@ const PlatformFeatures = () => (
               />
             </div>
             <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-            <p className="text-gray-300 text-base">{feature.description}</p>
+            <p className="text-gray-300">{feature.description}</p>
           </div>
         ))}
       </div>

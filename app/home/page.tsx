@@ -1,99 +1,74 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useState, useCallback, useEffect } from 'react';
-import Footer from '@/components/Footer';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-// import styles from './wheel.module.css';
 import PlatformFeatures from '@/components/PlatformFeatures';
 import HowItWorks from '@/components/HowItWorks';
 import PlatformStatistics from '@/components/PlatformStatistics';
+import Testimonials from '@/components/Testimonials';
+import CallToAction from '@/components/CallToAction';
 
 export default function HomePage() {
-  // Router for home page redirect
-  const router = useRouter();
-
-
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  // Redirect if necessary (using asPath instead of pathname in App Router)
-  useEffect(() => {
-    // Only redirect if needed
-    if (typeof window !== 'undefined' && window.location.pathname === '/') {
-      router.push('/home');
-    }
-    setIsAuthenticated(!!localStorage.getItem('token'));
-    const handleStorage = () => setIsAuthenticated(!!localStorage.getItem('token'));
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, [router]);
-
- 
-
-
-  const handleRegisterClick = () => {
-    router.push('/register');
-  };
-
   // Animation for BLOCKCHAIN LOTTERY color
   const [isPurple, setIsPurple] = useState(false);
   useEffect(() => {
     const interval = setInterval(() => {
       setIsPurple(prev => !prev);
-    }, 4000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
-
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Full screen hero section with carousel */}
+      {/* Background and Header */}
       <section className="relative h-screen overflow-hidden">
-        {/* Building Background */}
         <div className="absolute inset-0 z-0">
           <Image src="/ibg.png" alt="Background" fill style={{ objectFit: 'cover' }} priority />
         </div>
 
-        
-
         {/* Coin decorations */}
-        {/* Left Bottom Coin */}
-        <div className="absolute left-0 bottom-0 z-30 mb-8 ml-4">
-          <Image src="/coinL.png" alt="Coin Left" width={700} height={700} className="hidden sm:block w-[32rem] h-[32rem] md:w-[44rem] md:h-[44rem] lg:w-[56rem] lg:h-[56rem]" />
-          <Image src="/coinL.png" alt="Coin Left" width={320} height={320} className="block sm:hidden w-64 h-64" />
-        </div>
-        {/* Right Top Coin */}
-        <div className="absolute right-0 top-0 z-30 mt-8 mr-4">
-          <Image src="/coinR.png" alt="Coin Right" width={700} height={700} className="hidden sm:block w-[32rem] h-[32rem] md:w-[44rem] md:h-[44rem] lg:w-[56rem] lg:h-[56rem]" />
-          <Image src="/coinR.png" alt="Coin Right" width={320} height={320} className="block sm:hidden w-64 h-64" />
-        </div>
-        {/* Center Top Coin above heading */}
-        <div className="absolute left-1/2 z-30" style={{ top: '0%', transform: 'translateX(-50%)' }}>
-          <Image src="/coinM.png" alt="Coin Middle" width={600} height={600} className="hidden sm:block w-[28rem] h-[28rem] md:w-[40rem] md:h-[40rem] lg:w-[52rem] lg:h-[52rem]" />
-          <Image src="/coinM.png" alt="Coin Middle" width={260} height={260} className="block sm:hidden w-52 h-52" />
+        {/* Top Left Coin */}
+        <div className="absolute left-0 top-0 z-30 mt-24 ml-4">
+          <Image src="/coinL.png" alt="Coin Left" width={200} height={200} className="w-[120px] h-[120px] md:w-[180px] md:h-[180px]" />
         </div>
         
-        {/* Animated sphere1 at bottom left */}
-        <div className="absolute left-0 bottom-0 z-40 mb-12 ml-8">
-  <Image 
-    src="/circle1.png" 
-    alt="cicrle 1" 
-    width={400} 
-    height={500} 
-    className="w-[18rem] h-[18rem] md:w-[28rem] md:h-[28rem] lg:w-[36rem] " 
-  />
-</div>
-
-
-
+        {/* Top Center Coin */}
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 z-30 mt-16">
+          <Image src="/coinM.png" alt="Coin Middle" width={200} height={200} className="w-[140px] h-[140px] md:w-[200px] md:h-[200px]" />
+        </div>
         
-        {/* Transparent header overlaid on carousel */}
+        {/* Bottom Right Coin */}
+        <div className="absolute right-0 bottom-0 z-30 mb-8 mr-4">
+          <Image src="/coinR.png" alt="Coin Right" width={250} height={250} className="w-[160px] h-[160px] md:w-[240px] md:h-[240px]" />
+        </div>
+        
+        {/* Bottom Left Circle */}
+        <div className="absolute left-0 bottom-0 z-40 mb-24 ml-8">
+          <Image 
+            src="/circle1.png" 
+            alt="Circle 1" 
+            width={250} 
+            height={250} 
+            className="w-[160px] h-[160px] md:w-[240px] md:h-[240px]" 
+          />
+        </div>
+        
+        {/* Bottom Right Circle */}
+        <div className="absolute right-0 bottom-0 z-40 mb-36 mr-36">
+          <Image 
+            src="/circle2.png" 
+            alt="Circle 2" 
+            width={200} 
+            height={200} 
+            className="w-[140px] h-[140px] md:w-[200px] md:h-[200px]" 
+          />
+        </div>
         <div className="absolute top-0 left-0 right-0 z-20 w-full">
           <Header />
         </div>
-
+        
         {/* Hero Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
           <div className="w-full flex flex-col items-center justify-center">
@@ -107,66 +82,41 @@ export default function HomePage() {
             </div>
             
             <p className="text-base sm:text-lg md:text-xl text-gray-300 text-center max-w-2xl mx-auto mb-10">
-            Experience the future of lottery gaming with transparent, secure, and decentralized draws powered by smart contracts
+              Experience the future of lottery gaming with transparent, secure, and decentralized draws powered by smart contracts
             </p>
-            <div className="flex flex-row gap-6 justify-center w-full max-w-xl mt-4 relative">
+            
+            <div className="flex flex-row gap-6 justify-center w-full max-w-xl mt-6">
               <button
-                className="flex items-center justify-center bg-[#0F0448] hover:bg-blue-400 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg transition-all duration-200 cursor-pointer"
+                className="flex items-center justify-center bg-[#0F0448] hover:bg-blue-400 text-white font-bold py-3 px-6 rounded-full text-lg shadow-lg transition-all duration-200 cursor-pointer"
                 onClick={() => {
                   const howItWorksSection = document.getElementById('how-it-works-section');
                   if (howItWorksSection) howItWorksSection.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
-                <span className="mr-2 text-2xl">🎯</span> How It Works
+                <span className="mr-2">🎯</span> How It Works
               </button>
               <button
-                className="flex items-center justify-center bg-[#0F0448] hover:bg-blue-400 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg transition-all duration-200 cursor-pointer"
+                className="flex items-center justify-center bg-[#0F0448] hover:bg-blue-400 text-white font-bold py-3 px-6 rounded-full text-lg shadow-lg transition-all duration-200 cursor-pointer"
                 onClick={() => {
                   const ticketSection = document.querySelector('section.bg-gray-900');
                   if (ticketSection) ticketSection.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
-                <span className="mr-2 text-2xl">🎫</span> Buy Tickets Now
+                <span className="mr-2">🎫</span> Buy Tickets Now
               </button>
-              {/* Sphere2 to the right of the buttons */}
-              <div className="absolute right-[-10rem] top-1/2 -translate-y-1/2 z-40 rounded-full overflow-hidden">
-                <Image src="/circle2.png" alt="Sphere 2" width={400} height={400} className="w-[18rem] h-[18rem] md:w-[28rem] md:h-[28rem] lg:w-[36rem] lg:h-[36rem] object-cover" />
-              </div>
-          </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Platform Statistics Section */}
+      {/* Components only */}
       <PlatformStatistics />
-
-      {/* Platform Features Section */}
       <PlatformFeatures />
-
-      {/* How It Works Section */}
       <HowItWorks />
+      <Testimonials />
+      <CallToAction />
 
-      {/* Mobile-only heading - "going above" */}
-      {/* <div className="md:hidden relative z-20 bg-gradient-to-r from-[var(--tronado-gold)] to-yellow-500 py-3 px-4 text-center">
-        <h2 className="text-2xl font-bold text-[var(--tronado-dark)] uppercase tracking-wider">going above</h2>
-      </div> */}
-
-
-      
       <Footer />
-
-      {/* Custom animation for slow spin */}
-      <style jsx global>{`
-        .animate-spin-slow {
-          animation: spin 16s linear infinite;
-        }
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }
-
-
