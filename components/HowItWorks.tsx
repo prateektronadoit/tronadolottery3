@@ -45,13 +45,13 @@ const HowItWorks = () => (
         <div className="flex flex-wrap justify-center gap-5 w-full">
           {steps.slice(0, 3).map((step, idx) => (
             <div key={idx} className="bg-black rounded-full shadow-xl w-full sm:w-[450px] md:w-[550px] px-12 py-6 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300">
-              <div className="flex-shrink-0 w-16 h-16 relative">
+              <div className="flex-shrink-0 w-24 h-24 relative mt-[-10px]">
                 <Image 
                   src={step.image} 
                   alt={step.title} 
-                  width={80} 
-                  height={80} 
-                  className="object-contain" 
+                  width={120} 
+                  height={120} 
+                  className="object-contain translate-y-[-5px]" 
                 />
               </div>
               <div className="flex-1 text-left">
@@ -66,13 +66,13 @@ const HowItWorks = () => (
         <div className="flex flex-wrap justify-center gap-5 w-full">
           {steps.slice(3, 5).map((step, idx) => (
             <div key={idx + 3} className="bg-black rounded-full shadow-xl w-full sm:w-[450px] md:w-[550px] px-12 py-6 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300">
-              <div className="flex-shrink-0 w-16 h-16 relative">
+              <div className="flex-shrink-0 w-24 h-24 relative mt-[-10px]">
                 <Image 
                   src={step.image} 
                   alt={step.title} 
-                  width={80} 
-                  height={80} 
-                  className="object-contain" 
+                  width={120} 
+                  height={120} 
+                  className="object-contain translate-y-[-5px]" 
                 />
               </div>
               <div className="flex-1 text-left">
