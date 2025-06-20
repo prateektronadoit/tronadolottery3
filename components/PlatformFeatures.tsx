@@ -53,7 +53,7 @@ const PlatformFeatures = () => (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {features.map((feature) => (
           <div key={feature.title} className="bg-black rounded-2xl p-8 flex flex-col items-center text-center border border-purple-400/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-            <div className="relative w-40 h-64 mb-8">
+            <div className="relative w-40 h-64 mb-0">
               <Image
                 src={feature.icon}
                 alt={feature.title}
@@ -61,7 +61,7 @@ const PlatformFeatures = () => (
                 className="object-contain mt-2"
               />
             </div>
-            <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+            <h3 className="text-xl font-semibold mb-2 -mt-6">{feature.title}</h3>
             <p className="text-gray-300">{feature.description}</p>
           </div>
         ))}
