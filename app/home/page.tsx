@@ -112,7 +112,6 @@ export default function HomePage() {
       {/* Components only */}
       <PlatformStatistics />
       <PlatformFeatures />
-      <HowItWorks />
       <Testimonials />
       <CallToAction />
 

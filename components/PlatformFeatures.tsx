@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import HowItWorks from './HowItWorks';
 
 const features = [
   {
@@ -65,6 +66,11 @@ const PlatformFeatures = () => (
             <p className="text-gray-300">{feature.description}</p>
           </div>
         ))}
+      </div>
+      
+      {/* How It Works Section */}
+      <div className="mt-20">
+        <HowItWorks />
       </div>
     </div>
   </section>
