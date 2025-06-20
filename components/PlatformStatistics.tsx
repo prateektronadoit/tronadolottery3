@@ -28,6 +28,7 @@ const stats = [
 ];
 
 const PlatformStatistics = () => {
+
   // Animation variants for the section
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -68,8 +69,31 @@ const PlatformStatistics = () => {
           <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto rounded-full"></div>
         </motion.div>
         
+        {/* Mobile Grid View - Show all four stats */}
+        <div className="block sm:hidden w-full">
+          <div className="grid grid-cols-2 gap-3 px-2 max-w-[450px] mx-auto">
+            {stats.map((stat, idx) => (
+              <div 
+                key={idx}
+                className="bg-gradient-to-br from-[#120d32] to-[#0c0424] rounded-2xl shadow-lg p-4 flex flex-col items-center text-center border border-gray-800 transform transition-all duration-300"
+              >
+                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl mb-2 shadow-lg`}>
+                  {stat.icon}
+                </div>
+                <div className="text-xl font-bold mb-1 bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
+                  {stat.value}
+                </div>
+                <div className="text-xs text-gray-300">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Grid View */}
         <motion.div 
-          className="flex justify-center"
+          className="hidden sm:flex justify-center"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
