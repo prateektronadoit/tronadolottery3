@@ -58,7 +58,7 @@ const PlatformFeatures = () => (
                 src={feature.icon}
                 alt={feature.title}
                 fill
-                className="object-contain mt-2"
+                className={`object-contain ${feature.icon === '/3.png' ? 'mt-0 -translate-y-3' : 'mt-2'}`}
               />
             </div>
             <h3 className="text-xl font-semibold mb-2 -mt-6">{feature.title}</h3>
