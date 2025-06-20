@@ -44,7 +44,7 @@ const HowItWorks = () => (
         {/* First row - 3 pills */}
         <div className="flex flex-wrap justify-center gap-5 w-full">
           {steps.slice(0, 3).map((step, idx) => (
-            <div key={idx} className="bg-black rounded-full shadow-xl w-full sm:w-[350px] md:w-[400px] px-8 py-6 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300">
+            <div key={idx} className="bg-black rounded-full shadow-xl w-full sm:w-[450px] md:w-[550px] px-12 py-6 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300">
               <div className="flex-shrink-0 w-16 h-16 relative">
                 <Image 
                   src={step.image} 
@@ -65,7 +65,7 @@ const HowItWorks = () => (
         {/* Second row - 2 pills */}
         <div className="flex flex-wrap justify-center gap-5 w-full">
           {steps.slice(3, 5).map((step, idx) => (
-            <div key={idx + 3} className="bg-black rounded-full shadow-xl w-full sm:w-[350px] md:w-[400px] px-8 py-6 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300">
+            <div key={idx + 3} className="bg-black rounded-full shadow-xl w-full sm:w-[450px] md:w-[550px] px-12 py-6 flex items-center space-x-4 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-300">
               <div className="flex-shrink-0 w-16 h-16 relative">
                 <Image 
                   src={step.image} 
