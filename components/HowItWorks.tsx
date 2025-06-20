@@ -43,12 +43,12 @@ const HowItWorks = () => (
         {steps.map((step, idx) => (
           <div key={idx} className="bg-black rounded-2xl shadow-lg p-8 flex flex-col items-center text-center border border-purple-400/30 hover:shadow-2xl hover:-translate-y-3 hover:scale-105 transition-all duration-300 group">
             <div className="flex items-center justify-center w-12 h-12 rounded-full bg-purple-400 text-black font-bold text-xl mb-4 group-hover:bg-purple-300 group-hover:scale-110 transition-all duration-300">{step.number}</div>
-            <div className="w-24 h-24 mb-4 group-hover:scale-110 transition-transform duration-300">
+            <div className="w-32 h-32 mb-6 group-hover:scale-110 transition-transform duration-300">
               <Image 
                 src={step.image} 
                 alt={step.title} 
-                width={128} 
-                height={128} 
+                width={160} 
+                height={160} 
                 className="w-full h-full object-contain" 
               />
             </div>
