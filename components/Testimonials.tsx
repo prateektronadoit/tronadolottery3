@@ -1,8 +1,15 @@
 import React from 'react';
+import '../styles/fluid-animation.css';
 
 const Testimonials = () => {
   return (
-    <section className="py-16 bg-gradient-to-b from-gray-800 to-gray-900">
+    <section className="py-16 bg-[#0a0024] fluid-background relative">
+      <div className="fluid-animation"></div>
+      <div className="bubble"></div>
+      <div className="bubble"></div>
+      <div className="bubble"></div>
+      <div className="bubble"></div>
+      <div className="bubble"></div>
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">What Our Winners Say</h2>
@@ -11,7 +18,7 @@ const Testimonials = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {/* Testimonial 1 */}
-          <div className="bg-gray-800 rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
+          <div className="bg-black rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
             <div className="flex justify-center mb-4">
               <span className="text-4xl">🎯</span>
             </div>
@@ -25,7 +32,7 @@ const Testimonials = () => {
           </div>
 
           {/* Testimonial 2 */}
-          <div className="bg-gray-800 rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
+          <div className="bg-black rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
             <div className="flex justify-center mb-4">
               <span className="text-4xl">💎</span>
             </div>
@@ -39,7 +46,7 @@ const Testimonials = () => {
           </div>
 
           {/* Testimonial 3 */}
-          <div className="bg-gray-800 rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
+          <div className="bg-black rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
             <div className="flex justify-center mb-4">
               <span className="text-4xl">🚀</span>
             </div>

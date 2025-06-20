@@ -1,9 +1,17 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import '../styles/fluid-animation.css';
 
 const CallToAction = () => {
   return (
-    <section className="py-16 bg-gradient-to-b from-gray-900 to-blue-950">
+    <section className="py-16 bg-[#0a0024] fluid-background relative">
+      <div className="fluid-animation"></div>
+      <div className="bubble"></div>
+      <div className="bubble"></div>
+      <div className="bubble"></div>
+      <div className="bubble"></div>
+      <div className="bubble"></div>
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Win Big?</h2>
@@ -14,13 +22,15 @@ const CallToAction = () => {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
             <Link href="/dashboard" 
-              className="inline-flex items-center justify-center bg-gradient-to-r from-blue-800 to-indigo-900 hover:from-blue-900 hover:to-indigo-950 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-200">
-              <span className="mr-2">🎯</span> Register Now
+              className="inline-flex items-center justify-center bg-[#16072d] hover:bg-[#291352] text-white font-bold py-4 px-8 rounded-full text-xl shadow-[0_4px_16px_rgba(156,25,233,0.5)] border border-[#3d2b59] hover:border-purple-500 transition-all duration-300 cursor-pointer group">
+              <span className="text-2xl mr-3 group-hover:text-purple-300 transition-colors duration-300">🎯</span>
+              <span className="group-hover:text-purple-300 transition-colors duration-300">Register Now</span>
             </Link>
             
             <Link href="#how-it-works-section"
-              className="inline-flex items-center justify-center bg-transparent border-2 border-white hover:bg-white hover:text-blue-950 text-white font-bold py-3 px-8 rounded-full text-lg transition-all duration-200">
-              <span className="mr-2">📖</span> Learn More
+              className="inline-flex items-center justify-center bg-transparent border-2 border-purple-400 hover:bg-[#291352] text-white font-bold py-4 px-8 rounded-full text-xl transition-all duration-300 group hover:border-purple-300">
+              <span className="text-2xl mr-3 group-hover:text-purple-300 transition-colors duration-300">📖</span>
+              <span className="group-hover:text-purple-300 transition-colors duration-300">Learn More</span>
             </Link>
           </div>
         </div>
