@@ -141,7 +141,7 @@ export default function Header() {
           aria-hidden={!mobileMenuOpen}
         >
           <div className="px-4 py-5 space-y-4 shadow-inner">
-            <nav>
+            {/* <nav>
               <ul className="space-y-4">
                 <li>
                   <Link href="#" className="flex items-center py-2 px-3 text-white hover:text-yellow-300 hover:bg-cyan-600 transition-all rounded-md font-medium group">
@@ -154,7 +154,7 @@ export default function Header() {
                   </Link>
                 </li>
               </ul>
-            </nav>
+            </nav> */}
             
             <div className="flex flex-wrap items-center justify-between w-full gap-3 py-4 mt-2 border-t border-cyan-600">
               {/* Register Now Button for Mobile or Profile Icon */}
