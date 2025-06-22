@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 CryptoLottery - Win Big with Blockchain Technology</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #1A1A2E;
+            --bg-tertiary: #16213E;
+            --bg-card: #252540;
+            --bg-glass: rgba(26, 26, 46, 0.8);
+            
+            --accent-primary: #FF4500;
+            --accent-secondary: #FF6B35;
+            --accent-gold: #FFD700;
+            --accent-purple: #9945FF;
+            --accent-cyan: #00F5FF;
+            --accent-green: #00FF88;
+            
+            --success-color: #00D27A;
+            --warning-color: #FFB800;
+            --error-color: #FF4444;
+            
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B3C1;
+            --text-muted: #6B7280;
+            
+            --gradient-primary: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            --gradient-rainbow: linear-gradient(135deg, var(--accent-primary), var(--accent-purple), var(--accent-cyan), var(--accent-gold));
+            --gradient-gold: linear-gradient(135deg, #FFD700, #FFA500, #FF8C00);
+            --gradient-purple: linear-gradient(135deg, #9945FF, #7C3AED, #6366F1);
+            --gradient-cyan: linear-gradient(135deg, #00F5FF, #00D4FF, #0EA5E9);
+            
+            --shadow-glow: 0 8px 32px rgba(255, 69, 0, 0.3);
+            --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.4);
+            --shadow-neon: 0 0 30px rgba(255, 69, 0, 0.5);
+            --shadow-gold: 0 8px 32px rgba(255, 215, 0, 0.3);
+            --shadow-purple: 0 8px 32px rgba(153, 69, 255, 0.3);
+            --shadow-cyan: 0 8px 32px rgba(0, 245, 255, 0.3);
+            
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+            --border-radius-xl: 32px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Enhanced Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 69, 0, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(153, 69, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 50% 90%, rgba(0, 245, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 10% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+            animation: float 25s ease-in-out infinite;
+        }
+
+        .bg-animation::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(45deg, transparent 30%, rgba(255, 69, 0, 0.05) 50%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(153, 69, 255, 0.05) 50%, transparent 70%);
+            animation: slide 30s linear infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            25% { transform: translate(30px, -30px) scale(1.1) rotate(90deg); }
+            50% { transform: translate(-20px, 20px) scale(0.9) rotate(180deg); }
+            75% { transform: translate(20px, -10px) scale(1.05) rotate(270deg); }
+        }
+
+        @keyframes slide {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 69, 0, 0.3);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 10, 15, 0.98);
+            box-shadow: var(--shadow-glow);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-rainbow);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 69, 0, 0.5);
+            animation: glow-pulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow-pulse {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
+        }
+
+        .nav-button {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-button:hover::before {
+            left: 100%;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Hero Section with Images */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 2rem 60px;
+            position: relative;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(255, 69, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(153, 69, 255, 0.1) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            max-width: 900px;
+            z-index: 2;
+        }
+
+        .hero-image {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            animation: float-hero 4s ease-in-out infinite;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .hero-image:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .hero-image:nth-child(2) {
+            top: 30%;
+            right: 15%;
+            animation-delay: 1s;
+            background: var(--gradient-gold);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .hero-image:nth-child(3) {
+            bottom: 25%;
+            left: 8%;
+            animation-delay: 2s;
+            background: var(--gradient-purple);
+            box-shadow: var(--shadow-purple);
+        }
+
+        .hero-image:nth-child(4) {
+            bottom: 20%;
+            right: 12%;
+            animation-delay: 3s;
+            background: var(--gradient-cyan);
+            box-shadow: var(--shadow-cyan);
+        }
+
+        @keyframes float-hero {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            background: var(--gradient-rainbow);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow-text 4s ease-in-out infinite alternate;
+            background-size: 300% 300%;
+            text-shadow: 0 0 50px rgba(255, 69, 0, 0.3);
+        }
+
+        @keyframes glow-text {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-weight: 400;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: var(--border-radius-lg);
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: var(--shadow-neon);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-secondary);
+            border: 3px solid var(--accent-secondary);
+            padding: 17px 37px;
+            border-radius: var(--border-radius-lg);
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-secondary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--accent-secondary);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn-secondary:hover::before {
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        /* Hero Stats */
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .hero-stat {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .hero-stat:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--accent-primary);
+        }
+
+        .hero-stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hero-stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Features Section with Images */
+        .features {
+            padding: 120px 2rem;
+            background: 
+                linear-gradient(135deg, rgba(26, 26, 46, 0.5) 0%, rgba(22, 33, 62, 0.5) 100%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,69,0,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-rainbow);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 50px rgba(255, 69, 0, 0.3);
+        }
+
+        .section-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+        }
+
+        .feature-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 69, 0, 0.2);
+            border-radius: var(--border-radius-xl);
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-rainbow);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--accent-primary);
+            background: rgba(37, 37, 64, 0.9);
+        }
+
+        .feature-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 2rem;
+            box-shadow: var(--shadow-glow);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .feature-card:nth-child(2) .feature-icon {
+            background: var(--gradient-gold);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .feature-card:nth-child(3) .feature-icon {
+            background: var(--gradient-purple);
+            box-shadow: var(--shadow-purple);
+        }
+
+        .feature-card:nth-child(4) .feature-icon {
+            background: var(--gradient-cyan);
+            box-shadow: var(--shadow-cyan);
+        }
+
+        .feature-card:nth-child(5) .feature-icon {
+            background: linear-gradient(135deg, var(--accent-green), #00D27A);
+            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.3);
+        }
+
+        .feature-card:nth-child(6) .feature-icon {
+            background: var(--gradient-rainbow);
+            box-shadow: var(--shadow-neon);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        .feature-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+
+        /* How It Works Section with Visual Steps */
+        .how-it-works {
+            padding: 120px 2rem;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(255, 69, 0, 0.05) 0%, transparent 70%),
+                radial-gradient(circle at 20% 20%, rgba(153, 69, 255, 0.05) 0%, transparent 70%);
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
+            margin-top: 5rem;
+        }
+
+        .step-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 69, 0, 0.2);
+            border-radius: var(--border-radius-xl);
+            padding: 3rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.1), rgba(153, 69, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .step-card:hover::before {
+            opacity: 1;
+        }
+
+        .step-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--accent-primary);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.4rem;
+            box-shadow: var(--shadow-glow);
+            border: 3px solid var(--bg-primary);
+        }
+
+        .step-card:nth-child(2) .step-number {
+            background: var(--gradient-gold);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .step-card:nth-child(3) .step-number {
+            background: var(--gradient-purple);
+            box-shadow: var(--shadow-purple);
+        }
+
+        .step-card:nth-child(4) .step-number {
+            background: var(--gradient-cyan);
+            box-shadow: var(--shadow-cyan);
+        }
+
+        .step-card:nth-child(5) .step-number {
+            background: linear-gradient(135deg, var(--accent-green), #00D27A);
+            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.3);
+        }
+
+        .step-visual {
+            width: 120px;
+            height: 120px;
+            border-radius: 20px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            margin: 3rem auto 2rem;
+            box-shadow: var(--shadow-glow);
+            transition: all 0.3s ease;
+        }
+
+        .step-card:nth-child(2) .step-visual {
+            background: var(--gradient-gold);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .step-card:nth-child(3) .step-visual {
+            background: var(--gradient-purple);
+            box-shadow: var(--shadow-purple);
+        }
+
+        .step-card:nth-child(4) .step-visual {
+            background: var(--gradient-cyan);
+            box-shadow: var(--shadow-cyan);
+        }
+
+        .step-card:nth-child(5) .step-visual {
+            background: linear-gradient(135deg, var(--accent-green), #00D27A);
+            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.3);
+        }
+
+        .step-card:hover .step-visual {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .step-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* Enhanced Statistics Section */
+        .stats {
+            padding: 100px 2rem;
+            background: 
+                var(--bg-glass),
+                linear-gradient(135deg, rgba(255, 69, 0, 0.1), rgba(153, 69, 255, 0.1));
+            backdrop-filter: blur(25px);
+            position: relative;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-rainbow);
+            animation: slide-rainbow 3s linear infinite;
+        }
+
+        @keyframes slide-rainbow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(37, 37, 64, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius-xl);
+            border: 1px solid rgba(255, 69, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.1), rgba(153, 69, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--accent-primary);
+        }
+
+        .stat-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .stat-card:nth-child(2) .stat-icon {
+            background: var(--gradient-gold);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .stat-card:nth-child(3) .stat-icon {
+            background: var(--gradient-purple);
+            box-shadow: var(--shadow-purple);
+        }
+
+        .stat-card:nth-child(4) .stat-icon {
+            background: var(--gradient-cyan);
+            box-shadow: var(--shadow-cyan);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: var(--gradient-rainbow);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1rem;
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            padding: 100px 2rem;
+            background: var(--bg-secondary);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .testimonial-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 69, 0, 0.2);
+            border-radius: var(--border-radius-xl);
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--accent-primary);
+        }
+
+        .testimonial-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .testimonial-card:nth-child(2) .testimonial-avatar {
+            background: var(--gradient-gold);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .testimonial-card:nth-child(3) .testimonial-avatar {
+            background: var(--gradient-purple);
+            box-shadow: var(--shadow-purple);
+        }
+
+        .testimonial-text {
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .testimonial-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .testimonial-role {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Enhanced CTA Section */
+        .cta {
+            padding: 120px 2rem;
+            text-align: center;
+            background: 
+                linear-gradient(135deg, rgba(255, 69, 0, 0.15), rgba(153, 69, 255, 0.15)),
+                radial-gradient(circle at 50% 50%, rgba(0, 245, 255, 0.1) 0%, transparent 70%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,69,0,0.3)"/></svg>'),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="rgba(153,69,255,0.3)"/></svg>'),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="80" cy="80" r="1.5" fill="rgba(0,245,255,0.3)"/></svg>');
+            background-size: 100px 100px, 150px 150px, 200px 200px;
+            animation: float-dots 20s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes float-dots {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-20px); }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            background: var(--gradient-rainbow);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 50px rgba(255, 69, 0, 0.3);
+        }
+
+        .cta-description {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            margin-bottom: 4rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 80px 2rem 40px;
+            background: 
+                linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><pattern id="footer-grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,69,0,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="20" fill="url(%23footer-grid)"/></svg>');
+            border-top: 1px solid rgba(255, 69, 0, 0.3);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-section h3 {
+            color: var(--accent-secondary);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            font-size: 1.3rem;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            line-height: 2.2;
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent-primary);
+            transform: translateX(5px);
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient-rainbow);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .footer-bottom {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 69, 0, 0.2);
+            text-align: center;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: var(--shadow-neon);
+        }
+
+        /* Floating Elements Enhanced */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            font-size: 2.5rem;
+            opacity: 0.15;
+            animation: float-elements 20s linear infinite;
+            filter: blur(1px);
+        }
+
+        .floating-element:nth-child(even) {
+            animation-direction: reverse;
+            animation-duration: 25s;
+        }
+
+        @keyframes float-elements {
+            0% { 
+                transform: translateY(100vh) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            10% { opacity: 0.15; }
+            90% { opacity: 0.15; }
+            100% { 
+                transform: translateY(-100px) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 69, 0, 0.2);
+            border-top: 4px solid var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-image {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .features-grid,
+            .steps-container,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
+            }
+
+            .cta-title {
+                font-size: 2.5rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .feature-card,
+            .step-card {
+                padding: 2rem;
+            }
+
+            .feature-icon,
+            .step-visual {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s ease;
+        }
+
+        .slide-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.8s ease;
+        }
+
+        .slide-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 6px;
+            border: 2px solid var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gradient-rainbow);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+
+    <!-- Enhanced Floating Elements -->
+    <div class="floating-elements">
+        <div class="floating-element" style="left: 5%; animation-delay: 0s;">🎰</div>
+        <div class="floating-element" style="left: 15%; animation-delay: 2s;">💰</div>
+        <div class="floating-element" style="left: 25%; animation-delay: 4s;">🎫</div>
+        <div class="floating-element" style="left: 35%; animation-delay: 6s;">💎</div>
+        <div class="floating-element" style="left: 45%; animation-delay: 8s;">🏆</div>
+        <div class="floating-element" style="left: 55%; animation-delay: 10s;">⭐</div>
+        <div class="floating-element" style="left: 65%; animation-delay: 12s;">🚀</div>
+        <div class="floating-element" style="left: 75%; animation-delay: 14s;">🎯</div>
+        <div class="floating-element" style="left: 85%; animation-delay: 16s;">🔥</div>
+        <div class="floating-element" style="left: 95%; animation-delay: 18s;">💫</div>
+        <div class="floating-element" style="left: 10%; animation-delay: 20s;">🎊</div>
+        <div class="floating-element" style="left: 30%; animation-delay: 22s;">🎉</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">🎰 CryptoLottery</div>
+            <a href="dashboard.html" class="nav-button">🚀 Go to Dashboard</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <!-- Hero Images -->
+        <div class="hero-image">🎰</div>
+        <div class="hero-image">💰</div>
+        <div class="hero-image">🎫</div>
+        <div class="hero-image">🏆</div>
+
+        <div class="hero-content fade-in">
+            <h1 class="hero-title">Win Big with Blockchain Lottery</h1>
+            <p class="hero-subtitle">
+                Experience the future of lottery gaming with transparent, secure, and decentralized draws powered by smart contracts
+            </p>
+            <div class="hero-buttons">
+                <a href="#how-it-works" class="btn-primary">🎯 How It Works</a>
+                <a href="dashboard.html" class="btn-secondary">🎫 Buy Tickets Now</a>
+            </div>
+            
+            <!-- Hero Stats -->
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number" data-target="50000">0</div>
+                    <div class="hero-stat-label">Tickets Sold</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number" data-target="1250">0</div>
+                    <div class="hero-stat-label">Winners</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number" data-target="500">0</div>
+                    <div class="hero-stat-label">K USDT Won</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title fade-in">Why Choose CryptoLottery?</h2>
+            <p class="section-subtitle fade-in">Revolutionary features that make us the best blockchain lottery platform</p>
+            
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">100% Transparent</h3>
+                    <p class="feature-description">
+                        All draws are conducted on-chain using verifiable smart contracts. No hidden algorithms, no manipulation - pure transparency that you can verify yourself.
+                    </p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Instant Payouts</h3>
+                    <p class="feature-description">
+                        Winners receive payouts automatically through smart contracts. No waiting, no paperwork, no delays - just instant rewards delivered to your wallet.
+                    </p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🌍</div>
+                    <h3 class="feature-title">Global Access</h3>
+                    <p class="feature-description">
+                        Play from anywhere in the world with just a crypto wallet. No geographical restrictions, no complex verification - accessible to everyone.
+                    </p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title">Low Fees</h3>
+                    <p class="feature-description">
+                        Powered by BSC network for minimal transaction costs. More of your money goes toward prizes, not fees - maximizing your winning potential.
+                    </p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Provably Fair</h3>
+                    <p class="feature-description">
+                        Our drawing mechanism is provably fair and verifiable on blockchain. Every ticket has an equal chance - no house edge, just pure luck.
+                    </p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">Mobile Optimized</h3>
+                    <p class="feature-description">
+                        Seamlessly optimized for all devices. Buy tickets, check results, and claim prizes effortlessly on mobile, tablet, or desktop.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title fade-in">How It Works</h2>
+            <p class="section-subtitle fade-in">Simple steps to start winning big prizes in our blockchain lottery</p>
+            
+            <div class="steps-container">
+                <div class="step-card fade-in">
+                    <div class="step-number">1</div>
+                    <div class="step-visual">🔗</div>
+                    <h3 class="step-title">Connect Your Wallet</h3>
+                    <p class="step-description">
+                        Connect your MetaMask wallet to the BSC Testnet. Make sure you have some BNB for gas fees and USDT for ticket purchases. It's quick and secure!
+                    </p>
+                </div>
+                
+                <div class="step-card fade-in">
+                    <div class="step-number">2</div>
+                    <div class="step-visual">✅</div>
+                    <h3 class="step-title">Approve USDT</h3>
+                    <p class="step-description">
+                        Approve USDT spending for the lottery contract. This is a one-time approval that allows you to purchase multiple tickets without repeated approvals.
+                    </p>
+                </div>
+                
+                <div class="step-card fade-in">
+                    <div class="step-number">3</div>
+                    <div class="step-visual">🎫</div>
+                    <h3 class="step-title">Buy Tickets</h3>
+                    <p class="step-description">
+                        Choose your round and select how many tickets to buy (1-10 per transaction). Each ticket gives you a chance to win amazing prizes in the draw.
+                    </p>
+                </div>
+                
+                <div class="step-card fade-in">
+                    <div class="step-number">4</div>
+                    <div class="step-visual">🎰</div>
+                    <h3 class="step-title">Wait for Draw</h3>
+                    <p class="step-description">
+                        Once all tickets are sold, the smart contract automatically conducts a fair and transparent draw to select winners. Everything is verifiable on-chain.
+                    </p>
+                </div>
+                
+                <div class="step-card fade-in">
+                    <div class="step-number">5</div>
+                    <div class="step-visual">🏆</div>
+                    <h3 class="step-title">Claim Prizes</h3>
+                    <p class="step-description">
+                        If you win, claim your prize directly from the smart contract. Winners are automatically eligible for instant payouts - no waiting, no hassle.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Statistics Section -->
+    <section class="stats">
+        <div class="container">
+            <h2 class="section-title fade-in">Platform Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card fade-in">
+                    <div class="stat-icon">🎫</div>
+                    <div class="stat-number" data-target="50000">0</div>
+                    <div class="stat-label">Tickets Sold</div>
+                </div>
+                <div class="stat-card fade-in">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-number" data-target="1250">0</div>
+                    <div class="stat-label">Happy Winners</div>
+                </div>
+                <div class="stat-card fade-in">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-number" data-target="500000">0</div>
+                    <div class="stat-label">USDT Distributed</div>
+                </div>
+                <div class="stat-card fade-in">
+                    <div class="stat-icon">🎰</div>
+                    <div class="stat-number" data-target="125">0</div>
+                    <div class="stat-label">Rounds Completed</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title fade-in">What Our Winners Say</h2>
+            <p class="section-subtitle fade-in">Real testimonials from our community of winners</p>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-avatar">🎯</div>
+                    <p class="testimonial-text">
+                        "I won 5000 USDT in my first week! The transparency and instant payout made me a believer. This is the future of lottery gaming."
+                    </p>
+                    <div class="testimonial-name">Alex Chen</div>
+                    <div class="testimonial-role">Winner - Round 47</div>
+                </div>
+                
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-avatar">💎</div>
+                    <p class="testimonial-text">
+                        "Finally, a lottery system I can trust! Being able to verify everything on blockchain gives me complete confidence in the fairness."
+                    </p>
+                    <div class="testimonial-name">Sarah Kim</div>
+                    <div class="testimonial-role">Winner - Round 52</div>
+                </div>
+                
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-avatar">🚀</div>
+                    <p class="testimonial-text">
+                        "The user experience is amazing! Simple to use, fast transactions, and when I won, the payout was instant. Love this platform!"
+                    </p>
+                    <div class="testimonial-name">Mike Rodriguez</div>
+                    <div class="testimonial-role">Winner - Round 38</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title fade-in">Ready to Win Big?</h2>
+                <p class="cta-description fade-in">
+                    Join thousands of players who are already winning with the most transparent and fair lottery platform on blockchain. Your next big win is just one click away!
+                </p>
+                <div class="cta-buttons">
+                    <a href="dashboard.html" class="btn-primary">🎯 Start Playing Now</a>
+                    <a href="#features" class="btn-secondary">📖 Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-logo">🎰 CryptoLottery</div>
+                <p>The future of lottery gaming powered by blockchain technology. Fair, transparent, and decentralized gaming for everyone.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">📱</a>
+                    <a href="#" class="social-link">🐦</a>
+                    <a href="#" class="social-link">💬</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <p><a href="dashboard.html">🎯 Dashboard</a></p>
+                <p><a href="#how-it-works">❓ How It Works</a></p>
+                <p><a href="#features">✨ Features</a></p>
+                <p><a href="#stats">📊 Statistics</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <p><a href="#">🆘 Help Center</a></p>
+                <p><a href="#">👥 Community</a></p>
+                <p><a href="#">📧 Contact Us</a></p>
+                <p><a href="#">📋 FAQ</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>Blockchain Info</h3>
+                <p>🌐 Network: BSC Testnet</p>
+                <p>💰 Token: USDT</p>
+                <p>✅ Smart Contract Verified</p>
+                <p>🔒 Audited & Secure</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 CryptoLottery. All rights reserved. Built with ❤️ for the blockchain community.</p>
+            <div class="social-links">
+                <a href="#" class="social-link">🌐</a>
+                <a href="#" class="social-link">📊</a>
+                <a href="#" class="social-link">🔗</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Loading overlay
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // Enhanced navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Enhanced Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Enhanced animated counters for statistics
+        function animateCounter(element, target, duration = 3000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = target.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start).toLocaleString();
+                }
+            }, 16);
+        }
+
+        // Trigger counter animation when stats section is visible
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counters = entry.target.querySelectorAll('.stat-number, .hero-stat-number');
+                    counters.forEach((counter, index) => {
+                        const target = parseInt(counter.getAttribute('data-target'));
+                        setTimeout(() => {
+                            animateCounter(counter, target);
+                        }, index * 200);
+                    });
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        // Observe stats sections
+        const statsSection = document.querySelector('.stats');
+        const heroSection = document.querySelector('.hero');
+        if (statsSection) statsObserver.observe(statsSection);
+        if (heroSection) statsObserver.observe(heroSection);
+
+        // Enhanced interactive hover effects
+        document.querySelectorAll('.feature-card, .step-card, .testimonial-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-15px) scale(1.02)';
+                card.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Enhanced particle effect on button hover
+        document.querySelectorAll('.btn-primary').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                createParticles(btn);
+            });
+        });
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const colors = ['#FF4500', '#FF6B35', '#9945FF', '#00F5FF', '#FFD700'];
+            
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.left = rect.left + Math.random() * rect.width + 'px';
+                particle.style.top = rect.top + Math.random() * rect.height + 'px';
+                particle.style.width = Math.random() * 6 + 3 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                particle.style.boxShadow = `0 0 10px ${colors[Math.floor(Math.random() * colors.length)]}`;
+                document.body.appendChild(particle);
+
+                // Enhanced particle animation
+                particle.animate([
+                    { 
+                        transform: 'translate(0, 0) scale(1)', 
+                        opacity: 1,
+                        filter: 'blur(0px)'
+                    },
+                    { 
+                        transform: `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px) scale(0)`, 
+                        opacity: 0,
+                        filter: 'blur(2px)'
+                    }
+                ], {
+                    duration: 1500,
+                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                }).onfinish = () => {
+                    particle.remove();
+                };
+            }
+        }
+
+        // Dynamic background color change based on scroll with enhanced colors
+        window.addEventListener('scroll', () => {
+            const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+            const hue = 210 + (scrollPercent * 50); // More color variation
+            const saturation = 100 - (scrollPercent * 20); // Reduce saturation as we scroll
+            const lightness = 3 + (scrollPercent * 2); // Slight lightness change
+            document.documentElement.style.setProperty('--bg-primary', `hsl(${hue}, ${saturation}%, ${lightness}%)`);
+        });
+
+        // Enhanced typing effect for hero title
+        function typeWriter(element, text, speed = 80) {
+            let i = 0;
+            element.textContent = '';
+            element.style.borderRight = '3px solid #FF4500';
+            
+            function typing() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typing, speed);
+                } else {
+                    // Remove cursor after typing
+                    setTimeout(() => {
+                        element.style.borderRight = 'none';
+                    }, 1000);
+                }
+            }
+            typing();
+        }
+
+        // Initialize enhanced typing effect
+        setTimeout(() => {
+            const heroTitle = document.querySelector('.hero-title');
+            if (heroTitle) {
+                const originalText = heroTitle.textContent;
+                typeWriter(heroTitle, originalText, 100);
+            }
+        }, 1500);
+
+        // Enhanced floating animation for feature cards
+        document.querySelectorAll('.feature-card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.3}s`;
+            card.style.animation = `float-gentle ${6 + index}s ease-in-out infinite`;
+        });
+
+        // Enhanced floating animation for step cards
+        document.querySelectorAll('.step-card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.2}s`;
+            card.style.animation = `float-gentle ${7 + index}s ease-in-out infinite`;
+        });
+
+        // Add enhanced custom CSS for floating animations
+        const enhancedStyle = document.createElement('style');
+        enhancedStyle.textContent = `
+            @keyframes float-gentle {
+                0%, 100% { transform: translateY(0px) rotate(0deg); }
+                25% { transform: translateY(-8px) rotate(1deg); }
+                50% { transform: translateY(-4px) rotate(0deg); }
+                75% { transform: translateY(-12px) rotate(-1deg); }
+            }
+            
+            @keyframes pulse-glow {
+                0%, 100% { box-shadow: 0 0 20px rgba(255, 69, 0, 0.3); }
+                50% { box-shadow: 0 0 40px rgba(255, 69, 0, 0.6); }
+            }
+            
+            .feature-icon, .step-visual, .stat-icon {
+                animation: pulse-glow 3s ease-in-out infinite;
+            }
+            
+            @keyframes rainbow {
+                0% { filter: hue-rotate(0deg) brightness(1); }
+                25% { filter: hue-rotate(90deg) brightness(1.2); }
+                50% { filter: hue-rotate(180deg) brightness(1.1); }
+                75% { filter: hue-rotate(270deg) brightness(1.3); }
+                100% { filter: hue-rotate(360deg) brightness(1); }
+            }
+            
+            @keyframes fadeOut {
+                0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            }
+            
+            @keyframes bounce {
+                0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+                50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            }
+            
+            @keyframes trailFade {
+                0% { opacity: 1; transform: scale(1); }
+                100% { opacity: 0; transform: scale(0); }
+            }
+        `;
+        document.head.appendChild(enhancedStyle);
+
+        // Enhanced parallax effect for hero images
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroImages = document.querySelectorAll('.hero-image');
+            
+            heroImages.forEach((image, index) => {
+                const rate = scrolled * -0.5;
+                const xPos = Math.sin(scrolled * 0.01 + index) * 20;
+                const yPos = Math.cos(scrolled * 0.01 + index) * 15;
+                image.style.transform = `translate(${xPos}px, ${rate + yPos}px) rotate(${scrolled * 0.1 + index * 90}deg)`;
+            });
+        });
+
+        // Enhanced Easter egg: Multiple activation codes
+        let konamiCode = [];
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→BA
+        let secretCode = [];
+        const secretSequence = [87, 73, 78]; // WIN
+        
+        document.addEventListener('keydown', (e) => {
+            // Konami code
+            konamiCode.push(e.keyCode);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            
+            // Secret code
+            secretCode.push(e.keyCode);
+            if (secretCode.length > secretSequence.length) {
+                secretCode.shift();
+            }
+            
+            // Check Konami code
+            if (konamiCode.length === konamiSequence.length && 
+                konamiCode.every((code, index) => code === konamiSequence[index])) {
+                activateRainbowMode();
+                konamiCode = [];
+            }
+            
+            // Check secret code
+            if (secretCode.length === secretSequence.length && 
+                secretCode.every((code, index) => code === secretSequence[index])) {
+                activateFireworksMode();
+                secretCode = [];
+            }
+        });
+
+        function activateRainbowMode() {
+            document.body.style.animation = 'rainbow 3s linear infinite';
+            showEasterEggMessage('🌈 Rainbow Mode Activated! 🌈', 'You found the Konami code!');
+            
+            setTimeout(() => {
+                document.body.style.animation = '';
+            }, 6000);
+        }
+
+        function activateFireworksMode() {
+            createFireworks();
+            showEasterEggMessage('🎆 Fireworks Mode! 🎆', 'Type WIN to activate!');
+        }
+
+        function createFireworks() {
+            const colors = ['#FF4500', '#FFD700', '#9945FF', '#00F5FF', '#00FF88'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.style.position = 'fixed';
+                    firework.style.left = Math.random() * window.innerWidth + 'px';
+                    firework.style.top = Math.random() * window.innerHeight + 'px';
+                    firework.style.width = '4px';
+                    firework.style.height = '4px';
+                    firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    firework.style.borderRadius = '50%';
+                    firework.style.pointerEvents = 'none';
+                    firework.style.zIndex = '10000';
+                    document.body.appendChild(firework);
+
+                    firework.animate([
+                        { 
+                            transform: 'scale(1)', 
+                            opacity: 1,
+                            boxShadow: `0 0 0px ${colors[Math.floor(Math.random() * colors.length)]}`
+                        },
+                        { 
+                            transform: 'scale(20)', 
+                            opacity: 0,
+                            boxShadow: `0 0 50px ${colors[Math.floor(Math.random() * colors.length)]}`
+                        }
+                    ], {
+                        duration: 1000,
+                        easing: 'ease-out'
+                    }).onfinish = () => {
+                        firework.remove();
+                    };
+                }, i * 100);
+            }
+        }
+
+        function showEasterEggMessage(title, subtitle) {
+            const msg = document.createElement('div');
+            msg.innerHTML = `
+                <div style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">${title}</div>
+                <div style="font-size: 1.2rem; opacity: 0.8;">${subtitle}</div>
+            `;
+            msg.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #FF4500, #9945FF, #00F5FF);
+                color: white;
+                padding: 3rem;
+                border-radius: 30px;
+                font-weight: bold;
+                z-index: 10000;
+                text-align: center;
+                box-shadow: 0 0 50px rgba(255, 69, 0, 0.8);
+                backdrop-filter: blur(10px);
+                animation: bounce 0.5s ease-out;
+            `;
+            
+            document.body.appendChild(msg);
+            
+            setTimeout(() => {
+                msg.style.animation = 'fadeOut 0.5s ease-in forwards';
+                setTimeout(() => {
+                    msg.remove();
+                }, 500);
+            }, 3000);
+        }
+
+        // Enhanced mouse follow effect
+        let mouseX = 0, mouseY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Create cursor trail effect
+        function createCursorTrail() {
+            const trail = document.createElement('div');
+            trail.style.cssText = `
+                position: fixed;
+                width: 6px;
+                height: 6px;
+                background: radial-gradient(circle, #FF4500, #9945FF);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+                mix-blend-mode: difference;
+                animation: trailFade 1s ease-out forwards;
+            `;
+            
+            trail.style.left = mouseX + 'px';
+            trail.style.top = mouseY + 'px';
+            
+            document.body.appendChild(trail);
+            
+            setTimeout(() => trail.remove(), 1000);
+        }
+
+        // Create trail on mouse move (throttled)
+        let trailTimeout;
+        document.addEventListener('mousemove', () => {
+            if (!trailTimeout) {
+                trailTimeout = setTimeout(() => {
+                    createCursorTrail();
+                    trailTimeout = null;
+                }, 50);
+            }
+        });
+
+        // Console art and messages
+        console.log(`
+    🎰 CryptoLottery Landing Page Loaded! 🎰
+    
+    ╔═══════════════════════════════════════╗
+    ║  🎯 Ready to Win Big?                 ║
+    ║  💰 Transparent Blockchain Lottery    ║
+    ║  🚀 Instant Payouts & Fair Draws     ║
+    ╚═══════════════════════════════════════╝
+    
+    🔥 Easter Eggs:
+    💡 Try the Konami Code: ↑↑↓↓←→←→BA
+    🎆 Type 'WIN' for fireworks!
+    🌈 Enjoy the enhanced animations!
+    
+    🚀 Ready to start? Click "Go to Dashboard"!
+        `);
+
+        // Performance optimization: Lazy load animations
+        const performanceObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.willChange = 'transform, opacity';
+                } else {
+                    entry.target.style.willChange = 'auto';
+                }
+            });
+        });
+
+        document.querySelectorAll('.feature-card, .step-card, .testimonial-card').forEach(el => {
+            performanceObserver.observe(el);
+        });
+
+        // Final initialization message
+        setTimeout(() => {
+            console.log('✨ All animations and effects loaded successfully!');
+            console.log('🎮 Interactive features ready!');
+            console.log('🎊 Welcome to the future of lottery gaming!');
+        }, 2000);
+    </script>
+</body>
+</html>
