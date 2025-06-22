@@ -80,7 +80,7 @@ const ContractTest = () => {
             dashboardData.myTickets[0]
           );
           if (ticketDetails) {
-            addTestResult(`✅ Ticket details retrieved: Owner=${formatAddress(ticketDetails.owner)}, Rank=${ticketDetails.rank}, Prize=${ticketDetails.prize}`);
+            addTestResult(`✅ Ticket details retrieved: Owner=${formatAddress(ticketDetails.owner || 'Unknown')}, Rank=${ticketDetails.rank}, Prize=${ticketDetails.prize}`);
           } else {
             addTestResult('❌ Failed to get ticket details');
           }

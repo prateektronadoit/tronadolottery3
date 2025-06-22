@@ -464,7 +464,7 @@ export default function Dashboard() {
         return (
           <>
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-4 md:mb-6">
               <StatCard 
                 icon=""
                 iconImage="18.png"
@@ -478,7 +478,7 @@ export default function Dashboard() {
                 title="Total Tickets" 
                 value={dashboardData.totalTickets || 0} 
                 subtitle="Available in current round"
-                iconSize={100} 
+                iconSize={80} 
               />
               <StatCard 
                 icon=""
@@ -489,7 +489,7 @@ export default function Dashboard() {
               />
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-4 md:mb-6">
               <StatCard 
                 icon=""
                 iconImage="11.png"
@@ -513,7 +513,7 @@ export default function Dashboard() {
               />
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 lg:gap-6 mb-6 md:mb-8">
               <StatCard 
                 icon=""
                 iconImage="13.png"
@@ -531,7 +531,7 @@ export default function Dashboard() {
             </div>
 
             {/* Live Tickets Board */}
-            <div className="mt-8 relative overflow-hidden rounded-lg">
+            <div className="mt-6 md:mt-8 relative overflow-hidden rounded-lg">
               <div className="absolute inset-0 z-0">
                 <Image
                   src="/dbg.png"
@@ -543,14 +543,14 @@ export default function Dashboard() {
                 />
               </div>
               
-              <div className="relative z-10 p-6">
-                <h2 className="text-2xl font-bold mb-6 text-center text-white">🎫 Live Tickets Board</h2>
+              <div className="relative z-10 p-3 md:p-6">
+                <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center text-white">🎫 Live Tickets Board</h2>
                 
-                <div className="grid grid-cols-10 gap-2 mb-6">
+                <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-1 md:gap-2 mb-4 md:mb-6">
                   {Array.from({length: dashboardData.totalTickets || 0}, (_, i) => i + 1).map((ticketNumber) => (
                     <button 
                       key={ticketNumber}
-                      className={`${getTicketStatusClass(ticketNumber)} aspect-square rounded flex items-center justify-center transition-all duration-200 text-sm font-mono`}
+                      className={`${getTicketStatusClass(ticketNumber)} aspect-square rounded flex items-center justify-center transition-all duration-200 text-xs md:text-sm font-mono`}
                       onClick={() => handleTicketClick(ticketNumber)}
                     >
                       {String(ticketNumber).padStart(3, '0')}
@@ -558,21 +558,21 @@ export default function Dashboard() {
                   ))}
                 </div>
                 
-                <div className="flex flex-wrap justify-center gap-4 text-sm text-white">
+                <div className="flex flex-wrap justify-center gap-2 md:gap-4 text-xs md:text-sm text-white">
                   <div className="flex items-center">
-                    <span className="block w-4 h-4 bg-blue-600 rounded mr-2"></span>
+                    <span className="block w-3 h-3 md:w-4 md:h-4 bg-blue-600 rounded mr-1 md:mr-2"></span>
                     <span>My Tickets</span>
                   </div>
                   <div className="flex items-center">
-                    <span className="block w-4 h-4 bg-orange-500 rounded mr-2"></span>
+                    <span className="block w-3 h-3 md:w-4 md:h-4 bg-orange-500 rounded mr-1 md:mr-2"></span>
                     <span>Sold</span>
                   </div>
                   <div className="flex items-center">
-                    <span className="block w-4 h-4 bg-yellow-500 rounded mr-2"></span>
+                    <span className="block w-3 h-3 md:w-4 md:h-4 bg-yellow-500 rounded mr-1 md:mr-2"></span>
                     <span>Winners</span>
                   </div>
                   <div className="flex items-center">
-                    <span className="block w-4 h-4 bg-gray-700 rounded mr-2"></span>
+                    <span className="block w-3 h-3 md:w-4 md:h-4 bg-gray-700 rounded mr-1 md:mr-2"></span>
                     <span>Available</span>
                   </div>
                 </div>
@@ -584,37 +584,36 @@ export default function Dashboard() {
       case 'registration':
         return (
           <div className="max-w-md mx-auto">
-            <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
-              <h2 className="text-2xl font-bold mb-6 text-center">Join the Lottery</h2>
+            <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700">
+              <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">Join the Lottery</h2>
               
               {dashboardData.isRegistered ? (
                 <div className="text-center">
-                  <div className="text-green-500 text-6xl mb-4">✅</div>
-                  <h3 className="text-xl font-semibold mb-2">Already Registered!</h3>
+                  <div className="text-green-500 text-4xl md:text-6xl mb-3 md:mb-4">✅</div>
+                  <h3 className="text-lg md:text-xl font-semibold mb-2">Already Registered!</h3>
                   {dashboardData.userInfo && (
-                    <div className="space-y-2 text-sm text-gray-300">
+                    <div className="space-y-2 text-xs md:text-sm text-gray-300">
                       <p><strong>Sponsor:</strong> {formatAddress(dashboardData.userInfo.sponsor)}</p>
                       <p><strong>Total Tickets:</strong> {dashboardData.userInfo.totalTicketsPurchased || 0}</p>
-                      {/* <p><strong>Total Spent:</strong> {dashboardData.userInfo.totalSpent || '0'} USDT</p> */}
                     </div>
                   )}
                 </div>
               ) : (
                 <>
                   <div className="mb-4">
-                    <label className="block text-gray-300 mb-2">Sponsor Address (Optional)</label>
+                    <label className="block text-gray-300 mb-2 text-sm md:text-base">Sponsor Address (Optional)</label>
                     <input
                       type="text"
                       placeholder="Sponsor address (optional)"
                       value={sponsorAddress}
                       onChange={(e) => setSponsorAddress(e.target.value)}
-                      className="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                      className="w-full p-2 md:p-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-400 focus:border-purple-500 focus:outline-none text-sm md:text-base"
                     />
                   </div>
                   <button
                     onClick={handleRegister}
                     disabled={!isConnected || loading}
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 rounded-lg hover:from-purple-700 hover:to-pink-700 transition duration-300 disabled:opacity-50"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2 md:py-3 rounded-lg hover:from-purple-700 hover:to-pink-700 transition duration-300 disabled:opacity-50 text-sm md:text-base"
                   >
                     Register
                   </button>
@@ -627,16 +626,16 @@ export default function Dashboard() {
       case 'purchase':
         return (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-gray-900 rounded-lg p-6 border border-gray-700 mb-6">
-              <h2 className="text-2xl font-bold mb-6 text-center">Purchase Tickets</h2>
+            <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700 mb-4 md:mb-6">
+              <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">Purchase Tickets</h2>
               
               {!dashboardData.isRegistered ? (
                 <div className="text-center text-gray-400">
-                  <p className="text-6xl mb-4">📝</p>
-                  <p>Please register first before purchasing tickets</p>
+                  <p className="text-4xl md:text-6xl mb-3 md:mb-4">📝</p>
+                  <p className="text-sm md:text-base">Please register first before purchasing tickets</p>
                   <button
                     onClick={() => setActiveSection('registration')}
-                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
+                    className="mt-3 md:mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2 rounded text-sm md:text-base"
                   >
                     Register Now
                   </button>
@@ -644,23 +643,23 @@ export default function Dashboard() {
               ) : (
                 <>
                   <div className="mb-4">
-                    <label className="block text-gray-300 mb-2">Number of Tickets</label>
+                    <label className="block text-gray-300 mb-2 text-sm md:text-base">Number of Tickets</label>
                     <input
                       type="number"
                       min="1"
                       max="100"
                       value={numTickets}
                       onChange={(e) => setNumTickets(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                      className="w-full p-2 md:p-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-400 focus:border-purple-500 focus:outline-none text-sm md:text-base"
                     />
                   </div>
                   
-                  <div className="bg-gray-800 rounded-lg p-4 mb-4">
-                    <div className="flex justify-between text-sm">
+                  <div className="bg-gray-800 rounded-lg p-3 md:p-4 mb-4">
+                    <div className="flex justify-between text-xs md:text-sm">
                       <span>Price per ticket:</span>
                       <span>{dashboardData.ticketPrice || '0'} USDT</span>
                     </div>
-                    <div className="flex justify-between font-semibold">
+                    <div className="flex justify-between font-semibold text-sm md:text-base">
                       <span>Total cost:</span>
                       <span>{(parseFloat(dashboardData.ticketPrice || '0') * numTickets).toFixed(4)} USDT</span>
                     </div>
@@ -669,7 +668,7 @@ export default function Dashboard() {
                   <button
                     onClick={handlePurchase}
                     disabled={!isConnected || loading}
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 rounded-lg hover:from-purple-700 hover:to-pink-700 transition duration-300 disabled:opacity-50"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2 md:py-3 rounded-lg hover:from-purple-700 hover:to-pink-700 transition duration-300 disabled:opacity-50 text-sm md:text-base"
                   >
                     Purchase Tickets
                   </button>
@@ -678,14 +677,14 @@ export default function Dashboard() {
             </div>
 
             {/* Purchase History Section */}
-            <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold flex items-center">
+            <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-2">
+                <h3 className="text-lg md:text-xl font-bold flex items-center">
                   <span className="mr-2">📊</span>
                   Purchase History
                 </h3>
                 <button 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center text-sm md:text-base"
                   onClick={() => window.location.reload()}
                 >
                   <span className="mr-2">🔄</span>
@@ -697,36 +696,28 @@ export default function Dashboard() {
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-gray-700">
-                      <th className="py-3 px-4 text-gray-300 font-semibold">Round</th>
-                      <th className="py-3 px-4 text-gray-300 font-semibold">Tickets</th>
-                      <th className="py-3 px-4 text-gray-300 font-semibold">Amount Paid</th>
-                      <th className="py-3 px-4 text-gray-300 font-semibold">Status</th>
+                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Round</th>
+                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Tickets</th>
+                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Amount Paid</th>
+                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {dashboardData.userPurchaseHistory && dashboardData.userPurchaseHistory.length > 0 ? (
                       dashboardData.userPurchaseHistory.map((purchase: any, index: number) => (
                         <tr key={index} className="border-b border-gray-800 hover:bg-gray-800">
-                          <td className="py-3 px-4">{purchase.roundId}</td>
-                          <td className="py-3 px-4">{purchase.ticketsCount}</td>
-                          <td className="py-3 px-4">{purchase.amountPaid} USDT</td>
-                          <td className="py-3 px-4">
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              purchase.status === 'Draw Complete' 
-                                ? 'bg-green-900 text-green-300' 
-                                : 'bg-blue-900 text-blue-300'
-                            }`}>
-                              {purchase.status}
-                            </span>
-                          </td>
+                          <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">{purchase.roundId}</td>
+                          <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">{purchase.ticketsCount}</td>
+                          <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">{purchase.amountPaid}</td>
+                          <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">{purchase.status}</td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={4} className="py-8 text-center text-gray-400">
-                          <div className="text-4xl mb-2">📊</div>
-                          <div className="text-lg font-semibold mb-1">No purchase history</div>
-                          <div className="text-sm">Your ticket purchases will appear here</div>
+                        <td colSpan={4} className="py-6 md:py-8 text-center text-gray-400">
+                          <div className="text-3xl md:text-4xl mb-2">📊</div>
+                          <div className="text-sm md:text-lg font-semibold mb-1">No purchase history</div>
+                          <div className="text-xs md:text-sm">Your ticket purchases will appear here</div>
                         </td>
                       </tr>
                     )}
@@ -740,26 +731,26 @@ export default function Dashboard() {
       case 'mytickets':
         return (
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6 text-center">My Tickets</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">My Tickets</h2>
             
             {(!dashboardData.myTickets || dashboardData.myTickets.length === 0) ? (
               <div className="text-center text-gray-400">
-                <p className="text-6xl mb-4">🎫</p>
-                <p>No tickets purchased yet</p>
+                <p className="text-4xl md:text-6xl mb-3 md:mb-4">🎫</p>
+                <p className="text-sm md:text-base">No tickets purchased yet</p>
                 <button
                   onClick={() => setActiveSection('purchase')}
-                  className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
+                  className="mt-3 md:mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2 rounded text-sm md:text-base"
                 >
                   Buy Tickets
                 </button>
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-5 gap-4 mb-6">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 md:gap-4 mb-4 md:mb-6">
                   {dashboardData.myTickets.map((ticketNumber: number) => (
                     <div
                       key={ticketNumber}
-                      className={`aspect-square rounded-lg flex items-center justify-center text-xl font-bold ${
+                      className={`aspect-square rounded-lg flex items-center justify-center text-sm md:text-xl font-bold ${
                         dashboardData.drawExecuted && dashboardData.winningNumber === ticketNumber
                           ? 'bg-yellow-500 text-black animate-pulse'
                           : 'bg-blue-600 text-white'
@@ -788,11 +779,11 @@ export default function Dashboard() {
       case 'claim':
         return (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-gray-900 rounded-lg p-6 border border-gray-700 mb-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">🏆 Claim Prizes</h2>
+            <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700 mb-4 md:mb-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-2">
+                <h2 className="text-xl md:text-2xl font-bold">🏆 Claim Prizes</h2>
                 <button 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center text-sm md:text-base"
                   onClick={() => {
                     loadPrizeData();
                     setNotification({ type: 'info', message: 'Refreshing prize data...' });
@@ -805,40 +796,40 @@ export default function Dashboard() {
               
               {!dashboardData.drawExecuted ? (
                 <div className="text-center text-gray-400">
-                  <p className="text-6xl mb-4">⏳</p>
-                  <p>Draw not executed yet. Please wait for the round to complete.</p>
+                  <p className="text-4xl md:text-6xl mb-3 md:mb-4">⏳</p>
+                  <p className="text-sm md:text-base">Draw not executed yet. Please wait for the round to complete.</p>
                 </div>
               ) : (!dashboardData.myTickets || dashboardData.myTickets.length === 0) ? (
                 <div className="text-center text-gray-400">
-                  <p className="text-6xl mb-4">🎫</p>
-                  <p>No tickets to claim prizes for</p>
+                  <p className="text-4xl md:text-6xl mb-3 md:mb-4">🎫</p>
+                  <p className="text-sm md:text-base">No tickets to claim prizes for</p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4 md:space-y-6">
                   {/* Prize Statistics */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-gray-800 rounded-lg p-4 text-center">
-                      <div className="text-2xl font-bold text-blue-400">{dashboardData.userInfo?.totalTicketsPurchased || 0}</div>
-                      <div className="text-sm text-gray-300">Total Tickets</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-6">
+                    <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
+                      <div className="text-xl md:text-2xl font-bold text-blue-400">{dashboardData.userInfo?.totalTicketsPurchased || 0}</div>
+                      <div className="text-xs md:text-sm text-gray-300">Total Tickets</div>
                     </div>
-                    <div className="bg-gray-800 rounded-lg p-4 text-center">
-                      <div className="text-2xl font-bold text-green-400">
+                    <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
+                      <div className="text-xl md:text-2xl font-bold text-green-400">
                         {parseFloat(dashboardData.userInfo?.totalEarnings || '0').toFixed(5)}
                       </div>
-                      <div className="text-sm text-gray-300">Total Winnings</div>
+                      <div className="text-xs md:text-sm text-gray-300">Total Winnings</div>
                     </div>
-                    <div className="bg-gray-800 rounded-lg p-4 text-center">
-                      <div className="text-2xl font-bold text-yellow-400">
+                    <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
+                      <div className="text-xl md:text-2xl font-bold text-yellow-400">
                         {parseFloat(prizeData.totalPendingClaims || '0').toFixed(5)}
                       </div>
-                      <div className="text-sm text-gray-300">Pending Claims</div>
+                      <div className="text-xs md:text-sm text-gray-300">Pending Claims</div>
                     </div>
                   </div>
 
                   {/* Prize Cards Section */}
                   {prizeData.foundPrizes ? (
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-semibold">Your Prize Cards</h3>
+                    <div className="space-y-3 md:space-y-4">
+                      <h3 className="text-lg md:text-xl font-semibold">Your Prize Cards</h3>
                       
                       {prizeData.prizes.map((prize, index) => {
                         const rankNames = {
@@ -848,15 +839,15 @@ export default function Dashboard() {
                         };
                         
                         return (
-                          <div key={index} className={`bg-gray-800 rounded-lg p-6 border-2 ${
+                          <div key={index} className={`bg-gray-800 rounded-lg p-4 md:p-6 border-2 ${
                             prize.isAlreadyClaimed ? 'border-green-500' : 'border-blue-500'
                           }`}>
-                            <div className="flex justify-between items-start mb-4">
-                              <div className="flex items-center space-x-4">
-                                <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                            <div className="flex flex-col sm:flex-row justify-between items-start mb-3 md:mb-4 gap-2">
+                              <div className="flex flex-wrap items-center gap-2 md:gap-4">
+                                <div className="bg-blue-600 text-white px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold">
                                   Round #{prize.roundId}
                                 </div>
-                                <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                                <div className={`px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold ${
                                   prize.isAlreadyClaimed 
                                     ? 'bg-green-900 text-green-300' 
                                     : 'bg-blue-900 text-blue-300'
@@ -866,39 +857,39 @@ export default function Dashboard() {
                               </div>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-6">
                               <div className="text-center">
-                                <div className="text-2xl font-bold text-blue-400">{prize.userTickets}</div>
-                                <div className="text-sm text-gray-300">Tickets</div>
+                                <div className="text-lg md:text-2xl font-bold text-blue-400">{prize.userTickets}</div>
+                                <div className="text-xs md:text-sm text-gray-300">Tickets</div>
                               </div>
                               <div className="text-center">
-                                <div className="text-2xl font-bold text-green-400">{prize.roundPrizes.length}</div>
-                                <div className="text-sm text-gray-300">Winners</div>
+                                <div className="text-lg md:text-2xl font-bold text-green-400">{prize.roundPrizes.length}</div>
+                                <div className="text-xs md:text-sm text-gray-300">Winners</div>
                               </div>
                               <div className="text-center">
-                                <div className="text-2xl font-bold text-yellow-400">
+                                <div className="text-lg md:text-2xl font-bold text-yellow-400">
                                   {rankNames[prize.bestRank as keyof typeof rankNames]?.split(' ')[0]}
                                 </div>
-                                <div className="text-sm text-gray-300">Best Rank</div>
+                                <div className="text-xs md:text-sm text-gray-300">Best Rank</div>
                               </div>
                             </div>
                             
                             {/* Winning Tickets Section */}
-                            <div className="mb-6">
-                              <h4 className="text-lg font-semibold mb-3 flex items-center">
+                            <div className="mb-4 md:mb-6">
+                              <h4 className="text-base md:text-lg font-semibold mb-2 md:mb-3 flex items-center">
                                 <span className="mr-2">🏆</span>
                                 Your Winning Tickets
                               </h4>
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
                                 {prize.roundPrizes.map((ticketPrize, ticketIndex) => (
-                                  <div key={ticketIndex} className="bg-gray-700 rounded-lg p-3 text-center">
-                                    <div className="text-lg font-bold text-yellow-400">
+                                  <div key={ticketIndex} className="bg-gray-700 rounded-lg p-2 md:p-3 text-center">
+                                    <div className="text-sm md:text-lg font-bold text-yellow-400">
                                       #{ticketPrize.ticketNumber}
                                     </div>
-                                    <div className="text-sm text-gray-300">
+                                    <div className="text-xs md:text-sm text-gray-300">
                                       {rankNames[ticketPrize.rank as keyof typeof rankNames]}
                                     </div>
-                                    <div className="text-sm font-semibold text-green-400">
+                                    <div className="text-xs md:text-sm font-semibold text-green-400">
                                       {parseFloat(ticketPrize.prize).toFixed(4)} USDT
                                     </div>
                                   </div>
@@ -907,136 +898,82 @@ export default function Dashboard() {
                             </div>
                             
                             {/* Total Prize Section */}
-                            <div className="text-center mb-4">
-                              <div className="text-3xl font-bold text-green-400">
-                                {parseFloat(prize.totalRoundPrize).toFixed(4)} USDT
+                            <div className="bg-gray-700 rounded-lg p-3 md:p-4 mb-4 md:mb-6">
+                              <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
+                                <div className="text-center sm:text-left">
+                                  <div className="text-lg md:text-2xl font-bold text-green-400">
+                                    {parseFloat(prize.totalRoundPrize).toFixed(4)} USDT
+                                  </div>
+                                  <div className="text-xs md:text-sm text-gray-300">Total Prize Value</div>
+                                </div>
+                                {!prize.isAlreadyClaimed && (
+                                  <button
+                                    onClick={() => handleClaim(prize.roundId)}
+                                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition duration-300 text-sm md:text-base"
+                                  >
+                                    Claim Prize
+                                  </button>
+                                )}
                               </div>
-                              <div className="text-sm text-gray-300">Total Prize Amount</div>
-                            </div>
-                            
-                            {/* Claim Button */}
-                            <div className="text-center">
-                              {prize.isAlreadyClaimed ? (
-                                <button className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold" disabled>
-                                  ✅ Already Claimed
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handleClaim(prize.roundId)}
-                                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition duration-300"
-                                >
-                                  🏆 Claim Prize
-                                </button>
-                              )}
                             </div>
                           </div>
                         );
                       })}
                     </div>
                   ) : (
-                    <div className="text-center text-gray-400">
-                      <div className="text-6xl mb-4">📊</div>
-                      <h3 className="text-xl font-semibold mb-2">No Prizes Available</h3>
-                      <p>You don't have any prizes to claim at the moment.</p>
-                    </div>
-                  )}
-                  
-                  {/* Claim All Button */}
-                  {prizeData.foundPrizes && prizeData.prizes.some(prize => !prize.isAlreadyClaimed) && (
-                    <div className="text-center">
-                      <button
-                        onClick={() => handleClaim()}
-                        className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition duration-300"
-                      >
-                        🏆 Claim All Available Prizes
-                      </button>
+                    <div className="text-center text-gray-400 py-8 md:py-12">
+                      <div className="text-4xl md:text-6xl mb-3 md:mb-4">🎫</div>
+                      <div className="text-lg md:text-xl font-semibold mb-2">No prizes found</div>
+                      <div className="text-sm md:text-base">You haven't won any prizes in this round yet.</div>
                     </div>
                   )}
                 </div>
               )}
             </div>
 
-            {/* Your Prize History Section */}
-            <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold flex items-center">
-                  <span className="mr-2">🎯</span>
-                  Your Prize History
-                </h3>
-                <button 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center"
-                  onClick={() => {
-                    loadPrizeData();
-                    setNotification({ type: 'info', message: 'Refreshing prize history...' });
-                  }}
-                >
-                  <span className="mr-2">🔄</span>
-                  Refresh
-                </button>
-              </div>
-
+            {/* Prize History Table */}
+            <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700">
+              <h3 className="text-lg md:text-xl font-bold mb-4 md:mb-6">🏆 Prize History</h3>
+              
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-gray-700">
-                      <th className="py-3 px-4 text-gray-300 font-semibold">Round</th>
-                      <th className="py-3 px-4 text-gray-300 font-semibold">Tickets</th>
-                      <th className="py-3 px-4 text-gray-300 font-semibold">Winners</th>
-                      <th className="py-3 px-4 text-gray-300 font-semibold">Best Rank</th>
-                      <th className="py-3 px-4 text-gray-300 font-semibold">Prize Amount</th>
-                      <th className="py-3 px-4 text-gray-300 font-semibold">Status</th>
-                      <th className="py-3 px-4 text-gray-300 font-semibold">Action</th>
+                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Round</th>
+                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Tickets</th>
+                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Winners</th>
+                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Best Rank</th>
+                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Total Prize</th>
+                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Status</th>
+                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {prizeData.foundPrizes && prizeData.prizes.length > 0 ? (
                       prizeData.prizes.map((prize, index) => {
                         const rankNames = {
-                          1: '1st Place', 2: '2nd Place', 3: '3rd Place',
-                          4: '4th Place', 5: '5th Place', 6: '6th Place',
-                          7: '7th Place', 8: '8th Place', 9: '9th Place', 10: '10th Place'
+                          1: '1st', 2: '2nd', 3: '3rd', 4: '4th', 5: '5th',
+                          6: '6th', 7: '7th', 8: '8th', 9: '9th', 10: '10th'
                         };
                         
                         return (
                           <tr key={index} className="border-b border-gray-800 hover:bg-gray-800">
-                            <td className="py-3 px-4">
-                              <div className="flex items-center">
-                                <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold mr-2">
-                                  #{prize.roundId}
-                                </span>
-                                <span className="text-gray-300">Round</span>
-                              </div>
+                            <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">#{prize.roundId}</td>
+                            <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">{prize.userTickets}</td>
+                            <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">{prize.roundPrizes.length}</td>
+                            <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">
+                              {rankNames[prize.bestRank as keyof typeof rankNames]}
                             </td>
-                            <td className="py-3 px-4">
+                            <td className="py-2 md:py-3 px-2 md:px-4">
                               <div className="text-center">
-                                <div className="font-semibold text-blue-400">{prize.userTickets}</div>
-                                <div className="text-xs text-gray-400">tickets</div>
-                              </div>
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="text-center">
-                                <div className="font-semibold text-green-400">{prize.roundPrizes.length}</div>
-                                <div className="text-xs text-gray-400">winners</div>
-                              </div>
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="text-center">
-                                <div className="font-semibold text-yellow-400">
-                                  {rankNames[prize.bestRank as keyof typeof rankNames]?.split(' ')[0]}
-                                </div>
-                                <div className="text-xs text-gray-400">rank</div>
-                              </div>
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="text-center">
-                                <div className="font-bold text-green-400">
+                                <div className="font-bold text-green-400 text-xs md:text-sm">
                                   {parseFloat(prize.totalRoundPrize).toFixed(4)} USDT
                                 </div>
                                 <div className="text-xs text-gray-400">total prize</div>
                               </div>
                             </td>
-                            <td className="py-3 px-4">
-                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            <td className="py-2 md:py-3 px-2 md:px-4">
+                              <span className={`px-2 md:px-3 py-1 rounded-full text-xs font-semibold ${
                                 prize.isAlreadyClaimed 
                                   ? 'bg-green-900 text-green-300' 
                                   : 'bg-blue-900 text-blue-300'
@@ -1044,7 +981,7 @@ export default function Dashboard() {
                                 {prize.isAlreadyClaimed ? '✅ Claimed' : '🏆 Claimable'}
                               </span>
                             </td>
-                            <td className="py-3 px-4">
+                            <td className="py-2 md:py-3 px-2 md:px-4">
                               {prize.isAlreadyClaimed ? (
                                 <button className="bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm" disabled>
                                   Already Claimed
@@ -1063,10 +1000,10 @@ export default function Dashboard() {
                       })
                     ) : (
                       <tr>
-                        <td colSpan={7} className="py-8 text-center text-gray-400">
-                          <div className="text-4xl mb-2">🎫</div>
-                          <div className="text-lg font-semibold mb-1">No Prize History</div>
-                          <div className="text-sm">You haven't won any lottery prizes yet. Keep playing and good luck!</div>
+                        <td colSpan={7} className="py-6 md:py-8 text-center text-gray-400">
+                          <div className="text-3xl md:text-4xl mb-2">🎫</div>
+                          <div className="text-sm md:text-lg font-semibold mb-1">No Prize History</div>
+                          <div className="text-xs md:text-sm">You haven't won any lottery prizes yet. Keep playing and good luck!</div>
                           <div className="text-xs text-gray-500 mt-2">Prizes will appear here once you win in any lottery round.</div>
                         </td>
                       </tr>
@@ -1077,24 +1014,24 @@ export default function Dashboard() {
 
               {/* Prize History Summary */}
               {prizeData.foundPrizes && prizeData.prizes.length > 0 && (
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="bg-gray-800 rounded-lg p-4 text-center">
+                <div className="mt-4 md:mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                  <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
                     <div className="text-2xl font-bold text-blue-400">{prizeData.prizes.length}</div>
                     <div className="text-sm text-gray-300">Total Rounds</div>
                   </div>
-                  <div className="bg-gray-800 rounded-lg p-4 text-center">
+                  <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
                     <div className="text-2xl font-bold text-green-400">
                       {prizeData.prizes.reduce((sum, prize) => sum + prize.roundPrizes.length, 0)}
                     </div>
                     <div className="text-sm text-gray-300">Total Winners</div>
                   </div>
-                  <div className="bg-gray-800 rounded-lg p-4 text-center">
+                  <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
                     <div className="text-2xl font-bold text-yellow-400">
                       {prizeData.prizes.filter(prize => !prize.isAlreadyClaimed).length}
                     </div>
                     <div className="text-sm text-gray-300">Pending Claims</div>
                   </div>
-                  <div className="bg-gray-800 rounded-lg p-4 text-center">
+                  <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
                     <div className="text-2xl font-bold text-purple-400">
                       {prizeData.prizes.reduce((sum, prize) => sum + parseFloat(prize.totalRoundPrize), 0).toFixed(4)}
                     </div>
@@ -1123,17 +1060,17 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="md:ml-64 flex-1 bg-gradient-to-b from-blue-950 to-blue-900 text-white">
         {/* Header */}
-        <header className="py-4 px-4 md:px-6 bg-gradient-to-r from-gray-900 to-blue-900 flex justify-between items-center">
+        <header className="py-3 md:py-4 px-3 md:px-6 bg-gradient-to-r from-gray-900 to-blue-900 flex justify-between items-center">
           <div className="flex items-center">
             <button 
-              className="mr-4 text-gray-400 hover:text-white md:hidden"
+              className="mr-3 md:mr-4 text-gray-400 hover:text-white md:hidden"
               onClick={toggleSidebar}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-xl md:text-2xl font-bold text-white flex items-center">
+            <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-white flex items-center">
               <span className="mr-2">🏆</span> 
               {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
             </h1>
@@ -1142,7 +1079,7 @@ export default function Dashboard() {
         </header>
         
         {/* Dashboard Content */}
-        <div className="p-3 md:p-6">
+        <div className="p-3 md:p-4 lg:p-6">
           {renderContent()}
         </div>
       </div>
@@ -1159,20 +1096,20 @@ export default function Dashboard() {
       {/* Ticket Details Modal */}
       {selectedTicket && showTicketModal && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
           onClick={() => {
             setShowTicketModal(false);
             setSelectedTicket(null);
           }}
         >
           <div 
-            className="bg-gray-900 rounded-lg p-6 border border-gray-700 text-white w-96"
+            className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700 text-white w-full max-w-sm md:w-96"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">🎫 Ticket Details</h2>
+            <div className="flex justify-between items-center mb-3 md:mb-4">
+              <h2 className="text-xl md:text-2xl font-bold">🎫 Ticket Details</h2>
               <button 
-                className="text-gray-400 hover:text-white text-2xl font-bold"
+                className="text-gray-400 hover:text-white text-xl md:text-2xl font-bold"
                 onClick={() => {
                   setShowTicketModal(false);
                   setSelectedTicket(null);
@@ -1182,26 +1119,26 @@ export default function Dashboard() {
               </button>
             </div>
             
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-300">Ticket Number:</span>
-                <span className="font-mono">#{selectedTicket.ticketNumber}</span>
+                <span className="text-gray-300 text-sm md:text-base">Ticket Number:</span>
+                <span className="font-mono text-sm md:text-base">#{selectedTicket.ticketNumber}</span>
               </div>
               
               <div className="flex justify-between">
-                <span className="text-gray-300">Owner:</span>
-                <span className="font-mono">{formatAddress(selectedTicket.owner)}</span>
+                <span className="text-gray-300 text-sm md:text-base">Owner:</span>
+                <span className="font-mono text-sm md:text-base">{formatAddress(selectedTicket.owner)}</span>
               </div>
               
               {selectedTicket.isMyTicket && (
-                <div className="text-green-400 text-center font-semibold">
+                <div className="text-green-400 text-center font-semibold text-sm md:text-base">
                   ✅ This is your ticket!
                 </div>
               )}
               
               <div className="flex justify-between">
-                <span className="text-gray-300">Status:</span>
-                <span className={`font-semibold ${
+                <span className="text-gray-300 text-sm md:text-base">Status:</span>
+                <span className={`font-semibold text-sm md:text-base ${
                   selectedTicket.status === 'Available' ? 'text-green-400' : 'text-blue-400'
                 }`}>
                   {selectedTicket.status}
@@ -1209,9 +1146,9 @@ export default function Dashboard() {
               </div>
             </div>
             
-            <div className="mt-6 flex justify-end">
+            <div className="mt-4 md:mt-6 flex justify-end">
               <button 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-300"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2 rounded-lg transition duration-300 text-sm md:text-base"
                 onClick={() => {
                   setShowTicketModal(false);
                   setSelectedTicket(null);
