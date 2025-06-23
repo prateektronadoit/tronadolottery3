@@ -179,7 +179,7 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sponsorAddress, setSponsorAddress] = useState('');
-  const [numTickets, setNumTickets] = useState(1);
+  const [numTickets, setNumTickets] = useState('');
   const [selectedTicket, setSelectedTicket] = useState<{
     ticketNumber: number;
     owner: string;
@@ -309,7 +309,10 @@ export default function Dashboard() {
   };
 
   const handlePurchase = async () => {
-    await purchaseTickets(numTickets);
+    const ticketCount = parseInt(numTickets) || 0;
+    if (ticketCount > 0) {
+      await purchaseTickets(ticketCount);
+    }
   };
 
   const handleClaim = async (roundId?: number) => {
@@ -719,7 +722,8 @@ export default function Dashboard() {
                       min="1"
                       max="100"
                       value={numTickets}
-                      onChange={(e) => setNumTickets(Math.max(1, parseInt(e.target.value) || 1))}
+                      onChange={(e) => setNumTickets(e.target.value)}
+                      placeholder="Enter number of tickets"
                       className="w-full p-2 md:p-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-400 focus:border-purple-500 focus:outline-none text-sm md:text-base"
                     />
                   </div>
@@ -731,7 +735,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex justify-between font-semibold text-sm md:text-base">
                       <span>Total cost:</span>
-                      <span>{formatUSDT(parseFloat(dashboardData.ticketPrice || '0') * numTickets)} USDT</span>
+                      <span>{formatUSDT(parseFloat(dashboardData.ticketPrice || '0') * (parseInt(numTickets) || 0))} USDT</span>
                     </div>
                   </div>
                   
@@ -1017,14 +1021,14 @@ export default function Dashboard() {
                                       {/* Content */}
                                       <div className="relative z-10">
                                         <div className={`text-sm md:text-lg font-bold ${styling.textClass}`}>
-                                          #{ticketPrize.ticketNumber}
-                                        </div>
+                                      #{ticketPrize.ticketNumber}
+                                    </div>
                                         <div className={`text-xs md:text-sm ${styling.textClass} font-semibold`}>
                                           {getColoredRankName(ticketPrize.rank)}
-                                        </div>
+                                    </div>
                                         <div className={`text-xs md:text-sm font-semibold ${styling.textClass}`}>
-                                          {formatUSDT(formatEther(BigInt(ticketPrize.prize)))} USDT
-                                        </div>
+                                      {formatUSDT(formatEther(BigInt(ticketPrize.prize)))} USDT
+                                    </div>
                                         
                                         {/* Rank indicator */}
                                         {ticketPrize.rank <= 3 && (
@@ -1032,7 +1036,7 @@ export default function Dashboard() {
                                             {ticketPrize.rank === 1 && <span className="text-2xl">🥇</span>}
                                             {ticketPrize.rank === 2 && <span className="text-2xl">🥈</span>}
                                             {ticketPrize.rank === 3 && <span className="text-2xl">🥉</span>}
-                                          </div>
+                                  </div>
                                         )}
                                       </div>
                                     </div>
