@@ -21,6 +21,12 @@ const CallToAction = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+            <Link href="/dashboard?section=purchase" 
+              className="inline-flex items-center justify-center bg-[#ffa200] hover:bg-[#ffb733] text-white font-bold py-4 px-8 rounded-full text-xl shadow-[0_4px_16px_rgba(255,162,0,0.5)] border border-[#ffa200] hover:border-[#ffb733] transition-all duration-300 cursor-pointer group">
+              <span className="text-2xl mr-3 group-hover:text-yellow-200 transition-colors duration-300">🎫</span>
+              <span className="group-hover:text-yellow-200 transition-colors duration-300">Buy Tickets Now</span>
+            </Link>
+            
             <Link href="/dashboard" 
               className="inline-flex items-center justify-center bg-[#16072d] hover:bg-[#291352] text-white font-bold py-4 px-8 rounded-full text-xl shadow-[0_4px_16px_rgba(156,25,233,0.5)] border border-[#3d2b59] hover:border-purple-500 transition-all duration-300 cursor-pointer group">
               <span className="text-2xl mr-3 group-hover:text-purple-300 transition-colors duration-300">🎯</span>

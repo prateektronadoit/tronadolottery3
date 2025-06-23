@@ -194,6 +194,17 @@ export default function Dashboard() {
     getTicketDetails,
   } = useWallet();
 
+  // Handle URL parameters for direct navigation
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const section = urlParams.get('section');
+      if (section && ['dashboard', 'registration', 'purchase', 'mytickets', 'claim'].includes(section)) {
+        setActiveSection(section);
+      }
+    }
+  }, []);
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -577,6 +588,26 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Quick Action Buttons */}
+            <div className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => setActiveSection('purchase')}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg text-lg md:text-xl transition duration-300 flex items-center justify-center"
+              >
+                <span className="mr-2">🎫</span>
+                Buy Tickets Now
+              </button>
+              {!dashboardData.isRegistered && (
+                <button
+                  onClick={() => setActiveSection('registration')}
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg text-lg md:text-xl transition duration-300 flex items-center justify-center"
+                >
+                  <span className="mr-2">📝</span>
+                  Register First
+                </button>
+              )}
             </div>
           </>
         );
