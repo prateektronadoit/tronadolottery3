@@ -4,8 +4,25 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useReadContract } from 'wagmi';
+import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { useWallet } from '../hooks/useWallet';
+import { createPublicClient, http, formatEther } from 'viem';
+import { bscTestnet } from 'wagmi/chains';
+
+// Import contract data from useWallet
+const CONTRACT_ADDRESSES = {
+  LOTTERY: '0xbCcA069b381002bc8036d261a9Ff7F0A9F2f08fe',
+  USDT: '0x7b0ED090071cb486a6ca12F16f49bd1135BDbeDA'
+};
+
+// Create public client for reading contract data
+const publicClient = createPublicClient({
+  chain: bscTestnet,
+  transport: http('https://data-seed-prebsc-1-s1.binance.org:8545/'),
+});
+
+// Contract ABIs - Using the existing ABI which should be compatible
+const LOTTERY_ABI = [{"inputs":[{"internalType":"address","name":"_usdtToken","type":"address"},{"internalType":"address","name":"_creator","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundId","type":"uint256"}],"name":"DrawExecuted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint8","name":"level","type":"uint8"},{"indexed":false,"internalType":"bool","name":"isPurchase","type":"bool"}],"name":"MLMEarning","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Paused","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"winner","type":"address"},{"indexed":true,"internalType":"uint256","name":"roundId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PrizeClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256[10]","name":"newPercentages","type":"uint256[10]"},{"indexed":false,"internalType":"address","name":"updatedBy","type":"address"}],"name":"RankPrizesUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalTickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ticketPrice","type":"uint256"}],"name":"RoundCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalTransferredToCreator","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"usersProcessed","type":"uint256"}],"name":"RoundSettled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":true,"internalType":"uint256","name":"roundId","type":"uint256"},{"indexed":false,"internalType":"uint256[]","name":"ticketNumbers","type":"uint256[]"}],"name":"TicketPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Unpaused","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"sponsor","type":"address"}],"name":"UserRegistered","type":"event"},{"inputs":[{"internalType":"uint256","name":"roundId","type":"uint256"},{"internalType":"uint256","name":"ticketNumber","type":"uint256"}],"name":"calculateTicketPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundId","type":"uint256"}],"name":"claimAllPrizes","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"claimLevelPercentages","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundId","type":"uint256"}],"name":"claimPrize","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"totalTickets","type":"uint256"},{"internalType":"uint256","name":"ticketPrice","type":"uint256"}],"name":"createRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"creator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"currentRoundId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"defaultRankPrizes","outputs":[{"internalType":"uint256","name":"percentage","type":"uint256"},{"internalType":"bool","name":"isGroup","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundId","type":"uint256"}],"name":"executeDraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getContractStats","outputs":[{"internalType":"uint256","name":"totalRounds","type":"uint256"},{"internalType":"uint256","name":"contractBalance","type":"uint256"},{"internalType":"uint256","name":"activeRound","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentRankPrizes","outputs":[{"internalType":"uint256[10]","name":"percentages","type":"uint256[10]"},{"internalType":"bool[10]","name":"isGroupFlags","type":"bool[10]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundId","type":"uint256"}],"name":"getRoundInfo","outputs":[{"internalType":"uint256","name":"totalTickets","type":"uint256"},{"internalType":"uint256","name":"ticketPrice","type":"uint256"},{"internalType":"uint256","name":"ticketsSold","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"drawExecuted","type":"bool"},{"internalType":"bool","name":"allClaimed","type":"bool"},{"internalType":"bool","name":"isSettled","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundId","type":"uint256"},{"internalType":"uint256","name":"ticketNumber","type":"uint256"}],"name":"getTicketOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundId","type":"uint256"},{"internalType":"uint256","name":"ticketNumber","type":"uint256"}],"name":"getTicketRank","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserInfo","outputs":[{"internalType":"bool","name":"isRegistered","type":"bool"},{"internalType":"address","name":"sponsor","type":"address"},{"internalType":"uint256","name":"totalTicketsPurchased","type":"uint256"},{"internalType":"uint256","name":"totalEarnings","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundId","type":"uint256"},{"internalType":"address","name":"user","type":"address"}],"name":"getUserTickets","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"lastActiveRound","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"purchaseLevelPercentages","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundId","type":"uint256"},{"internalType":"uint256","name":"numberOfTickets","type":"uint256"}],"name":"purchaseTickets","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"sponsor","type":"address"}],"name":"registerUser","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"roundParticipants","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"rounds","outputs":[{"internalType":"uint256","name":"roundId","type":"uint256"},{"internalType":"uint256","name":"totalTickets","type":"uint256"},{"internalType":"uint256","name":"ticketPrice","type":"uint256"},{"internalType":"uint256","name":"ticketsSold","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"drawExecuted","type":"bool"},{"internalType":"bool","name":"allClaimed","type":"bool"},{"internalType":"bool","name":"isSettled","type":"bool"},{"internalType":"uint256","name":"createdAt","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundId","type":"uint256"},{"internalType":"address[]","name":"allRegisteredUsers","type":"address[]"}],"name":"settleRoundSponsorIncomes","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256[10]","name":"newPercentages","type":"uint256[10]"}],"name":"updateRankPrizes","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"usdtToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"users","outputs":[{"internalType":"bool","name":"isRegistered","type":"bool"},{"internalType":"address","name":"sponsor","type":"address"},{"internalType":"uint256","name":"totalTicketsPurchased","type":"uint256"},{"internalType":"uint256","name":"totalEarnings","type":"uint256"},{"internalType":"uint256","name":"sponsorIncome","type":"uint256"}],"stateMutability":"view","type":"function"}];
 
 // Sidebar component
 const Sidebar = ({ 
@@ -142,6 +159,22 @@ const Notification = ({ notification, onClose }: { notification: any; onClose: (
   );
 };
 
+// Custom formatting function for USDT values
+const formatUSDT = (value: string | number): string => {
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(num)) return '0.00';
+  
+  // If the number has no significant decimal places (like 10.0, 25.0), show only 2 decimal places
+  if (num % 1 === 0) {
+    return num.toFixed(2);
+  }
+  
+  // If the number has significant decimal places, show up to 5 decimal places
+  // Remove trailing zeros after the decimal point
+  const formatted = num.toFixed(5);
+  return formatted.replace(/\.?0+$/, ''); // Remove trailing zeros
+};
+
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -159,6 +192,7 @@ export default function Dashboard() {
   } | null>(null);
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'warning' | 'info' } | null>(null);
+  const [claimLoading, setClaimLoading] = useState(false);
   const [prizeData, setPrizeData] = useState<{
     foundPrizes: boolean;
     totalPendingClaims: string;
@@ -192,6 +226,7 @@ export default function Dashboard() {
     claimAllPrizes,
     formatAddress,
     getTicketDetails,
+    getFallbackUserTickets
   } = useWallet();
 
   // Handle URL parameters for direct navigation
@@ -284,44 +319,31 @@ export default function Dashboard() {
         return;
       }
 
-      if (roundId) {
-        // Claim specific round prize
-        setNotification({ type: 'info', message: 'Processing prize claim...' });
-        await claimPrize(roundId);
-        setNotification({ type: 'success', message: 'Prize claimed successfully! 🏆' });
-        
-        // Mark round as claimed in localStorage (like register.js)
-        try {
-          const claimedRounds = JSON.parse(localStorage.getItem(`claimedRounds_${address}`) || '[]');
-          if (!claimedRounds.includes(roundId)) {
-            claimedRounds.push(roundId);
-            localStorage.setItem(`claimedRounds_${address}`, JSON.stringify(claimedRounds));
-            console.log(`Round ${roundId} marked as claimed in localStorage`);
-          }
-        } catch (error) {
-          console.warn('Could not update localStorage for claimed round');
-        }
-      } else {
-        // Claim all available prizes
-        setNotification({ type: 'info', message: 'Processing all prize claims...' });
-        await claimAllPrizes();
-        setNotification({ type: 'success', message: 'All prizes claimed successfully! 🏆' });
-        
-        // Mark all unclaimed rounds as claimed in localStorage
-        try {
-          const claimedRounds = JSON.parse(localStorage.getItem(`claimedRounds_${address}`) || '[]');
-          prizeData.prizes.forEach(prize => {
-            if (!prize.isAlreadyClaimed && !claimedRounds.includes(prize.roundId)) {
-              claimedRounds.push(prize.roundId);
-            }
-          });
+      if (!roundId) {
+        setNotification({ type: 'error', message: 'Invalid round ID' });
+        return;
+      }
+
+      setClaimLoading(true);
+      setNotification({ type: 'info', message: 'Processing prize claim...' });
+      
+      await claimPrize(roundId);
+      
+      setNotification({ type: 'success', message: 'Prize claimed successfully! 🏆' });
+      
+      // Mark round as claimed in localStorage (exact same as register.js)
+      try {
+        const claimedRounds = JSON.parse(localStorage.getItem(`claimedRounds_${address}`) || '[]');
+        if (!claimedRounds.includes(roundId)) {
+          claimedRounds.push(roundId);
           localStorage.setItem(`claimedRounds_${address}`, JSON.stringify(claimedRounds));
-        } catch (error) {
-          console.warn('Could not update localStorage for claimed rounds');
+          console.log(`Round ${roundId} marked as claimed in localStorage`);
         }
+      } catch (error) {
+        console.warn('Could not update localStorage for claimed round');
       }
       
-      // Refresh data after successful claim
+      // Refresh data after successful claim (exact same as register.js)
       setTimeout(() => {
         loadPrizeData();
       }, 3000);
@@ -341,126 +363,143 @@ export default function Dashboard() {
       }
       
       setNotification({ type: 'error', message: errorMessage });
+    } finally {
+      setClaimLoading(false);
     }
   };
 
-  // Load Prize Data Function
+  // Load Prize Data Function - Using exact logic from register.js but only current round
   const loadPrizeData = async () => {
     try {
       if (!address || !dashboardData.userInfo) return;
       
-      console.log('🏆 Loading prize data...');
+      console.log('🏆 Loading current round pending claims...');
       
-      let foundPrizes = false;
       let totalPendingClaims = 0;
       let prizes: any[] = [];
       
-      // Check multiple rounds for prizes (check up to 5 recent rounds)
+      // Only check current round
       const currentRound = dashboardData.currentRound || 1;
-      const startRound = Math.max(1, currentRound - 4);
       
-      for (let roundId = startRound; roundId <= currentRound; roundId++) {
-        try {
-          // For demo purposes, check if this is the current round and draw is executed
-          if (roundId === currentRound && dashboardData.drawExecuted && dashboardData.myTickets && dashboardData.myTickets.length > 0) {
-            // Check if user has winning tickets in current round
-            const winningTickets = dashboardData.myTickets.filter((ticketNumber: number) => 
-              ticketNumber === dashboardData.winningNumber
-            );
-            
-            if (winningTickets.length > 0) {
-              foundPrizes = true;
-              
-              // Calculate prize for winning tickets (50% of prize pool for 1st place)
-              const prizePerTicket = parseFloat(dashboardData.prizePool || '0') * 0.5;
-              const roundPrizes = winningTickets.map((ticketNumber: number) => ({
-                ticketNumber: ticketNumber.toString(),
-                rank: 1, // 1st place for winning number
-                prize: prizePerTicket.toString()
-              }));
-              
-              const totalRoundPrize = roundPrizes.reduce((sum: number, prize: any) => 
-                sum + parseFloat(prize.prize), 0
-              );
-              
-              // Check if already claimed (using localStorage like register.js)
-              let isAlreadyClaimed = false;
-              try {
-                const claimedRounds = JSON.parse(localStorage.getItem(`claimedRounds_${address}`) || '[]');
-                if (claimedRounds.includes(roundId)) {
-                  isAlreadyClaimed = true;
-                  console.log(`Round ${roundId} marked as claimed in local storage`);
-                }
-              } catch (error) {
-                console.warn('Could not check claim status from localStorage');
-              }
-              
-              // Only add to pending claims if not claimed yet
-              if (!isAlreadyClaimed) {
-                totalPendingClaims += totalRoundPrize;
-              }
-              
-              prizes.push({
-                roundId,
-                userTickets: dashboardData.myTickets.length,
-                roundPrizes,
-                totalRoundPrize: totalRoundPrize.toString(),
-                isAlreadyClaimed,
-                bestRank: 1
-              });
-            }
-          }
-          
-          // For demo purposes, add some sample historical prizes
-          if (roundId < currentRound && roundId % 2 === 0) {
-            // Simulate some historical prizes
-            const samplePrizes = [
-              {
-                ticketNumber: '123',
-                rank: 2,
-                prize: '25.00000'
-              },
-              {
-                ticketNumber: '456',
-                rank: 3,
-                prize: '15.00000'
-              }
-            ];
-            
-            const totalSamplePrize = samplePrizes.reduce((sum, prize) => sum + parseFloat(prize.prize), 0);
-            
-            // Mark older rounds as claimed
-            const isAlreadyClaimed = roundId < currentRound - 1;
-            
-            if (!isAlreadyClaimed) {
-              totalPendingClaims += totalSamplePrize;
-            }
-            
-            prizes.push({
-              roundId,
-              userTickets: 5,
-              roundPrizes: samplePrizes,
-              totalRoundPrize: totalSamplePrize.toString(),
-              isAlreadyClaimed,
-              bestRank: 2
-            });
-            
-            foundPrizes = true;
-          }
-          
-        } catch (error) {
-          console.warn(`Could not check round ${roundId} for prizes:`, error);
-        }
+      // Check if draw is executed for current round
+      if (!dashboardData.drawExecuted) {
+        console.log('Draw not executed yet for current round');
+        setPrizeData({
+          foundPrizes: false,
+          totalPendingClaims: '0',
+          prizes: []
+        });
+        return;
       }
       
+      try {
+        // Get user tickets for current round
+        let userTickets: bigint[] = [];
+        try {
+          userTickets = await publicClient.readContract({
+            address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+            abi: LOTTERY_ABI,
+            functionName: 'getUserTickets',
+            args: [BigInt(currentRound), address as `0x${string}`],
+          }) as bigint[];
+          
+          console.log('🎫 User tickets for current round:', userTickets.length);
+        } catch (userTicketsError) {
+          console.warn('⚠️ Could not load user tickets:', userTicketsError);
+          userTickets = [];
+        }
+        
+        if (userTickets.length === 0) {
+          console.log('No tickets found for current round');
+          setPrizeData({
+            foundPrizes: false,
+            totalPendingClaims: '0',
+            prizes: []
+          });
+          return;
+        }
+        
+        // Check each ticket for prizes in current round
+        let roundPrizes = [];
+        let totalRoundPrize = BigInt(0);
+        
+        for (const ticketNumber of userTickets) {
+          try {
+            // Get ticket rank (0 = no prize, 1-10 = winning ranks)
+            const ticketRank = await publicClient.readContract({
+              address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+              abi: LOTTERY_ABI,
+              functionName: 'getTicketRank',
+              args: [BigInt(currentRound), BigInt(ticketNumber)],
+            }) as bigint;
+            
+            if (parseInt(ticketRank.toString()) > 0) {
+              // Calculate prize for this ticket
+              const ticketPrize = await publicClient.readContract({
+                address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+                abi: LOTTERY_ABI,
+                functionName: 'calculateTicketPrize',
+                args: [BigInt(currentRound), BigInt(ticketNumber)],
+              }) as bigint;
+              
+              if (BigInt(ticketPrize) > 0) {
+                roundPrizes.push({
+                  ticketNumber: ticketNumber.toString(),
+                  rank: parseInt(ticketRank.toString()),
+                  prize: ticketPrize.toString()
+                });
+                totalRoundPrize += BigInt(ticketPrize);
+              }
+            }
+          } catch (error) {
+            console.warn(`Could not check ticket ${ticketNumber} in round ${currentRound}:`, error);
+          }
+        }
+        
+        // If current round has prizes, check claim status
+        if (roundPrizes.length > 0) {
+          // Check if already claimed using localStorage
+          const claimedRounds = JSON.parse(localStorage.getItem(`claimedRounds_${address}`) || '[]');
+          const isAlreadyClaimed = claimedRounds.includes(currentRound);
+          
+          // Only add to pending claims if not claimed yet
+          if (!isAlreadyClaimed) {
+            totalPendingClaims = Number(totalRoundPrize);
+          }
+          
+          const rankNames = {
+            1: '1st Place', 2: '2nd Place', 3: '3rd Place',
+            4: '4th Place', 5: '5th Place', 6: '6th Place',
+            7: '7th Place', 8: '8th Place', 9: '9th Place', 10: '10th Place'
+          };
+          
+          const bestRank = Math.min(...roundPrizes.map((p: any) => p.rank));
+          
+          prizes.push({
+            roundId: currentRound,
+            userTickets: userTickets.length,
+            roundPrizes,
+            totalRoundPrize: totalRoundPrize.toString(),
+            isAlreadyClaimed,
+            bestRank
+          });
+        }
+        
+      } catch (error) {
+        console.warn(`Could not check current round ${currentRound} for prizes:`, error);
+      }
+      
+      // Convert totalPendingClaims from wei to USDT
+      const formattedPendingClaims = formatUSDT(formatEther(BigInt(totalPendingClaims)));
+      
       setPrizeData({
-        foundPrizes,
-        totalPendingClaims: totalPendingClaims.toString(),
+        foundPrizes: prizes.length > 0,
+        totalPendingClaims: formattedPendingClaims,
         prizes
       });
       
     } catch (error) {
-      console.error('❌ Error loading prize data:', error);
+      console.error('❌ Error loading current round prize data:', error);
       setPrizeData({
         foundPrizes: false,
         totalPendingClaims: '0',
@@ -505,14 +544,14 @@ export default function Dashboard() {
                 icon=""
                 iconImage="11.png"
                 title="Prize Pool" 
-                value={dashboardData.prizePool || '0'}
+                value={formatUSDT(dashboardData.prizePool || '0')}
                 subtitle="USDT total prizes" 
               />
               <StatCard 
                 icon=""
                 iconImage="19.png"
                 title="Ticket Price" 
-                value={dashboardData.ticketPrice || '0'} 
+                value={formatUSDT(dashboardData.ticketPrice || '0')} 
                 subtitle="USDT per ticket" 
               />
               <StatCard 
@@ -688,11 +727,11 @@ export default function Dashboard() {
                   <div className="bg-gray-800 rounded-lg p-3 md:p-4 mb-4">
                     <div className="flex justify-between text-xs md:text-sm">
                       <span>Price per ticket:</span>
-                      <span>{dashboardData.ticketPrice || '0'} USDT</span>
+                      <span>{formatUSDT(dashboardData.ticketPrice || '0')} USDT</span>
                     </div>
                     <div className="flex justify-between font-semibold text-sm md:text-base">
                       <span>Total cost:</span>
-                      <span>{(parseFloat(dashboardData.ticketPrice || '0') * numTickets).toFixed(4)} USDT</span>
+                      <span>{formatUSDT(parseFloat(dashboardData.ticketPrice || '0') * numTickets)} USDT</span>
                     </div>
                   </div>
                   
@@ -845,13 +884,13 @@ export default function Dashboard() {
                     </div>
                     <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
                       <div className="text-xl md:text-2xl font-bold text-green-400">
-                        {parseFloat(dashboardData.userInfo?.totalEarnings || '0').toFixed(5)}
+                        {formatUSDT(dashboardData.userInfo?.totalEarnings || '0')}
                       </div>
                       <div className="text-xs md:text-sm text-gray-300">Total Winnings</div>
                     </div>
                     <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
                       <div className="text-xl md:text-2xl font-bold text-yellow-400">
-                        {parseFloat(prizeData.totalPendingClaims || '0').toFixed(5)}
+                        {prizeData.totalPendingClaims}
                       </div>
                       <div className="text-xs md:text-sm text-gray-300">Pending Claims</div>
                     </div>
@@ -867,6 +906,20 @@ export default function Dashboard() {
                           1: '1st Place', 2: '2nd Place', 3: '3rd Place',
                           4: '4th Place', 5: '5th Place', 6: '6th Place',
                           7: '7th Place', 8: '8th Place', 9: '9th Place', 10: '10th Place'
+                        };
+                        
+                        // Function to get colored rank name
+                        const getColoredRankName = (rank: number) => {
+                          const rankName = rankNames[rank as keyof typeof rankNames];
+                          if (rank === 1) {
+                            return <span className="text-yellow-400 font-bold">{rankName}</span>;
+                          } else if (rank === 2) {
+                            return <span className="text-gray-300 font-bold">{rankName}</span>;
+                          } else if (rank === 3) {
+                            return <span className="text-amber-600 font-bold">{rankName}</span>;
+                          } else {
+                            return <span className="text-gray-300 font-semibold">{rankName}</span>;
+                          }
                         };
                         
                         return (
@@ -899,7 +952,7 @@ export default function Dashboard() {
                               </div>
                               <div className="text-center">
                                 <div className="text-lg md:text-2xl font-bold text-yellow-400">
-                                  {rankNames[prize.bestRank as keyof typeof rankNames]?.split(' ')[0]}
+                                  {getColoredRankName(prize.bestRank)}
                                 </div>
                                 <div className="text-xs md:text-sm text-gray-300">Best Rank</div>
                               </div>
@@ -912,19 +965,79 @@ export default function Dashboard() {
                                 Your Winning Tickets
                               </h4>
                               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
-                                {prize.roundPrizes.map((ticketPrize, ticketIndex) => (
-                                  <div key={ticketIndex} className="bg-gray-700 rounded-lg p-2 md:p-3 text-center">
-                                    <div className="text-sm md:text-lg font-bold text-yellow-400">
-                                      #{ticketPrize.ticketNumber}
+                                {prize.roundPrizes.map((ticketPrize, ticketIndex) => {
+                                  // Define rank-based styling
+                                  const getRankStyling = (rank: number) => {
+                                    switch (rank) {
+                                      case 1:
+                                        return {
+                                          bgClass: 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600',
+                                          radialClass: 'radial-gradient-gold',
+                                          textClass: 'text-yellow-900',
+                                          borderClass: 'border-yellow-300',
+                                          shadowClass: 'shadow-lg shadow-yellow-500/30'
+                                        };
+                                      case 2:
+                                        return {
+                                          bgClass: 'bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500',
+                                          radialClass: 'radial-gradient-silver',
+                                          textClass: 'text-gray-800',
+                                          borderClass: 'border-gray-200',
+                                          shadowClass: 'shadow-lg shadow-gray-400/30'
+                                        };
+                                      case 3:
+                                        return {
+                                          bgClass: 'bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800',
+                                          radialClass: 'radial-gradient-bronze',
+                                          textClass: 'text-amber-100',
+                                          borderClass: 'border-amber-500',
+                                          shadowClass: 'shadow-lg shadow-amber-600/30'
+                                        };
+                                      default:
+                                        return {
+                                          bgClass: 'bg-gray-700',
+                                          radialClass: '',
+                                          textClass: 'text-gray-300',
+                                          borderClass: 'border-gray-600',
+                                          shadowClass: 'shadow-md'
+                                        };
+                                    }
+                                  };
+
+                                  const styling = getRankStyling(ticketPrize.rank);
+                                  
+                                  return (
+                                    <div 
+                                      key={ticketIndex} 
+                                      className={`${styling.bgClass} ${styling.radialClass} ${styling.borderClass} ${styling.shadowClass} rounded-lg p-2 md:p-3 text-center border-2 relative overflow-hidden transition-all duration-300 hover:scale-105`}
+                                    >
+                                      {/* Radial gradient overlay */}
+                                      <div className={`absolute inset-0 ${styling.radialClass} opacity-20`}></div>
+                                      
+                                      {/* Content */}
+                                      <div className="relative z-10">
+                                        <div className={`text-sm md:text-lg font-bold ${styling.textClass}`}>
+                                          #{ticketPrize.ticketNumber}
+                                        </div>
+                                        <div className={`text-xs md:text-sm ${styling.textClass} font-semibold`}>
+                                          {getColoredRankName(ticketPrize.rank)}
+                                        </div>
+                                        <div className={`text-xs md:text-sm font-semibold ${styling.textClass}`}>
+                                          {formatUSDT(formatEther(BigInt(ticketPrize.prize)))} USDT
+                                        </div>
+                                        
+                                        {/* Rank indicator */}
+                                        {ticketPrize.rank <= 3 && (
+                                          <div className="mt-1">
+                                            {ticketPrize.rank === 1 && <span className="text-2xl">🥇</span>}
+                                            {ticketPrize.rank === 2 && <span className="text-2xl">🥈</span>}
+                                            {ticketPrize.rank === 3 && <span className="text-2xl">🥉</span>}
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
-                                    <div className="text-xs md:text-sm text-gray-300">
-                                      {rankNames[ticketPrize.rank as keyof typeof rankNames]}
-                                    </div>
-                                    <div className="text-xs md:text-sm font-semibold text-green-400">
-                                      {parseFloat(ticketPrize.prize).toFixed(4)} USDT
-                                    </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
                               </div>
                             </div>
                             
@@ -933,18 +1046,28 @@ export default function Dashboard() {
                               <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
                                 <div className="text-center sm:text-left">
                                   <div className="text-lg md:text-2xl font-bold text-green-400">
-                                    {parseFloat(prize.totalRoundPrize).toFixed(4)} USDT
+                                    {formatUSDT(formatEther(BigInt(prize.totalRoundPrize)))} USDT
                                   </div>
                                   <div className="text-xs md:text-sm text-gray-300">Total Prize Value</div>
                                 </div>
-                                {!prize.isAlreadyClaimed && (
-                                  <button
-                                    onClick={() => handleClaim(prize.roundId)}
-                                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition duration-300 text-sm md:text-base"
-                                  >
-                                    Claim Prize
-                                  </button>
-                                )}
+                                <button
+                                  onClick={() => !prize.isAlreadyClaimed && !claimLoading && handleClaim(prize.roundId)}
+                                  disabled={prize.isAlreadyClaimed || claimLoading}
+                                  className={`px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition duration-300 text-sm md:text-base ${
+                                    prize.isAlreadyClaimed
+                                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                      : claimLoading
+                                      ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
+                                      : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
+                                  }`}
+                                >
+                                  {prize.isAlreadyClaimed 
+                                    ? '✅ Already Claimed' 
+                                    : claimLoading 
+                                    ? '⏳ Claiming...' 
+                                    : '🏆 Claim Prize'
+                                  }
+                                </button>
                               </div>
                             </div>
                           </div>
@@ -958,116 +1081,6 @@ export default function Dashboard() {
                       <div className="text-sm md:text-base">You haven't won any prizes in this round yet.</div>
                     </div>
                   )}
-                </div>
-              )}
-            </div>
-
-            {/* Prize History Table */}
-            <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700">
-              <h3 className="text-lg md:text-xl font-bold mb-4 md:mb-6">🏆 Prize History</h3>
-              
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b border-gray-700">
-                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Round</th>
-                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Tickets</th>
-                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Winners</th>
-                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Best Rank</th>
-                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Total Prize</th>
-                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Status</th>
-                      <th className="py-2 md:py-3 px-2 md:px-4 text-gray-300 font-semibold text-xs md:text-sm">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {prizeData.foundPrizes && prizeData.prizes.length > 0 ? (
-                      prizeData.prizes.map((prize, index) => {
-                        const rankNames = {
-                          1: '1st', 2: '2nd', 3: '3rd', 4: '4th', 5: '5th',
-                          6: '6th', 7: '7th', 8: '8th', 9: '9th', 10: '10th'
-                        };
-                        
-                        return (
-                          <tr key={index} className="border-b border-gray-800 hover:bg-gray-800">
-                            <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">#{prize.roundId}</td>
-                            <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">{prize.userTickets}</td>
-                            <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">{prize.roundPrizes.length}</td>
-                            <td className="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm">
-                              {rankNames[prize.bestRank as keyof typeof rankNames]}
-                            </td>
-                            <td className="py-2 md:py-3 px-2 md:px-4">
-                              <div className="text-center">
-                                <div className="font-bold text-green-400 text-xs md:text-sm">
-                                  {parseFloat(prize.totalRoundPrize).toFixed(4)} USDT
-                                </div>
-                                <div className="text-xs text-gray-400">total prize</div>
-                              </div>
-                            </td>
-                            <td className="py-2 md:py-3 px-2 md:px-4">
-                              <span className={`px-2 md:px-3 py-1 rounded-full text-xs font-semibold ${
-                                prize.isAlreadyClaimed 
-                                  ? 'bg-green-900 text-green-300' 
-                                  : 'bg-blue-900 text-blue-300'
-                              }`}>
-                                {prize.isAlreadyClaimed ? '✅ Claimed' : '🏆 Claimable'}
-                              </span>
-                            </td>
-                            <td className="py-2 md:py-3 px-2 md:px-4">
-                              {prize.isAlreadyClaimed ? (
-                                <button className="bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm" disabled>
-                                  Already Claimed
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handleClaim(prize.roundId)}
-                                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded text-sm font-semibold transition duration-300"
-                                >
-                                  Claim Prize
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan={7} className="py-6 md:py-8 text-center text-gray-400">
-                          <div className="text-3xl md:text-4xl mb-2">🎫</div>
-                          <div className="text-sm md:text-lg font-semibold mb-1">No Prize History</div>
-                          <div className="text-xs md:text-sm">You haven't won any lottery prizes yet. Keep playing and good luck!</div>
-                          <div className="text-xs text-gray-500 mt-2">Prizes will appear here once you win in any lottery round.</div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Prize History Summary */}
-              {prizeData.foundPrizes && prizeData.prizes.length > 0 && (
-                <div className="mt-4 md:mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                  <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-400">{prizeData.prizes.length}</div>
-                    <div className="text-sm text-gray-300">Total Rounds</div>
-                  </div>
-                  <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
-                    <div className="text-2xl font-bold text-green-400">
-                      {prizeData.prizes.reduce((sum, prize) => sum + prize.roundPrizes.length, 0)}
-                    </div>
-                    <div className="text-sm text-gray-300">Total Winners</div>
-                  </div>
-                  <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
-                    <div className="text-2xl font-bold text-yellow-400">
-                      {prizeData.prizes.filter(prize => !prize.isAlreadyClaimed).length}
-                    </div>
-                    <div className="text-sm text-gray-300">Pending Claims</div>
-                  </div>
-                  <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
-                    <div className="text-2xl font-bold text-purple-400">
-                      {prizeData.prizes.reduce((sum, prize) => sum + parseFloat(prize.totalRoundPrize), 0).toFixed(4)}
-                    </div>
-                    <div className="text-sm text-gray-300">Total Prize Value</div>
-                  </div>
                 </div>
               )}
             </div>

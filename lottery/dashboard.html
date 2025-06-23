@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 Trdo jackpot</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Orbitron:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.11.1/web3.min.js"></script>
+
+    <link rel="stylesheet" href="css/dashboard.css">
+
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div id="particles"></div>
+
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" id="mobileToggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🎰 CRYPTO LOTTERY</div>
+        </div>
+        <div class="nav-menu">
+            <a class="nav-item active" href="dashboard.html" onclick="showSection('dashboard', this)">
+                <span class="nav-icon">🏠</span>
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-item" href="register.html" onclick="showSection('registration', this)">
+                <span class="nav-icon">📝</span>
+                <span>Registration</span>
+            </a>
+            <a class="nav-item" href="Purchase.html" onclick="showSection('purchase', this)">
+                <span class="nav-icon"></span>
+                <span></span>
+            </a>
+
+
+            <a class="nav-item" href="claim.html" onclick="showSection('claim', this)">
+                <span class="nav-icon"></span>
+                <span></span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🎰 CRYPTO LOTTERY</div>
+            <div class="wallet-section">
+                <div class="wallet-info" id="wallet-info">
+                    <div class="wallet-address" id="wallet-address">Not Connected</div>
+                    <div class="balance-info">
+                        <span>BNB: <span id="wallet-balance">0.0000</span></span>
+                        <span>USDT: <span id="usdt-balance">0.00</span></span>
+                    </div>
+                </div>
+                <button class="connect-btn" id="connectBtn">
+                    <span id="wallet-text">Connect Wallet</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="page-section active">
+            <h2 class="section-title">🏠 Dashboard</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-title">🎲 Current Round</div>
+                    <div class="card-value" id="current-round">-</div>
+                    <div class="card-subtitle">Active lottery round</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-title">🎫 Total Tickets</div>
+                    <div class="card-value" id="total-tickets">-</div>
+                    <div class="card-subtitle">Available in current round</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-title">💸 Tickets Sold</div>
+                    <div class="card-value" id="tickets-sold">-</div>
+                    <div class="card-subtitle"><span id="tickets-unsold">-</span> remaining</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-title">💰 Prize Pool</div>
+                    <div class="card-value" id="prize-pool">-</div>
+                    <div class="card-subtitle">USDT total prizes</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-title">💳 Ticket Price</div>
+                    <div class="card-value" id="ticket-price">-</div>
+                    <div class="card-subtitle">USDT per ticket</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-title">🎯 My Tickets</div>
+                    <div class="card-value" id="my-tickets-count">-</div>
+                    <div class="card-subtitle">In current round</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-title">🏆 Draw Status</div>
+                    <div class="card-value" id="draw-status" style="font-size: 1.5rem;">-</div>
+                    <div class="card-subtitle">Current round status</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-title">📊 Total Tickets Count</div>
+                    <div class="card-value" id="total-tickets-count">-</div>
+                    <div class="card-subtitle">Overall statistics</div>
+                </div>
+            </div>
+
+            <!-- Tickets Visualization -->
+            <div class="tickets-section">
+                <h3 style="text-align: center; margin-bottom: 20px; color: var(--accent-color);">🎫 Live Tickets Board
+                </h3>
+                <div class="tickets-grid" id="tickets-grid">
+                    <!-- Tickets will be generated here -->
+                </div>
+                <div style="margin-top: 15px; text-align: center; color: var(--text-secondary);">
+                    <span style="color: var(--accent-color);">● My Tickets</span> &nbsp;&nbsp;
+                    <span style="color: #888;">● Sold</span> &nbsp;&nbsp;
+                    <span style="color: var(--gold);">● Winners</span> &nbsp;&nbsp;
+                    <span style="color: #555;">● Available</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Registration Section -->
+        <section id="registration" class="page-section">
+            <h2 class="section-title">📝 User Registration</h2>
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label">Sponsor Address (Optional)</label>
+                    <input type="text" class="form-input" id="sponsor-address"
+                        placeholder="Enter sponsor wallet address">
+                </div>
+                <button class="btn" onclick="registerUser()">Register User</button>
+                <button class="btn btn-secondary" onclick="checkRegistrationStatus()">Check Status</button>
+            </div>
+
+            <div class="form-section">
+                <h3 style="color: var(--accent-color); margin-bottom: 20px;">📊 User Information</h3>
+                <div class="form-group">
+                    <label class="form-label">Registration Status</label>
+                    <input type="text" class="form-input" id="user-status" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sponsor</label>
+                    <input type="text" class="form-input" id="user-sponsor" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Total Tickets Purchased</label>
+                    <input type="text" class="form-input" id="user-tickets" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Total Earnings</label>
+                    <input type="text" class="form-input" id="user-earnings" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Total Spent</label>
+                    <input type="text" class="form-input" id="total-spent" readonly>
+                </div>
+            </div>
+        </section>
+
+        <!-- Purchase Section -->
+        <section id="purchase" class="page-section">
+            <h2 class="section-title">🎫 Purchase Tickets</h2>
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label">Round ID</label>
+                    <input type="number" class="form-input" id="purchase-round-id" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Number of Tickets (1-10)</label>
+                    <input type="number" class="form-input" id="num-tickets" value="1" min="1" max="10"
+                        oninput="updateTicketCost()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Total Cost</label>
+                    <input type="text" class="form-input" id="total-cost" readonly>
+                </div>
+                <button class="btn" onclick="purchaseTickets()">Purchase Tickets</button>
+            </div>
+        </section>
+
+        <!-- My Tickets Section -->
+        <section id="my-tickets" class="page-section">
+            <h2 class="section-title">🎯 My Tickets</h2>
+            <div class="form-section">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-title">🎫 Current Round Tickets</div>
+                        <div class="card-value" id="current-round-tickets">-</div>
+                        <div class="card-subtitle">Your tickets in current round</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="loadMyTickets()">Refresh My Tickets</button>
+            </div>
+        </section>
+
+        <!-- Claim Section -->
+        <section id="claim" class="page-section">
+            <h2 class="section-title">💰 Claim Prizes</h2>
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label">Round ID</label>
+                    <input type="number" class="form-input" id="claim-round-id" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Pending Claims</label>
+                    <input type="text" class="form-input" id="pending-claims" readonly>
+                </div>
+                <button class="btn" onclick="claimPrize()">Claim Prize</button>
+                <button class="btn btn-secondary" onclick="claimAllPrizes()">Claim All (Admin)</button>
+                <button class="btn btn-success" onclick="checkPendingClaims()">Check Pending Claims</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Status Message Container -->
+    <div id="statusMessage"></div>
+
+    <script type="module" src="js/dashboard.js"></script>

@@ -26,7 +26,7 @@ const bscTestnet = {
   },
   rpcUrls: {
     default: {
-      http: ['https://bsc-testnet.publicnode.com'],
+      http: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
     },
   },
   blockExplorers: {
@@ -93,7 +93,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             connectors,
             transports: {
               // Testnets (prioritize BSC testnet)
-              [bscTestnet.id]: http('https://bsc-testnet.publicnode.com'),
+              [bscTestnet.id]: http('https://data-seed-prebsc-1-s1.binance.org:8545/'),
               [sepolia.id]: http('https://eth-sepolia.g.alchemy.com/v2/demo'),
               [goerli.id]: http('https://eth-goerli.g.alchemy.com/v2/demo'),
               [polygonMumbai.id]: http('https://polygon-mumbai.g.alchemy.com/v2/demo'),

@@ -3,18 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useAccount, useDisconnect, useBalance, useReadContract, useWriteContract } from 'wagmi';
 import { parseEther, formatEther, createPublicClient, http } from 'viem';
-import { bsc } from 'wagmi/chains';
+import { bscTestnet } from 'wagmi/chains';
 
 // Contract addresses - Updated to match reference code
 const CONTRACT_ADDRESSES = {
-  LOTTERY: '0xbcca069b381002bc8036d261a9ff7f0a9f2f08fe', // Reference contract address
+  LOTTERY: '0xbCcA069b381002bc8036d261a9Ff7F0A9F2f08fe', // Reference contract address
   USDT: '0x7b0ED090071cb486a6ca12F16f49bd1135BDbeDA'  // USDT token address
 };
 
 // Create public client for reading contract data
 const publicClient = createPublicClient({
-  chain: bsc,
-  transport: http(),
+  chain: bscTestnet,
+  transport: http('https://data-seed-prebsc-1-s1.binance.org:8545/'),
 });
 
 // Contract ABIs - Using the existing ABI which should be compatible
@@ -49,6 +49,22 @@ const USDT_ABI = [
     "type": "function"
   }
 ];
+
+// Custom formatting function for USDT values
+const formatUSDT = (value: string | number): string => {
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(num)) return '0.00';
+  
+  // If the number has no significant decimal places (like 10.0, 25.0), show only 2 decimal places
+  if (num % 1 === 0) {
+    return num.toFixed(2);
+  }
+  
+  // If the number has significant decimal places, show up to 5 decimal places
+  // Remove trailing zeros after the decimal point
+  const formatted = num.toFixed(5);
+  return formatted.replace(/\.?0+$/, ''); // Remove trailing zeros
+};
 
 export const useWallet = () => {
   const { address, isConnected } = useAccount();
@@ -118,7 +134,7 @@ export const useWallet = () => {
     },
   });
 
-  const { data: userTickets } = useReadContract({
+  const { data: userTickets, error: userTicketsError } = useReadContract({
     address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
     abi: LOTTERY_ABI,
     functionName: 'getUserTickets',
@@ -132,12 +148,55 @@ export const useWallet = () => {
   const { writeContract: writeContractLottery } = useWriteContract();
   const { writeContract: writeContractUsdt } = useWriteContract();
 
+  // Fallback function to get user tickets using getTicketOwner
+  const getFallbackUserTickets = async (roundId: bigint, userAddress: string, ticketsSold: number) => {
+    const tickets: bigint[] = [];
+    try {
+      console.log(`🔍 Fallback: Searching through ${ticketsSold} sold tickets for user ${userAddress}...`);
+      
+      // Only check sold tickets to avoid unnecessary calls
+      for (let i = 1; i <= Math.min(ticketsSold, 100); i++) { // Limit to 100 for performance
+        try {
+          const ticketOwner = await publicClient.readContract({
+            address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+            abi: LOTTERY_ABI,
+            functionName: 'getTicketOwner',
+            args: [roundId, BigInt(i)],
+          }) as string;
+          
+          if (ticketOwner.toLowerCase() === userAddress.toLowerCase()) {
+            tickets.push(BigInt(i));
+          }
+        } catch (ticketError) {
+          console.warn(`Could not check ticket ${i} owner:`, ticketError);
+          continue;
+        }
+      }
+      
+      console.log('🎫 Found user tickets via fallback method:', tickets.length);
+      return tickets;
+    } catch (fallbackError) {
+      console.warn('⚠️ Fallback method failed:', fallbackError);
+      return [];
+    }
+  };
+
   // Update dashboard data when contract data changes
   useEffect(() => {
     if (currentRoundId && roundData) {
-      const tickets = userTickets ? (userTickets as bigint[]).map(t => Number(t)) : [];
+      let tickets: number[] = [];
+      
+      // Handle userTickets with error fallback
+      if (userTicketsError) {
+        console.warn('⚠️ getUserTickets failed, will use fallback method:', userTicketsError);
+        // We'll handle the fallback in a separate effect or when needed
+        tickets = [];
+      } else if (userTickets) {
+        tickets = (userTickets as bigint[]).map(t => Number(t));
+      }
+      
       const roundDataArray = roundData as any[];
-      const ticketPrice = formatEther(roundDataArray[1] || BigInt(0));
+      const ticketPrice = formatUSDT(formatEther(roundDataArray[1] || BigInt(0)));
       const totalTickets = Number(roundDataArray[0] || BigInt(0));
       const ticketsSold = Number(roundDataArray[2] || BigInt(0));
       
@@ -150,7 +209,7 @@ export const useWallet = () => {
         totalTickets,
         ticketPrice,
         ticketsSold,
-        prizePool: formatEther(prizePool),
+        prizePool: formatUSDT(formatEther(prizePool)),
         isActive: roundDataArray[3],
         drawExecuted: roundDataArray[4],
         allClaimed: roundDataArray[5],
@@ -162,17 +221,17 @@ export const useWallet = () => {
         userInfo: userInfo ? {
           sponsor: (userInfo as any[])[1],
           totalTicketsPurchased: Number((userInfo as any[])[2]),
-          totalEarnings: formatEther((userInfo as any[])[3] || BigInt(0))
+          totalEarnings: formatUSDT(formatEther((userInfo as any[])[3] || BigInt(0)))
         } : null,
         userPurchaseHistory: tickets.length > 0 ? [{
           roundId: Number(currentRoundId),
           ticketsCount: tickets.length,
-          amountPaid: formatEther(BigInt(tickets.length) * (roundDataArray[1] || BigInt(0))),
+          amountPaid: formatUSDT(formatEther(BigInt(tickets.length) * (roundDataArray[1] || BigInt(0)))),
           status: roundDataArray[4] ? 'Draw Complete' : 'Active'
         }] : []
       });
     }
-  }, [currentRoundId, roundData, userTickets, userInfo]);
+  }, [currentRoundId, roundData, userTickets, userTicketsError, userInfo]);
 
   const showNotification = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
     setNotification({ message, type });
@@ -418,6 +477,7 @@ export const useWallet = () => {
     getPrizeData,
     getTicketDetails,
     showNotification,
+    getFallbackUserTickets,
     
     // Contract addresses for reference
     contractAddresses: CONTRACT_ADDRESSES

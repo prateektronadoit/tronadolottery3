@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trdo Jackpot - Register</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/purchase.css">
+    <link rel="stylesheet" href="css/register.css">
+    <link rel="stylesheet" href="css/purchase.css">
+    <link rel="stylesheet" href="css/claim.css">
+
+
+
+</head>
+
+<body>
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" id="mobileToggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🎰 CRYPTO LOTTERY</div>
+        </div>
+        <div class="nav-menu">
+            <a class="nav-item" href="dashboard.html" onclick="navigateTo('dashboard')">
+                <span class="nav-icon">🏠</span>
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-item" href="register.html" onclick="navigateTo('registration')">
+                <span class="nav-icon">📝</span>
+                <span>Registration</span>
+            </a>
+
+        </div>
+    </nav>
+
+    <div class="container">
+
+
+
+
+        <!-- Right Side - Registration Form -->
+        <div class="right-sides">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2 class="form-title">Join the Lottery</h2>
+                    <p class="form-subtitle">Register now and start winning big prizes!</p>
+                </div>
+
+                <!-- Wallet Connection -->
+                <div class="wallet-section">
+                    <div class="wallet-status" id="wallet-status">Connect your wallet to get started</div>
+                    <div class="wallet-address" id="wallet-display" style="display: none;"></div>
+                    <button class="connect-wallet-btn" id="connect-wallet-btn" onclick="connectWallet()">
+                        🔗 Connect MetaMask Wallet
+                    </button>
+                </div>
+
+                <!-- Registration Form -->
+                <div class="form-section">
+                    <form id="registration-form">
+                        <div class="input-group">
+                            <label for="sponsor-address">
+                                Referral Address (Optional)
+                            </label>
+                            <input type="text" id="sponsor-address"
+                                placeholder="0x0000000000000000000000000000000000000000" maxlength="42">
+                            <div class="input-hint">
+                                Enter the wallet address of who referred you
+                            </div>
+                        </div>
+
+                        <!-- Status Message -->
+                        <div id="status-message" style="display: none;"></div>
+
+                        <!-- Register Button -->
+                        <button type="button" class="register-btn" id="register-btn" onclick="registerUser()" disabled>
+                            🚀 Register Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Loading Modal -->
+        <div class="loading" id="loading">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p style="color: #ffffff; font-size: 1.3rem; margin-bottom: 0.5rem;">Processing Registration...</p>
+                <p style="color: #b0b0b0; font-size: 1rem;">Please confirm the transaction in your wallet</p>
+            </div>
+        </div>
+        <div class="purchase-card" id="purchaseCard">
+            <h2 class="section-title">
+                <span class="section-icon">🎫</span>
+                Purchase Tickets
+            </h2>
+
+            <!-- Round Stats -->
+            <div class="round-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="currentRound">-</div>
+                    <div class="stat-label">Current Round</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="ticketsSold">-</div>
+                    <div class="stat-label">Tickets Sold</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalTickets">-</div>
+                    <div class="stat-label">Total Tickets</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="ticketPrice">-</div>
+                    <div class="stat-label">Price (USDT)</div>
+                </div>
+            </div>
+
+            <!-- USDT Approval Section -->
+            <div class="approval-section" id="approvalSection">
+                <div class="approval-title">
+                    ⚠️ USDT Approval Required
+                </div>
+                <div class="approval-description">
+                    You need to approve USDT spending before purchasing tickets. This is a one-time approval that allows
+                    the contract to spend your USDT for ticket purchases.
+                </div>
+                <div class="approval-description"
+                    style="font-size: 0.85rem; margin-top: 8px; color: var(--text-muted);">
+                    💡 This will approve enough USDT for multiple ticket purchases to save on gas fees.
+                </div>
+                <button class="btn btn-warning" id="approveBtn">
+                    ✅ Approve USDT Spending
+                </button>
+            </div>
+
+            <!-- Purchase Form -->
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Select Round:</label>
+                    <select class="form-select" id="roundSelect">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Number of Tickets :</label>
+                    <input type="number" class="form-input" id="numTickets" min="1" value="1">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Total Cost:</label>
+                <input type="text" class="form-input" id="totalCost" readonly value="0 USDT">
+            </div>
+
+            <button class="btn" id="purchaseBtn" disabled>
+                🛒 Purchase Tickets
+            </button>
+        </div>
+
+        <!-- Purchase History -->
+        <div class="history-section" id="historySection">
+            <div class="history-header">
+                <h2 class="section-title">
+                    <span class="section-icon">📊</span>
+                    Purchase History
+                </h2>
+                <button class="refresh-btn" id="refreshBtn">
+                    🔄 Refresh
+                </button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Round</th>
+                            <th>Tickets</th>
+                            <th>Amount Paid</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTbody">
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                <div class="empty-icon">📊</div>
+                                <div class="empty-title">No purchase history</div>
+                                <div>Your ticket purchases will appear here</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- Welcome Section -->
+        <section class="welcome-section" id="welcomeSection">
+            <h1 class="welcome-title">🏆 Prize Claims Center</h1>
+            <p class="welcome-subtitle">
+                Connect your wallet to view your lottery winnings and claim your prizes.
+                Check your ticket history and see detailed prize breakdowns for each round.
+            </p>
+
+        </section>
+
+        <!-- Stats Grid -->
+        <!-- <div class="stats-grid " id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalTickets">0</div>
+                <div class="stat-label">Total Tickets</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalRounds">0</div>
+                <div class="stat-label">Rounds Played</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalWinnings">0.00000</div>
+                <div class="stat-label">Total Winnings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pendingClaims">0.00000</div>
+                <div class="stat-label">Pending Claims</div>
+            </div>
+        </div> -->
+
+        <div class="stats-grid " id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="userTotalTickets">0</div>
+                <div class="stat-label">Total Tickets</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalRounds">0</div>
+                <div class="stat-label">Rounds Played</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalWinnings">0.00000</div>
+                <div class="stat-label">Total Winnings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pendingClaims">0.00000</div>
+                <div class="stat-label">Pending Claims</div>
+            </div>
+        </div>
+
+        <!-- Prize Section -->
+        <section class="prize-section " id="prizeSection">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">🎯</span>
+                    Your Prize History
+                </h2>
+                <button class="refresh-btn" id="refreshBtn" onclick="refreshData()">
+                    🔄 Refresh
+                </button>
+            </div>
+
+            <div class="prizes-grid" id="prizesGrid">
+
+
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state " id="emptyState">
+                <div class="empty-icon">🎫</div>
+                <div class="empty-title">No Prizes Found</div>
+                <div class="empty-description">
+                    You haven't won any lottery prizes yet. Keep playing and good luck!
+                    Prizes will appear here once you win in any lottery round.
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <div class="loading-text" id="loadingText">Loading...</div>
+                <div class="loading-subtext" id="loadingSubtext">Please wait</div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+
+</body>
+
+</html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.3/web3.min.js"></script>
+<script type="module" src="js/register.js"></script>

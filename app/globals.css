@@ -201,3 +201,16 @@ body {
   animation: twinkle 10s ease-in-out infinite;
   opacity: 0.3;
 }
+
+/* Prize Card Radial Gradients */
+.radial-gradient-gold {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.3) 0%, rgba(255, 193, 7, 0.2) 30%, rgba(255, 152, 0, 0.1) 60%, transparent 100%);
+}
+
+.radial-gradient-silver {
+  background: radial-gradient(circle at 30% 30%, rgba(192, 192, 192, 0.4) 0%, rgba(169, 169, 169, 0.3) 30%, rgba(128, 128, 128, 0.2) 60%, transparent 100%);
+}
+
+.radial-gradient-bronze {
+  background: radial-gradient(circle at 30% 30%, rgba(205, 127, 50, 0.4) 0%, rgba(184, 115, 51, 0.3) 30%, rgba(160, 82, 45, 0.2) 60%, transparent 100%);
+}
