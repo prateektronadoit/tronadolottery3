@@ -191,8 +191,8 @@ export default function Registration() {
 
   // Set sponsor address from user info if available
   useEffect(() => {
-    if (userInfo && userInfo[1] && userInfo[1] !== '0x0000000000000000000000000000000000000000') {
-      setSponsorAddress(userInfo[1]);
+    if (userInfo && userInfo.sponsor && userInfo.sponsor !== '0x0000000000000000000000000000000000000000') {
+      setSponsorAddress(userInfo.sponsor);
     }
   }, [userInfo]);
 
@@ -341,8 +341,8 @@ export default function Registration() {
                   <div className="text-green-300 font-semibold mb-2 text-sm md:text-base">✅ Already Registered!</div>
                   <p className="text-green-200 text-xs md:text-sm">
                     You are already registered and can purchase tickets.
-                    {userInfo && userInfo[1] && userInfo[1] !== '0x0000000000000000000000000000000000000000' && (
-                      <span> Sponsor: {formatAddress(userInfo[1])}</span>
+                    {userInfo && userInfo.sponsor && userInfo.sponsor !== '0x0000000000000000000000000000000000000000' && (
+                      <span> Sponsor: {formatAddress(userInfo.sponsor)}</span>
                     )}
                   </p>
                 </div>

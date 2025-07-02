@@ -176,7 +176,8 @@ export const useWallet = () => {
       const totalRevenue = (roundDataArray[1] || BigInt(0)) * BigInt(ticketsSold);
       const prizePool = (totalRevenue * BigInt(75)) / BigInt(100);
       
-      setDashboardData({
+      setDashboardData((prevData: any) => ({
+        ...prevData,
         currentRound: Number(currentRoundId),
         totalTickets,
         ticketPrice,
@@ -189,21 +190,37 @@ export const useWallet = () => {
         winningNumber: Number(roundDataArray[7] || BigInt(0)),
         myTicketsCount: tickets.length,
         myTickets: tickets,
-        isRegistered: userInfo ? (userInfo as any[])[0] : false,
-        userInfo: userInfo ? {
-          sponsor: (userInfo as any[])[1],
-          totalTicketsPurchased: Number((userInfo as any[])[2]),
-          totalEarnings: formatUSDT(formatEther((userInfo as any[])[3] || BigInt(0)))
-        } : null,
         userPurchaseHistory: tickets.length > 0 ? [{
           roundId: Number(currentRoundId),
           ticketsCount: tickets.length,
           amountPaid: formatUSDT(formatEther(BigInt(tickets.length) * (roundDataArray[1] || BigInt(0)))),
           status: roundDataArray[4] ? 'Draw Complete' : 'Active'
         }] : []
-      });
+      }));
     }
-  }, [currentRoundId, roundData, userTickets, userTicketsError, userInfo]);
+  }, [currentRoundId, roundData, userTickets, userTicketsError]);
+
+  // Separate effect to handle user registration data independently of round data
+  useEffect(() => {
+    if (userInfo) {
+      setDashboardData((prevData: any) => ({
+        ...prevData,
+        isRegistered: (userInfo as any[])[0],
+        userInfo: {
+          sponsor: (userInfo as any[])[1],
+          totalTicketsPurchased: Number((userInfo as any[])[2]),
+          totalEarnings: formatUSDT(formatEther((userInfo as any[])[3] || BigInt(0)))
+        }
+      }));
+    } else if (address) {
+      // Reset user data when address changes but no userInfo
+      setDashboardData((prevData: any) => ({
+        ...prevData,
+        isRegistered: false,
+        userInfo: null
+      }));
+    }
+  }, [userInfo, address]);
 
   const showNotification = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
     setNotification({ message, type });
