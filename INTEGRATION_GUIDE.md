@@ -1,14 +1,14 @@
-# BSC Testnet Smart Contract Integration Guide
+# Polygon Mainnet Smart Contract Integration Guide
 
 ## Overview
 
-This guide provides step-by-step instructions for integrating the BSC Testnet smart contract at address `0x6054829D19348Cd06C6EFC0a9912ABC5d6153a63` with your React/Next.js application using MetaMask and Wagmi.
+This guide provides step-by-step instructions for integrating the Polygon Mainnet smart contract at address `0xA4a6FA7bc08E25F525709Ee50CB8351559294a21` with your React/Next.js application using MetaMask and Wagmi.
 
 ## Contract Details
 
-- **Contract Address**: `0x6054829D19348Cd06C6EFC0a9912ABC5d6153a63`
-- **Network**: BSC Testnet (Chain ID: 97)
-- **Token**: USDT Test Token (`0x7b0ED090071cb486a6ca12F16f49bd1135BDbeDA`)
+- **Contract Address**: `0xA4a6FA7bc08E25F525709Ee50CB8351559294a21`
+- **Network**: Polygon Mainnet (Chain ID: 137)
+- **Token**: USDT Token (`0x8d60f559C2461F193913afd10c2d09a09FBa0Bf3`)
 
 ## Key Features Implemented
 
@@ -18,7 +18,7 @@ This guide provides step-by-step instructions for integrating the BSC Testnet sm
 - Displayed with "USDT" suffix for clarity
 
 ### 💰 Balance Tracking
-- Real-time BNB balance display
+- Real-time MATIC balance display
 - USDT token balance tracking
 - USDT allowance monitoring for ticket purchases
 
@@ -40,28 +40,28 @@ This guide provides step-by-step instructions for integrating the BSC Testnet sm
 ## Prerequisites
 
 1. **MetaMask Extension**: Install MetaMask browser extension
-2. **BSC Testnet Network**: Add BSC Testnet to MetaMask
-3. **Test BNB**: Get test BNB from BSC Testnet faucet
-4. **Test USDT**: Get test USDT tokens
+2. **Polygon Mainnet Network**: Add Polygon to MetaMask
+3. **MATIC**: Get MATIC for gas fees
+4. **USDT**: Get USDT tokens for ticket purchases
 
 ## Setup Instructions
 
-### 1. Add BSC Testnet to MetaMask
+### 1. Add Polygon to MetaMask
 
 1. Open MetaMask
 2. Click on the network dropdown (usually shows "Ethereum Mainnet")
 3. Click "Add network" → "Add network manually"
 4. Enter the following details:
-   - **Network Name**: BSC Testnet
-   - **New RPC URL**: `https://data-seed-prebsc-1-s1.binance.org:8545/`
-   - **Chain ID**: `97`
-   - **Currency Symbol**: `tBNB`
-   - **Block Explorer URL**: `https://testnet.bscscan.com`
+   - **Network Name**: Polygon
+   - **New RPC URL**: `https://polygon-rpc.com`
+   - **Chain ID**: `137`
+   - **Currency Symbol**: `MATIC`
+   - **Block Explorer URL**: `https://polygonscan.com`
 
-### 2. Get Test Tokens
+### 2. Get Tokens
 
-1. **Test BNB**: Visit [BSC Testnet Faucet](https://testnet.binance.org/faucet-smart)
-2. **Test USDT**: Use the contract's USDT token at `0x7b0ED090071cb486a6ca12F16f49bd1135BDbeDA`
+1. **MATIC**: Purchase MATIC from exchanges or use Polygon faucets
+2. **USDT**: Purchase USDT from exchanges or use the contract's USDT token at `0x8d60f559C2461F193913afd10c2d09a09FBa0Bf3`
 
 ### 3. Project Setup
 
@@ -80,8 +80,8 @@ The contract address has been updated in `app/hooks/useWallet.ts`:
 
 ```typescript
 const CONTRACT_ADDRESSES = {
-  LOTTERY: '0x6054829D19348Cd06C6EFC0a9912ABC5d6153a63', // Reference contract address
-  USDT: '0x7b0ED090071cb486a6ca12F16f49bd1135BDbeDA'  // USDT token address
+  LOTTERY: '0xA4a6FA7bc08E25F525709Ee50CB8351559294a21', // Reference contract address
+  USDT: '0x8d60f559C2461F193913afd10c2d09a09FBa0Bf3'  // USDT token address
 };
 ```
 
@@ -98,7 +98,7 @@ const prizePool = (totalRevenue * BigInt(75)) / BigInt(100);
 ### 3. Web3 Provider Configuration
 
 The `app/providers.tsx` file configures:
-- BSC Testnet as the primary network
+- Polygon Mainnet as the primary network
 - Multiple chain support
 - RainbowKit wallet connection
 - React Query for data management
@@ -162,9 +162,9 @@ const handlePurchase = async () => {
 ### 4. Check Balances
 
 ```typescript
-const { bnbBalance, usdtBalance } = useWallet();
+const { maticBalance, usdtBalance } = useWallet();
 
-console.log(`BNB: ${bnbBalance}`);
+console.log(`MATIC: ${maticBalance}`);
 console.log(`USDT: ${usdtBalance}`);
 ```
 
@@ -190,8 +190,8 @@ The test page will:
 
 ### 3. Manual Testing
 
-1. Connect MetaMask to BSC Testnet
-2. Ensure you have test BNB and USDT
+1. Connect MetaMask to Polygon Mainnet
+2. Ensure you have MATIC and USDT
 3. Register as a user
 4. Purchase tickets
 5. Check ticket ownership
@@ -203,7 +203,7 @@ The integration includes comprehensive error handling:
 
 ### Common Errors
 - **User Rejection (4001)**: User declined transaction
-- **Insufficient Balance**: Not enough USDT/BNB
+- **Insufficient Balance**: Not enough USDT/MATIC
 - **Network Errors**: Wrong network or connection issues
 - **Contract Errors**: Function reverts or invalid parameters
 
@@ -225,7 +225,7 @@ The integration includes comprehensive error handling:
 
 ### MetaMask Connection Issues
 1. Ensure MetaMask is installed and unlocked
-2. Check if you're on BSC Testnet
+2. Check if you're on Polygon Mainnet
 3. Clear browser cache and reload
 4. Check MetaMask permissions
 
@@ -250,8 +250,8 @@ The integration includes comprehensive error handling:
 
 ## Additional Resources
 
-- [BSC Testnet Explorer](https://testnet.bscscan.com)
-- [BSC Testnet Faucet](https://testnet.binance.org/faucet-smart)
+- [Polygon Explorer](https://polygonscan.com)
+- [Polygon Documentation](https://docs.polygon.technology)
 - [Wagmi Documentation](https://wagmi.sh)
 - [RainbowKit Documentation](https://www.rainbowkit.com)
 - [Viem Documentation](https://viem.sh)
@@ -261,17 +261,17 @@ The integration includes comprehensive error handling:
 For issues with:
 - **Contract Integration**: Check the test page at `/test`
 - **MetaMask**: Refer to MetaMask documentation
-- **Network Issues**: Check BSC Testnet status
+- **Network Issues**: Check Polygon Mainnet status
 - **Development**: Review browser console logs
 
 ## Next Steps
 
-1. Test all functionality on BSC Testnet
+1. Test all functionality on Polygon Mainnet
 2. Deploy to production when ready
 3. Monitor contract interactions
 4. Implement additional features as needed
-5. Consider mainnet deployment
+5. Consider additional network deployments
 
 ---
 
-**Note**: This integration is specifically configured for BSC Testnet. For mainnet deployment, update the contract addresses and network configuration accordingly. 
+**Note**: This integration is specifically configured for Polygon Mainnet. The contract is already deployed and ready for production use. 

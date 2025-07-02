@@ -4,8 +4,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    // Forward the request to the BSC RPC endpoint
-    const response = await fetch('https://data-seed-prebsc-1-s1.binance.org:8545/', {
+    // Forward the request to the Polygon RPC endpoint
+    const response = await fetch('https://polygon-rpc.com', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
