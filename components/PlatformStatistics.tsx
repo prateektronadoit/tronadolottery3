@@ -16,7 +16,7 @@ const stats = [
   {
     iconImage: '10.png',
     value: '500,000',
-    label: 'USDT Distributed',
+    label: 'TRDO Distributed',
   },
   {
     iconImage: '20.png',

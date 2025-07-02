@@ -567,14 +567,14 @@ export default function Dashboard() {
                 iconImage="11.png"
                 title="Prize Pool" 
                 value={formatUSDT(dashboardData.prizePool || '0')}
-                subtitle="USDT total prizes" 
+                subtitle="TRDO total prizes" 
               />
               <StatCard 
                 icon=""
                 iconImage="19.png"
                 title="Ticket Price" 
                 value={formatUSDT(dashboardData.ticketPrice || '0')} 
-                subtitle="USDT per ticket" 
+                subtitle="TRDO per ticket" 
               />
               <StatCard 
                 icon=""
@@ -765,11 +765,11 @@ export default function Dashboard() {
                   <div className="bg-gray-800 rounded-lg p-3 md:p-4 mb-4">
                     <div className="flex justify-between text-xs md:text-sm">
                       <span>Price per ticket:</span>
-                      <span>{formatUSDT(dashboardData.ticketPrice || '0')} USDT</span>
+                      <span>{formatUSDT(dashboardData.ticketPrice || '0')} TRDO</span>
                     </div>
                     <div className="flex justify-between font-semibold text-sm md:text-base">
                       <span>Total cost:</span>
-                      <span>{formatUSDT(dashboardData.ticketPrice || '0')} USDT</span>
+                      <span>{formatUSDT(dashboardData.ticketPrice || '0')} TRDO</span>
                     </div>
                   </div>
                   
@@ -1061,7 +1061,7 @@ export default function Dashboard() {
                                           {getColoredRankName(ticketPrize.rank)}
                                     </div>
                                         <div className={`text-xs md:text-sm font-semibold ${styling.textClass}`}>
-                                      {formatUSDT(formatEther(BigInt(ticketPrize.prize)))} USDT
+                                      {formatUSDT(formatEther(BigInt(ticketPrize.prize)))} TRDO
                                     </div>
                                         
                                         {/* Rank indicator */}
@@ -1084,7 +1084,7 @@ export default function Dashboard() {
                               <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
                                 <div className="text-center sm:text-left">
                                   <div className="text-lg md:text-2xl font-bold text-green-400">
-                                    {formatUSDT(formatEther(BigInt(prize.totalRoundPrize)))} USDT
+                                    {formatUSDT(formatEther(BigInt(prize.totalRoundPrize)))} TRDO
                                   </div>
                                   <div className="text-xs md:text-sm text-gray-300">Total Prize Value</div>
                                 </div>

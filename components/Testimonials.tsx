@@ -30,7 +30,7 @@ const Testimonials = () => {
               />
             </div>
             <p className="text-gray-300 italic mb-6 text-center">
-              "I won 5000 USDT in my first week! The transparency and instant payout made me a believer. This is the future of lottery gaming."
+              "I won 5000 TRDO in my first week! The transparency and instant payout made me a believer. This is the future of lottery gaming."
             </p>
             <div className="text-center">
               <p className="text-white font-semibold">Alex Chen</p>

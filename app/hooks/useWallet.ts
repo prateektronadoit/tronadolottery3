@@ -329,7 +329,7 @@ export const useWallet = () => {
           args: [CONTRACT_ADDRESSES.LOTTERY as `0x${string}`, requiredAmount],
         });
         
-        showNotification('USDT approval submitted! Please confirm in your wallet.', 'success');
+        showNotification('TRDO approval submitted! Please confirm in your wallet.', 'success');
         // Wait a bit for approval to be processed
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
@@ -339,7 +339,7 @@ export const useWallet = () => {
         address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
         abi: LOTTERY_ABI,
         functionName: 'purchaseTickets',
-        args: [currentRoundId, BigInt(ticketCount)],
+        args: [currentRoundId, 1],
       });
 
       showNotification('Ticket purchase submitted! Please confirm the transaction in your wallet.', 'success');

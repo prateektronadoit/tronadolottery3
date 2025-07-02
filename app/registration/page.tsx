@@ -395,12 +395,12 @@ export default function Registration() {
               <StatsCard icon="🎯" title="Current Round" value={dashboardData.currentRound?.toString() || '-'} />
               <StatsCard icon="🎫" title="Tickets Sold" value={dashboardData.ticketsSold?.toString() || '-'} />
               <StatsCard icon="📊" title="Total Tickets" value={dashboardData.totalTickets?.toString() || '-'} />
-              <StatsCard icon="💰" title="Price (USDT)" value={dashboardData.ticketPrice ? formatBalanceDisplay(dashboardData.ticketPrice) : '-'} />
+              <StatsCard icon="💰" title="Price (TRDO)" value={dashboardData.ticketPrice ? formatBalanceDisplay(dashboardData.ticketPrice) : '-'} />
             </div>
 
             {/* USDT Balance */}
             <div className="mb-4 md:mb-6 p-3 md:p-4 bg-gray-900 rounded-lg border border-gray-800">
-              <div className="text-gray-300 font-semibold text-sm md:text-base">💰 Your USDT Balance: {formatBalanceDisplay(usdtBalance)} USDT</div>
+              <div className="text-gray-300 font-semibold text-sm md:text-base">💰 Your TRDO Balance: {formatBalanceDisplay(usdtBalance)} TRDO</div>
             </div>
 
             {hasPurchasedTicket ? (
@@ -416,12 +416,12 @@ export default function Registration() {
                 {/* USDT Approval Section */}
                 {totalCost > 0 && usdtBalanceNum < totalCost && (
                   <div className="mb-4 md:mb-6 p-3 md:p-4 bg-yellow-900 border border-yellow-600 rounded-lg">
-                    <div className="text-yellow-300 font-semibold mb-2 text-sm md:text-base">⚠️ Insufficient USDT Balance</div>
+                    <div className="text-yellow-300 font-semibold mb-2 text-sm md:text-base">⚠️ Insufficient TRDO Balance</div>
                     <p className="text-yellow-200 text-xs md:text-sm mb-3">
-                      You need {totalCost.toFixed(4)} USDT but only have {formatBalanceDisplay(usdtBalance)} USDT.
+                      You need {totalCost.toFixed(4)} TRDO but only have {formatBalanceDisplay(usdtBalance)} TRDO.
                     </p>
                     <button 
-                      onClick={() => showNotification('Please add more USDT to your wallet', 'error')}
+                      onClick={() => showNotification('Please add more TRDO to your wallet', 'error')}
                       className="bg-yellow-600 hover:bg-yellow-700 text-white py-1 md:py-2 px-3 md:px-4 rounded-md flex items-center text-xs md:text-sm"
                     >
                       ⚠️ Insufficient Balance
@@ -461,7 +461,7 @@ export default function Registration() {
                   <div className="bg-gray-900 p-3 md:p-4 rounded-lg border border-gray-800">
                     <div className="text-gray-300 text-sm md:text-base">
                       <span className="font-semibold">Total Cost: </span>
-                      <span className="text-lg md:text-xl text-orange-500">{formatBalanceDisplay(dashboardData.ticketPrice)} USDT</span>
+                      <span className="text-lg md:text-xl text-orange-500">{formatBalanceDisplay(dashboardData.ticketPrice)} TRDO</span>
                     </div>
                   </div>
                 </div>
@@ -498,7 +498,7 @@ export default function Registration() {
                       <tr key={index}>
                         <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm text-white">#{purchase.roundId}</td>
                         <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm text-white">{purchase.ticketsCount}</td>
-                        <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm text-white">{purchase.amountPaid} USDT</td>
+                        <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm text-white">{purchase.amountPaid} TRDO</td>
                         <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                             purchase.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'

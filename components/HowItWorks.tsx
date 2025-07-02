@@ -5,13 +5,13 @@ const steps = [
     number: 1,
     image: '/1.png',
     title: 'Connect Your Wallet',
-    description: 'Connect your MetaMask wallet to the BSC Testnet. Make sure you have some BNB for gas fees and USDT for ticket purchases. It\'s quick and secure!'
+    description: 'Connect your MetaMask wallet to the BSC Testnet. Make sure you have some BNB for gas fees and TRDO for ticket purchases. It\'s quick and secure!'
   },
   {
     number: 2,
     image: '/2.png',
-    title: 'Approve USDT',
-    description: 'Approve USDT spending for the lottery contract. This is a one-time approval that allows you to purchase multiple tickets without repeated approvals.'
+    title: 'Approve TRDO',
+    description: 'Approve TRDO spending for the lottery contract. This is a one-time approval that allows you to purchase multiple tickets without repeated approvals.'
   },
   {
     number: 3,
