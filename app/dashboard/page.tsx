@@ -214,6 +214,9 @@ export default function Dashboard() {
     prizes: []
   });
 
+  // NEW STATE - Track if user has already purchased a ticket
+  const [hasPurchasedTicket, setHasPurchasedTicket] = useState(false);
+
   const { isConnected } = useAccount();
   const {
     address,
@@ -226,7 +229,8 @@ export default function Dashboard() {
     claimAllPrizes,
     formatAddress,
     getTicketDetails,
-    getFallbackUserTickets
+    getFallbackUserTickets,
+    hasUserPurchasedTicket // NEW FUNCTION
   } = useWallet();
 
   // Handle URL parameters for direct navigation
@@ -250,6 +254,23 @@ export default function Dashboard() {
       loadPrizeData();
     }
   }, [isConnected, address, dashboardData.userInfo, dashboardData.drawExecuted, dashboardData.myTickets]);
+
+  // NEW EFFECT - Check if user has already purchased a ticket
+  useEffect(() => {
+    const checkUserTicketPurchase = async () => {
+      if (isConnected && address && dashboardData.currentRound) {
+        try {
+          const hasPurchased = await hasUserPurchasedTicket(dashboardData.currentRound);
+          setHasPurchasedTicket(hasPurchased);
+        } catch (error) {
+          console.error('Error checking user ticket purchase:', error);
+          setHasPurchasedTicket(false);
+        }
+      }
+    };
+
+    checkUserTicketPurchase();
+  }, [isConnected, address, dashboardData.currentRound, hasUserPurchasedTicket]);
 
   // Function to handle ticket click and show details
   const handleTicketClick = async (ticketNumber: number) => {
@@ -309,10 +330,8 @@ export default function Dashboard() {
   };
 
   const handlePurchase = async () => {
-    const ticketCount = parseInt(numTickets) || 0;
-    if (ticketCount > 0) {
-      await purchaseTickets(ticketCount);
-    }
+    // Always purchase 1 ticket (limited per user)
+    await purchaseTickets(1);
   };
 
   const handleClaim = async (roundId?: number) => {
@@ -713,19 +732,34 @@ export default function Dashboard() {
                     Register Now
                   </button>
                 </div>
+              ) : hasPurchasedTicket ? (
+                // User has already purchased a ticket
+                <div className="text-center text-gray-400">
+                  <p className="text-4xl md:text-6xl mb-3 md:mb-4">✅</p>
+                  <p className="text-sm md:text-base font-semibold text-green-400 mb-2">Ticket Already Purchased!</p>
+                  <p className="text-xs md:text-sm">You can only buy 1 ticket per round. Your ticket is ready for the draw.</p>
+                  <button
+                    onClick={() => setActiveSection('mytickets')}
+                    className="mt-3 md:mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2 rounded text-sm md:text-base"
+                  >
+                    View My Tickets
+                  </button>
+                </div>
               ) : (
+                // User can purchase a ticket
                 <>
                   <div className="mb-4">
                     <label className="block text-gray-300 mb-2 text-sm md:text-base">Number of Tickets</label>
                     <input
                       type="number"
                       min="1"
-                      max="100"
-                      value={numTickets}
-                      onChange={(e) => setNumTickets(e.target.value)}
-                      placeholder="Enter number of tickets"
-                      className="w-full p-2 md:p-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-400 focus:border-purple-500 focus:outline-none text-sm md:text-base"
+                      max="1"
+                      value="1"
+                      disabled
+                      placeholder="1 ticket only"
+                      className="w-full p-2 md:p-3 bg-gray-800 border border-gray-600 rounded-lg text-gray-400 placeholder-gray-500 focus:border-purple-500 focus:outline-none text-sm md:text-base cursor-not-allowed"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Limited to 1 ticket per user per round</p>
                   </div>
                   
                   <div className="bg-gray-800 rounded-lg p-3 md:p-4 mb-4">
@@ -735,7 +769,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex justify-between font-semibold text-sm md:text-base">
                       <span>Total cost:</span>
-                      <span>{formatUSDT(parseFloat(dashboardData.ticketPrice || '0') * (parseInt(numTickets) || 0))} USDT</span>
+                      <span>{formatUSDT(dashboardData.ticketPrice || '0')} USDT</span>
                     </div>
                   </div>
                   
@@ -744,7 +778,7 @@ export default function Dashboard() {
                     disabled={!isConnected || loading}
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2 md:py-3 rounded-lg hover:from-purple-700 hover:to-pink-700 transition duration-300 disabled:opacity-50 text-sm md:text-base"
                   >
-                    Purchase Tickets
+                    {loading ? 'Processing...' : 'Purchase 1 Ticket'}
                   </button>
                 </>
               )}

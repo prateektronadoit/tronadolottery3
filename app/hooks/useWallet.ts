@@ -234,6 +234,56 @@ export const useWallet = () => {
     }
   };
 
+  // OLD CODE - COMMENTED OUT
+  // const purchaseTickets = async (numTickets: number) => {
+  //   if (!address) {
+  //     showNotification('Please connect your wallet first', 'error');
+  //     return;
+  //   }
+
+  //   if (!currentRoundId) {
+  //     showNotification('No active round found', 'error');
+  //     return;
+  //   }
+
+  //   try {
+  //     setLoading(true);
+      
+  //     // First, check if we need to approve USDT spending
+  //     const requiredAmount = parseEther((Number(dashboardData.ticketPrice) * numTickets).toString());
+  //     // if (!usdtAllowance || usdtAllowance < requiredAmount) {
+  //     if (!usdtAllowance || (typeof usdtAllowance === 'bigint' && usdtAllowance < requiredAmount)) {
+  //       // Approve USDT spending
+  //       await writeContractUsdt({
+  //         address: CONTRACT_ADDRESSES.USDT as `0x${string}`,
+  //         abi: USDT_ABI,
+  //         functionName: 'approve',
+  //         args: [CONTRACT_ADDRESSES.LOTTERY as `0x${string}`, requiredAmount],
+  //       });
+        
+  //       showNotification('USDT approval submitted! Please confirm in your wallet.', 'success');
+  //       // Wait a bit for approval to be processed
+  //       await new Promise(resolve => setTimeout(resolve, 2000));
+  //     }
+
+  //     // Purchase tickets
+  //     await writeContractLottery({
+  //       address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+  //       abi: LOTTERY_ABI,
+  //       functionName: 'purchaseTickets',
+  //       args: [currentRoundId, BigInt(numTickets)],
+  //     });
+
+  //     showNotification('Ticket purchase submitted! Please confirm the transaction in your wallet.', 'success');
+  //   } catch (error: any) {
+  //     console.error('Ticket purchase failed:', error);
+  //     showNotification(error.message || 'Ticket purchase failed', 'error');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // NEW CODE - LIMITED TO 1 TICKET PER USER
   const purchaseTickets = async (numTickets: number) => {
     if (!address) {
       showNotification('Please connect your wallet first', 'error');
@@ -245,12 +295,31 @@ export const useWallet = () => {
       return;
     }
 
+    // Check if user already has tickets in current round
+    try {
+      const userTickets = await publicClient.readContract({
+        address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+        abi: LOTTERY_ABI,
+        functionName: 'getUserTickets',
+        args: [currentRoundId, address as `0x${string}`],
+      }) as bigint[];
+
+      if (userTickets.length > 0) {
+        showNotification('Ticket already purchased! You can only buy 1 ticket per round.', 'error');
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking user tickets:', error);
+    }
+
+    // Force ticket count to 1
+    const ticketCount = 1;
+
     try {
       setLoading(true);
       
       // First, check if we need to approve USDT spending
-      const requiredAmount = parseEther((Number(dashboardData.ticketPrice) * numTickets).toString());
-      // if (!usdtAllowance || usdtAllowance < requiredAmount) {
+      const requiredAmount = parseEther((Number(dashboardData.ticketPrice) * ticketCount).toString());
       if (!usdtAllowance || (typeof usdtAllowance === 'bigint' && usdtAllowance < requiredAmount)) {
         // Approve USDT spending
         await writeContractUsdt({
@@ -265,12 +334,12 @@ export const useWallet = () => {
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
-      // Purchase tickets
+      // Purchase exactly 1 ticket
       await writeContractLottery({
         address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
         abi: LOTTERY_ABI,
         functionName: 'purchaseTickets',
-        args: [currentRoundId, BigInt(numTickets)],
+        args: [currentRoundId, BigInt(ticketCount)],
       });
 
       showNotification('Ticket purchase submitted! Please confirm the transaction in your wallet.', 'success');
@@ -422,6 +491,25 @@ export const useWallet = () => {
     }
   };
 
+  // NEW FUNCTION - Check if user has already purchased a ticket in current round
+  const hasUserPurchasedTicket = async (roundId: number) => {
+    if (!address) return false;
+    
+    try {
+      const userTickets = await publicClient.readContract({
+        address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+        abi: LOTTERY_ABI,
+        functionName: 'getUserTickets',
+        args: [BigInt(roundId), address as `0x${string}`],
+      }) as bigint[];
+      
+      return userTickets.length > 0;
+    } catch (error) {
+      console.error('Error checking if user has purchased ticket:', error);
+      return false;
+    }
+  };
+
   return {
     // State
     address,
@@ -448,6 +536,7 @@ export const useWallet = () => {
     getPurchaseHistory,
     getPrizeData,
     getTicketDetails,
+    hasUserPurchasedTicket, // NEW FUNCTION
     showNotification,
     getFallbackUserTickets,
     

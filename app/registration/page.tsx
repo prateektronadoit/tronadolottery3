@@ -149,6 +149,7 @@ export default function Registration() {
     showNotification,
     formatBalance,
     formatAddress,
+    hasUserPurchasedTicket, // NEW FUNCTION
   } = useWallet();
 
   // Extract userInfo and isUserRegistered from dashboardData
@@ -163,6 +164,9 @@ export default function Registration() {
   
   // Local notification state for clearing
   const [localNotification, setLocalNotification] = useState(notification);
+  
+  // NEW STATE - Track if user has already purchased a ticket
+  const [hasPurchasedTicket, setHasPurchasedTicket] = useState(false);
 
   // Update local notification when notification changes
   useEffect(() => {
@@ -191,6 +195,23 @@ export default function Registration() {
       setSponsorAddress(userInfo[1]);
     }
   }, [userInfo]);
+
+  // NEW EFFECT - Check if user has already purchased a ticket
+  useEffect(() => {
+    const checkUserTicketPurchase = async () => {
+      if (isConnected && address && selectedRound) {
+        try {
+          const hasPurchased = await hasUserPurchasedTicket(selectedRound);
+          setHasPurchasedTicket(hasPurchased);
+        } catch (error) {
+          console.error('Error checking user ticket purchase:', error);
+          setHasPurchasedTicket(false);
+        }
+      }
+    };
+
+    checkUserTicketPurchase();
+  }, [isConnected, address, selectedRound, hasUserPurchasedTicket]);
 
   // Calculate total cost
   const totalCost = numTickets * parseFloat(dashboardData.ticketPrice || '0');
@@ -228,8 +249,9 @@ export default function Registration() {
 
     setLocalLoading(true);
     try {
-      await purchaseTickets(numTickets);
-      showNotification(`Successfully purchased ${numTickets} ticket(s)!`, 'success');
+      // Always purchase 1 ticket (limited per user)
+      await purchaseTickets(1);
+      showNotification('Successfully purchased 1 ticket!', 'success');
     } catch (error: any) {
       console.error('Purchase error:', error);
       showNotification(error.message || 'Ticket purchase failed', 'error');
@@ -381,65 +403,79 @@ export default function Registration() {
               <div className="text-gray-300 font-semibold text-sm md:text-base">💰 Your USDT Balance: {formatBalanceDisplay(usdtBalance)} USDT</div>
             </div>
 
-            {/* USDT Approval Section */}
-            {totalCost > 0 && usdtBalanceNum < totalCost && (
-              <div className="mb-4 md:mb-6 p-3 md:p-4 bg-yellow-900 border border-yellow-600 rounded-lg">
-                <div className="text-yellow-300 font-semibold mb-2 text-sm md:text-base">⚠️ Insufficient USDT Balance</div>
-                <p className="text-yellow-200 text-xs md:text-sm mb-3">
-                  You need {totalCost.toFixed(4)} USDT but only have {formatBalanceDisplay(usdtBalance)} USDT.
-                </p>
-                <button 
-                  onClick={() => showNotification('Please add more USDT to your wallet', 'error')}
-                  className="bg-yellow-600 hover:bg-yellow-700 text-white py-1 md:py-2 px-3 md:px-4 rounded-md flex items-center text-xs md:text-sm"
-                >
-                  ⚠️ Insufficient Balance
-                </button>
+            {hasPurchasedTicket ? (
+              // User has already purchased a ticket
+              <div className="text-center text-gray-400 p-6 md:p-8">
+                <p className="text-4xl md:text-6xl mb-3 md:mb-4">✅</p>
+                <p className="text-sm md:text-base font-semibold text-green-400 mb-2">Ticket Already Purchased!</p>
+                <p className="text-xs md:text-sm">You can only buy 1 ticket per round. Your ticket is ready for the draw.</p>
               </div>
-            )}
-            
-            <div className="space-y-3 md:space-y-4">
-              <div>
-                <label className="block text-xs md:text-sm font-medium text-gray-300 mb-1 md:mb-2">Select Round</label>
-                <select 
-                  value={selectedRound} 
-                  onChange={(e) => setSelectedRound(Number(e.target.value))}
-                  className="w-full p-2 md:p-3 bg-gray-800 border border-gray-700 rounded-md text-white text-sm md:text-base"
-                >
-                  <option value={0}>Select Round</option>
-                  {dashboardData.currentRound && dashboardData.currentRound > 0 && (
-                    <option value={dashboardData.currentRound}>Round {dashboardData.currentRound}</option>
-                  )}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-xs md:text-sm font-medium text-gray-300 mb-1 md:mb-2">Number of Tickets</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={numTickets}
-                  onChange={(e) => setNumTickets(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-full p-2 md:p-3 bg-gray-800 border border-gray-700 rounded-md text-white text-sm md:text-base"
-                />
-              </div>
-              
-              <div className="bg-gray-900 p-3 md:p-4 rounded-lg border border-gray-800">
-                <div className="text-gray-300 text-sm md:text-base">
-                  <span className="font-semibold">Total Cost: </span>
-                  <span className="text-lg md:text-xl text-orange-500">{totalCost.toFixed(4)} USDT</span>
+            ) : (
+              // User can purchase a ticket
+              <>
+                {/* USDT Approval Section */}
+                {totalCost > 0 && usdtBalanceNum < totalCost && (
+                  <div className="mb-4 md:mb-6 p-3 md:p-4 bg-yellow-900 border border-yellow-600 rounded-lg">
+                    <div className="text-yellow-300 font-semibold mb-2 text-sm md:text-base">⚠️ Insufficient USDT Balance</div>
+                    <p className="text-yellow-200 text-xs md:text-sm mb-3">
+                      You need {totalCost.toFixed(4)} USDT but only have {formatBalanceDisplay(usdtBalance)} USDT.
+                    </p>
+                    <button 
+                      onClick={() => showNotification('Please add more USDT to your wallet', 'error')}
+                      className="bg-yellow-600 hover:bg-yellow-700 text-white py-1 md:py-2 px-3 md:px-4 rounded-md flex items-center text-xs md:text-sm"
+                    >
+                      ⚠️ Insufficient Balance
+                    </button>
+                  </div>
+                )}
+                
+                <div className="space-y-3 md:space-y-4">
+                  <div>
+                    <label className="block text-xs md:text-sm font-medium text-gray-300 mb-1 md:mb-2">Select Round</label>
+                    <select 
+                      value={selectedRound} 
+                      onChange={(e) => setSelectedRound(Number(e.target.value))}
+                      className="w-full p-2 md:p-3 bg-gray-800 border border-gray-700 rounded-md text-white text-sm md:text-base"
+                    >
+                      <option value={0}>Select Round</option>
+                      {dashboardData.currentRound && dashboardData.currentRound > 0 && (
+                        <option value={dashboardData.currentRound}>Round {dashboardData.currentRound}</option>
+                      )}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs md:text-sm font-medium text-gray-300 mb-1 md:mb-2">Number of Tickets</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="1"
+                      value="1"
+                      disabled
+                      placeholder="1 ticket only"
+                      className="w-full p-2 md:p-3 bg-gray-800 border border-gray-600 rounded-md text-gray-400 placeholder-gray-500 text-sm md:text-base cursor-not-allowed"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Limited to 1 ticket per user per round</p>
+                  </div>
+                  
+                  <div className="bg-gray-900 p-3 md:p-4 rounded-lg border border-gray-800">
+                    <div className="text-gray-300 text-sm md:text-base">
+                      <span className="font-semibold">Total Cost: </span>
+                      <span className="text-lg md:text-xl text-orange-500">{formatBalanceDisplay(dashboardData.ticketPrice)} USDT</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            
-            <button 
-              onClick={handlePurchaseTickets}
-              disabled={isLoading || !selectedRound || totalCost > usdtBalanceNum}
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 md:py-3 px-4 md:px-6 lg:px-8 rounded-md text-sm md:text-base lg:text-lg transition-all duration-200 flex items-center"
-            >
-              {isLoading ? <LoadingSpinner /> : <span className="mr-2">🛒</span>}
-              {isLoading ? 'Purchasing...' : 'Purchase Tickets'}
-            </button>
+                
+                <button 
+                  onClick={handlePurchaseTickets}
+                  disabled={isLoading || !selectedRound || parseFloat(dashboardData.ticketPrice || '0') > usdtBalanceNum}
+                  className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 md:py-3 px-4 md:px-6 lg:px-8 rounded-md text-sm md:text-base lg:text-lg transition-all duration-200 flex items-center"
+                >
+                  {isLoading ? <LoadingSpinner /> : <span className="mr-2">🛒</span>}
+                  {isLoading ? 'Purchasing...' : 'Purchase 1 Ticket'}
+                </button>
+              </>
+            )}
           </Section>
         )}
 
