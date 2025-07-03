@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import ClientLayoutShell from './ClientLayoutShell';
+import { usePathname } from 'next/navigation';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,11 +29,11 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className={`${poppins.variable} font-sans antialiased`}>
         <Providers>
-          <div className="flex flex-col min-h-screen">
-            <main className="flex-grow">
-              {children}
-            </main>
-          </div>
+          {typeof window !== 'undefined' && window.location.pathname === '/about' ? (
+            <ClientLayoutShell>{children}</ClientLayoutShell>
+          ) : (
+            children
+          )}
         </Providers>
       </body>
     </html>
