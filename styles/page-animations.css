@@ -1,0 +1,234 @@
+/* Page Background Animation Styles - Optimized */
+
+.page-animated-background {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  /* Enable hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.page-animated-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(135deg, 
+    rgba(0, 20, 50, 0.95) 0%, 
+    rgba(0, 10, 30, 0.95) 50%, 
+    rgba(20, 0, 40, 0.95) 100%);
+  opacity: 0.9;
+}
+
+.page-fluid-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  opacity: 0.3;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0) 50%),
+    radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0) 50%),
+    radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0) 60%);
+  background-size: 300% 300%;
+  animation: page-fluid-move 20s ease-in-out infinite alternate;
+  /* Optimize for animations */
+  will-change: background-position, transform;
+  transform: translateZ(0);
+}
+
+.page-floating-elements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -3;
+  overflow: hidden;
+  /* Reduce repaints */
+  transform: translateZ(0);
+}
+
+.page-floating-element {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0) 70%);
+  border-radius: 50%;
+  opacity: 0;
+  animation: page-float 12s ease-in-out infinite;
+  /* Optimize for animations */
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  /* Use transform3d for hardware acceleration */
+  transform-style: preserve-3d;
+}
+
+/* Reduced from 6 to 4 floating elements for better performance */
+.page-floating-element:nth-child(1) {
+  width: 80px;
+  height: 80px;
+  left: 15%;
+  animation-delay: 0s;
+}
+
+.page-floating-element:nth-child(2) {
+  width: 60px;
+  height: 60px;
+  left: 35%;
+  animation-delay: 4s;
+}
+
+.page-floating-element:nth-child(3) {
+  width: 70px;
+  height: 70px;
+  left: 65%;
+  animation-delay: 8s;
+}
+
+.page-floating-element:nth-child(4) {
+  width: 50px;
+  height: 50px;
+  left: 85%;
+  animation-delay: 12s;
+}
+
+.page-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -4;
+  /* Reduce repaints */
+  transform: translateZ(0);
+}
+
+.page-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(245, 158, 11, 0.6);
+  border-radius: 50%;
+  animation: page-particle-float 8s linear infinite;
+  /* Optimize for animations */
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Reduced from 10 to 6 particles for better performance */
+.page-particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.page-particle:nth-child(2) { left: 25%; animation-delay: 1.5s; }
+.page-particle:nth-child(3) { left: 40%; animation-delay: 3s; }
+.page-particle:nth-child(4) { left: 60%; animation-delay: 4.5s; }
+.page-particle:nth-child(5) { left: 75%; animation-delay: 6s; }
+.page-particle:nth-child(6) { left: 90%; animation-delay: 7.5s; }
+
+/* Optimized keyframes using transform3d for hardware acceleration */
+@keyframes page-fluid-move {
+  0% {
+    background-position: 0% 0%;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    background-position: 100% 100%;
+    transform: translate3d(0, 0, 0) scale(1.02);
+  }
+  100% {
+    background-position: 0% 100%;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes page-float {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 100vh, 0) rotate(0deg);
+  }
+  20% {
+    opacity: 0.3;
+  }
+  80% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -100px, 0) rotate(360deg);
+  }
+}
+
+@keyframes page-particle-float {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 100vh, 0);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(20px, -50px, 0);
+  }
+}
+
+/* Optimized hover effects - only change necessary properties */
+.page-animated-background:hover .page-fluid-animation {
+  opacity: 0.4;
+  animation-duration: 15s;
+}
+
+.page-animated-background:hover .page-floating-element {
+  opacity: 0.4;
+  animation-duration: 10s;
+}
+
+.page-animated-background:hover .page-particle {
+  animation-duration: 6s;
+}
+
+/* Media query for reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .page-fluid-animation,
+  .page-floating-element,
+  .page-particle {
+    animation: none;
+    opacity: 0.1;
+  }
+  
+  .page-animated-background:hover .page-fluid-animation,
+  .page-animated-background:hover .page-floating-element,
+  .page-animated-background:hover .page-particle {
+    animation: none;
+  }
+}
+
+/* Performance optimization for mobile devices */
+@media (max-width: 768px) {
+  .page-floating-element {
+    animation-duration: 16s; /* Slower on mobile */
+  }
+  
+  .page-particle {
+    animation-duration: 12s; /* Slower on mobile */
+  }
+  
+  /* Reduce opacity on mobile for better performance */
+  .page-fluid-animation {
+    opacity: 0.2;
+  }
+  
+  .page-floating-element {
+    opacity: 0.05;
+  }
+  
+  .page-particle {
+    opacity: 0.3;
+  }
+} 

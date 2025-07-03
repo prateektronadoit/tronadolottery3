@@ -5,7 +5,24 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <Header />
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 bg-black">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 bg-black page-animated-background">
+        {/* Optimized Animated Background Elements */}
+        <div className="page-fluid-animation"></div>
+        <div className="page-floating-elements">
+          <div className="page-floating-element"></div>
+          <div className="page-floating-element"></div>
+          <div className="page-floating-element"></div>
+          <div className="page-floating-element"></div>
+        </div>
+        <div className="page-particles">
+          <div className="page-particle"></div>
+          <div className="page-particle"></div>
+          <div className="page-particle"></div>
+          <div className="page-particle"></div>
+          <div className="page-particle"></div>
+          <div className="page-particle"></div>
+        </div>
+        
         <h2 className="text-3xl font-bold mb-4 text-amber-500">Terms & Conditions</h2>
        
         <div className="max-w-2xl w-full bg-gray-800 border border-amber-500 rounded-lg p-6 text-base text-gray-200 shadow-lg mt-6">
