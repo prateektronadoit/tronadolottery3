@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title: "Tronado Lottery",
   description: "A decentralized lottery platform",
   icons: {
-    icon: "/t-golden.svg",
+    icon: "/T.png",
   },
 };
 
