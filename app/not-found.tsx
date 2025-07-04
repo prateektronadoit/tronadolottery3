@@ -5,35 +5,24 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen relative text-white">
-      {/* Background with gradient */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[var(--tronado-dark)] bg-opacity-95"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/50 via-indigo-900/40 to-black/70"></div>
-        
-        {/* Light particles effect */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-0 w-full h-full">
-            {[...Array(20)].map((_, i) => (
-              <div 
-                key={i}
-                className="absolute rounded-full bg-white animate-pulse"
-                style={{
-                  width: `${Math.random() * 4 + 2}px`,
-                  height: `${Math.random() * 4 + 2}px`,
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  opacity: Math.random() * 0.5 + 0.3,
-                  animationDuration: `${Math.random() * 3 + 2}s`,
-                  animationDelay: `${Math.random() * 2}s`
-                }}
-              />
-            ))}
-          </div>
+    <div className="flex flex-col items-center justify-center min-h-screen relative text-white page-animated-background">
+      {/* Animated background layers */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="page-fluid-animation"></div>
+        <div className="page-floating-elements">
+          <div className="page-floating-element"></div>
+          <div className="page-floating-element"></div>
+          <div className="page-floating-element"></div>
+          <div className="page-floating-element"></div>
         </div>
-        
-        {/* Light ray from top */}
-        <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-[120%] h-[40%] bg-gradient-to-b from-blue-300/20 to-transparent rotate-180 opacity-50 rounded-full blur-2xl"></div>
+        <div className="page-particles">
+          <div className="page-particle"></div>
+          <div className="page-particle"></div>
+          <div className="page-particle"></div>
+          <div className="page-particle"></div>
+          <div className="page-particle"></div>
+          <div className="page-particle"></div>
+        </div>
       </div>
       
       {/* Logo */}

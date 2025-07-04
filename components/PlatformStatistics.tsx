@@ -5,22 +5,22 @@ import '../styles/fluid-animation.css';
 const stats = [
   {
     iconImage: '12.png',
-    value: '50,000',
+    value: '0',
     label: 'Tickets Sold',
   },
   {
     iconImage: '11.png',
-    value: '1,250',
+    value: '0',
     label: 'Happy Winners',
   },
   {
     iconImage: '10.png',
-    value: '500,000',
+    value: '0',
     label: 'TRDO Distributed',
   },
   {
     iconImage: '20.png',
-    value: '125',
+    value: '0',
     label: 'Rounds Completed',
   },
 ];
