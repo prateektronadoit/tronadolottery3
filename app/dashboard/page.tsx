@@ -330,8 +330,25 @@ export default function Dashboard() {
   };
 
   const handlePurchase = async () => {
-    // Always purchase 1 ticket (limited per user)
-    await purchaseTickets(1);
+    // Validate ticket count
+    const ticketCount = parseInt(numTickets);
+    if (!ticketCount || ticketCount < 1 || ticketCount > 50) {
+      setNotification({ type: 'error', message: 'Please enter a valid number of tickets (1-50)' });
+      return;
+    }
+    
+    try {
+      // Purchase the specified number of tickets
+      await purchaseTickets(ticketCount);
+      
+      // Only mark as purchased after successful purchase
+      setHasPurchasedTicket(true);
+      setNotification({ type: 'success', message: `Successfully purchased ${ticketCount} ticket${ticketCount > 1 ? 's' : ''}!` });
+    } catch (error: any) {
+      console.error('Purchase failed:', error);
+      // Don't set hasPurchasedTicket to true if purchase fails
+      setNotification({ type: 'error', message: error.message || 'Ticket purchase failed' });
+    }
   };
 
   const handleClaim = async (roundId?: number) => {
@@ -733,11 +750,11 @@ export default function Dashboard() {
                   </button>
                 </div>
               ) : hasPurchasedTicket ? (
-                // User has already purchased a ticket
+                // User has already purchased tickets
                 <div className="text-center text-gray-400">
                   <p className="text-4xl md:text-6xl mb-3 md:mb-4">✅</p>
-                  <p className="text-sm md:text-base font-semibold text-green-400 mb-2">Ticket Already Purchased!</p>
-                  <p className="text-xs md:text-sm">You can only buy 1 ticket per round. Your ticket is ready for the draw.</p>
+                  <p className="text-sm md:text-base font-semibold text-green-400 mb-2">Tickets Already Purchased!</p>
+                  <p className="text-xs md:text-sm">You can only purchase tickets once per round. Your tickets are ready for the draw.</p>
                   <button
                     onClick={() => setActiveSection('mytickets')}
                     className="mt-3 md:mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2 rounded text-sm md:text-base"
@@ -753,13 +770,13 @@ export default function Dashboard() {
                     <input
                       type="number"
                       min="1"
-                      max="1"
-                      value="1"
-                      disabled
-                      placeholder="1 ticket only"
-                      className="w-full p-2 md:p-3 bg-gray-800 border border-gray-600 rounded-lg text-gray-400 placeholder-gray-500 focus:border-purple-500 focus:outline-none text-sm md:text-base cursor-not-allowed"
+                      max="50"
+                      value={numTickets}
+                      onChange={(e) => setNumTickets(e.target.value)}
+                      placeholder="Enter number of tickets (1-50)"
+                      className="w-full p-2 md:p-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none text-sm md:text-base"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Limited to 1 ticket per user per round</p>
+                    <p className="text-xs text-gray-500 mt-1">Maximum 50 tickets per user per round</p>
                   </div>
                   
                   <div className="bg-gray-800 rounded-lg p-3 md:p-4 mb-4">
@@ -767,18 +784,22 @@ export default function Dashboard() {
                       <span>Price per ticket:</span>
                       <span>{formatUSDT(dashboardData.ticketPrice || '0')} TRDO</span>
                     </div>
-                    <div className="flex justify-between font-semibold text-sm md:text-base">
+                    <div className="flex justify-between text-xs md:text-sm">
+                      <span>Number of tickets:</span>
+                      <span>{numTickets || '0'}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold text-sm md:text-base border-t border-gray-700 pt-2 mt-2">
                       <span>Total cost:</span>
-                      <span>{formatUSDT(dashboardData.ticketPrice || '0')} TRDO</span>
+                      <span>{formatUSDT((parseFloat(dashboardData.ticketPrice || '0') * (parseInt(numTickets) || 0)).toString())} TRDO</span>
                     </div>
                   </div>
                   
                   <button
                     onClick={handlePurchase}
-                    disabled={!isConnected || loading}
+                    disabled={!isConnected || loading || hasPurchasedTicket || !numTickets || parseInt(numTickets) < 1 || parseInt(numTickets) > 50}
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2 md:py-3 rounded-lg hover:from-purple-700 hover:to-pink-700 transition duration-300 disabled:opacity-50 text-sm md:text-base"
                   >
-                    {loading ? 'Processing...' : 'Purchase 1 Ticket'}
+                    {loading ? 'Processing...' : hasPurchasedTicket ? 'Already Purchased' : `Purchase ${numTickets || '0'} Ticket${parseInt(numTickets) > 1 ? 's' : ''}`}
                   </button>
                 </>
               )}

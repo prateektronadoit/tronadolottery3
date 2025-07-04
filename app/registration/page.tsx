@@ -158,7 +158,7 @@ export default function Registration() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sponsorAddress, setSponsorAddress] = useState('');
-  const [numTickets, setNumTickets] = useState(1);
+  const [numTickets, setNumTickets] = useState('');
   const [selectedRound, setSelectedRound] = useState(0);
   const [localLoading, setLocalLoading] = useState(false);
   
@@ -214,7 +214,7 @@ export default function Registration() {
   }, [isConnected, address, selectedRound, hasUserPurchasedTicket]);
 
   // Calculate total cost
-  const totalCost = numTickets * parseFloat(dashboardData.ticketPrice || '0');
+  const totalCost = (parseInt(numTickets) || 0) * parseFloat(dashboardData.ticketPrice || '0');
 
   // Simple format balance function for display
   const formatBalanceDisplay = (value: string | number | undefined): string => {
@@ -247,14 +247,23 @@ export default function Registration() {
       return;
     }
 
+    // Validate ticket count
+    const ticketCount = parseInt(numTickets);
+    if (!ticketCount || ticketCount < 1 || ticketCount > 50) {
+      showNotification('Please enter a valid number of tickets (1-50)', 'error');
+      return;
+    }
+
     setLocalLoading(true);
     try {
-      // Always purchase 1 ticket (limited per user)
-      await purchaseTickets(1);
-      showNotification('Successfully purchased 1 ticket!', 'success');
+      await purchaseTickets(ticketCount);
+      showNotification(`Successfully purchased ${ticketCount} ticket${ticketCount > 1 ? 's' : ''}!`, 'success');
+      // Only mark as purchased after successful purchase
+      setHasPurchasedTicket(true);
     } catch (error: any) {
       console.error('Purchase error:', error);
       showNotification(error.message || 'Ticket purchase failed', 'error');
+      // Don't set hasPurchasedTicket to true if purchase fails
     } finally {
       setLocalLoading(false);
     }
@@ -404,11 +413,11 @@ export default function Registration() {
             </div>
 
             {hasPurchasedTicket ? (
-              // User has already purchased a ticket
+              // User has already purchased tickets
               <div className="text-center text-gray-400 p-6 md:p-8">
                 <p className="text-4xl md:text-6xl mb-3 md:mb-4">✅</p>
-                <p className="text-sm md:text-base font-semibold text-green-400 mb-2">Ticket Already Purchased!</p>
-                <p className="text-xs md:text-sm">You can only buy 1 ticket per round. Your ticket is ready for the draw.</p>
+                <p className="text-sm md:text-base font-semibold text-green-400 mb-2">Tickets Already Purchased!</p>
+                <p className="text-xs md:text-sm">You can only purchase tickets once per round. Your tickets are ready for the draw.</p>
               </div>
             ) : (
               // User can purchase a ticket
@@ -449,30 +458,30 @@ export default function Registration() {
                     <input
                       type="number"
                       min="1"
-                      max="1"
-                      value="1"
-                      disabled
-                      placeholder="1 ticket only"
-                      className="w-full p-2 md:p-3 bg-gray-800 border border-gray-600 rounded-md text-gray-400 placeholder-gray-500 text-sm md:text-base cursor-not-allowed"
+                      max="50"
+                      value={numTickets}
+                      onChange={(e) => setNumTickets(e.target.value)}
+                      placeholder="Enter number of tickets (1-50)"
+                      className="w-full p-2 md:p-3 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-500 text-sm md:text-base"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Limited to 1 ticket per user per round</p>
+                    <p className="text-xs text-gray-500 mt-1">Maximum 50 tickets per user per round</p>
                   </div>
                   
                   <div className="bg-gray-900 p-3 md:p-4 rounded-lg border border-gray-800">
                     <div className="text-gray-300 text-sm md:text-base">
                       <span className="font-semibold">Total Cost: </span>
-                      <span className="text-lg md:text-xl text-orange-500">{formatBalanceDisplay(dashboardData.ticketPrice)} TRDO</span>
+                      <span className="text-lg md:text-xl text-orange-500">{formatBalanceDisplay(totalCost.toString())} TRDO</span>
                     </div>
                   </div>
                 </div>
                 
                 <button 
                   onClick={handlePurchaseTickets}
-                  disabled={isLoading || !selectedRound || parseFloat(dashboardData.ticketPrice || '0') > usdtBalanceNum}
+                  disabled={isLoading || !selectedRound || !numTickets || parseInt(numTickets) < 1 || parseInt(numTickets) > 50 || totalCost > usdtBalanceNum}
                   className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 md:py-3 px-4 md:px-6 lg:px-8 rounded-md text-sm md:text-base lg:text-lg transition-all duration-200 flex items-center"
                 >
                   {isLoading ? <LoadingSpinner /> : <span className="mr-2">🛒</span>}
-                  {isLoading ? 'Purchasing...' : 'Purchase 1 Ticket'}
+                  {isLoading ? 'Purchasing...' : `Purchase ${numTickets || '0'} Ticket${parseInt(numTickets) > 1 ? 's' : ''}`}
                 </button>
               </>
             )}

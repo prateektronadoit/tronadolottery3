@@ -303,13 +303,22 @@ export const useWallet = () => {
   // NEW CODE - LIMITED TO 1 TICKET PER USER
   const purchaseTickets = async (numTickets: number) => {
     if (!address) {
-      showNotification('Please connect your wallet first', 'error');
-      return;
+      const error = new Error('Please connect your wallet first');
+      showNotification(error.message, 'error');
+      throw error;
     }
 
     if (!currentRoundId) {
-      showNotification('No active round found', 'error');
-      return;
+      const error = new Error('No active round found');
+      showNotification(error.message, 'error');
+      throw error;
+    }
+
+    // Validate ticket count
+    if (!numTickets || numTickets < 1 || numTickets > 50) {
+      const error = new Error('Please enter a valid number of tickets (1-50)');
+      showNotification(error.message, 'error');
+      throw error;
     }
 
     // Check if user already has tickets in current round
@@ -322,21 +331,19 @@ export const useWallet = () => {
       }) as bigint[];
 
       if (userTickets.length > 0) {
-        showNotification('Ticket already purchased! You can only buy 1 ticket per round.', 'error');
-        return;
+        const error = new Error('Tickets already purchased! You can only purchase tickets once per round.');
+        showNotification(error.message, 'error');
+        throw error;
       }
     } catch (error) {
       console.error('Error checking user tickets:', error);
     }
 
-    // Force ticket count to 1
-    const ticketCount = 1;
-
     try {
       setLoading(true);
       
       // First, check if we need to approve USDT spending
-      const requiredAmount = parseEther((Number(dashboardData.ticketPrice) * ticketCount).toString());
+      const requiredAmount = parseEther((Number(dashboardData.ticketPrice) * numTickets).toString());
       if (!usdtAllowance || (typeof usdtAllowance === 'bigint' && usdtAllowance < requiredAmount)) {
         // Approve USDT spending
         await writeContractUsdt({
@@ -351,18 +358,19 @@ export const useWallet = () => {
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
-      // Purchase exactly 1 ticket
+      // Purchase the specified number of tickets
       await writeContractLottery({
         address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
         abi: LOTTERY_ABI,
         functionName: 'purchaseTickets',
-        args: [currentRoundId, 1],
+        args: [currentRoundId, BigInt(numTickets)],
       });
 
-      showNotification('Ticket purchase submitted! Please confirm the transaction in your wallet.', 'success');
+      showNotification(`Ticket purchase submitted! Please confirm the transaction in your wallet.`, 'success');
     } catch (error: any) {
       console.error('Ticket purchase failed:', error);
       showNotification(error.message || 'Ticket purchase failed', 'error');
+      throw error; // Re-throw the error so calling functions can handle it
     } finally {
       setLoading(false);
     }
