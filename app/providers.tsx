@@ -14,28 +14,28 @@ const RainbowKitProvider = dynamic(() => import('@rainbow-me/rainbowkit').then(m
   ssr: false,
 });
 
-// Polygon Mainnet configuration
-const polygon = {
-  id: 137,
-  name: 'Polygon',
-  network: 'polygon',
+// BSC Testnet configuration
+const bscTestnet = {
+  id: 97,
+  name: 'BSC Testnet',
+  network: 'bsc-testnet',
   nativeCurrency: {
-    name: 'MATIC',
-    symbol: 'MATIC',
+    name: 'tBNB',
+    symbol: 'tBNB',
     decimals: 18,
   },
   rpcUrls: {
     default: {
-      http: ['https://polygon-rpc.com'],
+      http: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
     },
   },
   blockExplorers: {
     default: {
-      name: 'PolygonScan',
-      url: 'https://polygonscan.com',
+      name: 'BscScan',
+      url: 'https://testnet.bscscan.com',
     },
   },
-  testnet: false,
+  testnet: true,
 } as const;
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -51,11 +51,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         try {
           const { createConfig } = await import('wagmi');
           const { getDefaultWallets } = await import('@rainbow-me/rainbowkit');
-          const { polygon } = await import('wagmi/chains');
+          const { bscTestnet } = await import('wagmi/chains');
           const { http } = await import('viem');
 
-          // Configure only Polygon mainnet
-          const chains = [polygon] as const;
+          // Configure only BSC testnet
+          const chains = [bscTestnet] as const;
 
           // Configure wallet connectors with custom options
           const { connectors } = getDefaultWallets({
@@ -63,11 +63,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
             projectId: 'fc21f1d3bcd9c06bd3139b0046af7b70',
           });
 
-          // Configure RPC endpoint for Polygon mainnet
+          // Configure RPC endpoint for BSC testnet
           const config = createConfig({
             connectors,
             transports: {
-              [polygon.id]: http('https://polygon-rpc.com'),
+              [bscTestnet.id]: http('https://data-seed-prebsc-1-s1.binance.org:8545'),
             },
             chains,
           });
@@ -97,7 +97,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <WagmiConfig config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider 
-          initialChain={polygon}
+          initialChain={bscTestnet}
           showRecentTransactions={true}
           modalSize="compact"
         >

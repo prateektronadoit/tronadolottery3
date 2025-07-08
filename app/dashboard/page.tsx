@@ -7,18 +7,18 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { useWallet } from '../hooks/useWallet';
 import { createPublicClient, http, formatEther } from 'viem';
-import { polygon } from 'wagmi/chains';
+import { bscTestnet } from 'wagmi/chains';
 
-// Import contract data from useWallet
+// Import contract data from useWallet - Testnet BSCScan
 const CONTRACT_ADDRESSES = {
-  LOTTERY: '0xA4a6FA7bc08E25F525709Ee50CB8351559294a21',
-  USDT: '0x8d60f559C2461F193913afd10c2d09a09FBa0Bf3'
+  LOTTERY: '0xc00235bc296c2d8986bbab01967239f8a61c0f88',
+  USDT: '0x7b0ED090071cb486a6ca12F16f49bd1135BDbeDA'
 };
 
 // Create public client for reading contract data
 const publicClient = createPublicClient({
-  chain: polygon,
-  transport: http('https://polygon-rpc.com'),
+  chain: bscTestnet,
+  transport: http('https://data-seed-prebsc-1-s1.binance.org:8545'),
 });
 
 // Contract ABIs - Updated with new ABI
