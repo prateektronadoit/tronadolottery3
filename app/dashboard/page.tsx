@@ -584,6 +584,19 @@ export default function Dashboard() {
   
   // NEW STATE - Track claim status from contract
   const [isClaimedFromContract, setIsClaimedFromContract] = useState<boolean | null>(null);
+  
+  // NEW STATE - Track referral link
+  const [referralLink, setReferralLink] = useState('');
+  const [showReferralCopied, setShowReferralCopied] = useState(false);
+  
+  // NEW STATE - Track rankings loading
+  const [rankingsLoading, setRankingsLoading] = useState(false);
+  
+  // NEW STATE - Track dashboard loading
+  const [dashboardLoading, setDashboardLoading] = useState(false);
+  
+  // NEW STATE - Track claim section loading
+  const [claimSectionLoading, setClaimSectionLoading] = useState(false);
 
   const {
     address,
@@ -618,7 +631,7 @@ export default function Dashboard() {
     });
   }, [dashboardData, address]);
 
-  // Handle URL parameters for direct navigation
+  // Handle URL parameters for direct navigation and referral
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -626,11 +639,44 @@ export default function Dashboard() {
       if (section && ['dashboard', 'registration', 'purchase', 'mytickets', 'claim'].includes(section)) {
         setActiveSection(section);
       }
+      
+      // Handle referral parameter
+      const refId = urlParams.get('refId');
+      if (refId && refId !== '0x0000000000000000000000000000000000000000') {
+        setSponsorAddress(refId);
+        // If we're not already on registration page, navigate there
+        if (activeSection !== 'registration') {
+          setActiveSection('registration');
+        }
+      }
     }
   }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  // Function to generate referral link
+  const generateReferralLink = () => {
+    if (typeof window !== 'undefined' && address) {
+      const baseUrl = window.location.origin;
+      const referralUrl = `${baseUrl}/dashboard?section=registration&refId=${address}`;
+      setReferralLink(referralUrl);
+    }
+  };
+
+  // Function to copy referral link
+  const copyReferralLink = async () => {
+    if (referralLink) {
+      try {
+        await navigator.clipboard.writeText(referralLink);
+        setShowReferralCopied(true);
+        setTimeout(() => setShowReferralCopied(false), 2000);
+        setNotification({ type: 'success', message: 'Referral link copied to clipboard! 📋' });
+      } catch (err) {
+        setNotification({ type: 'error', message: 'Failed to copy referral link' });
+      }
+    }
   };
 
   // Load prize data when component mounts or when relevant data changes
@@ -678,6 +724,44 @@ export default function Dashboard() {
 
     loadUserLevelCounts();
   }, [isConnected, address, dashboardData.isRegistered]);
+
+  // Set rankings loading when wallet changes
+  useEffect(() => {
+    if (isConnected && address) {
+      setRankingsLoading(true);
+    }
+  }, [address]);
+
+  // Set dashboard loading when wallet changes
+  useEffect(() => {
+    if (isConnected && address) {
+      setDashboardLoading(true);
+      // Reset loading after a short delay to allow data to load
+      const timer = setTimeout(() => {
+        setDashboardLoading(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [address]);
+
+  // Set claim section loading when wallet changes
+  useEffect(() => {
+    if (isConnected && address) {
+      setClaimSectionLoading(true);
+      // Reset loading after a short delay to allow data to load
+      const timer = setTimeout(() => {
+        setClaimSectionLoading(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [address]);
+
+  // Generate referral link when address changes
+  useEffect(() => {
+    if (address) {
+      generateReferralLink();
+    }
+  }, [address]);
 
   // Function to get total prize amount for current round
   const getTotalPrizeAmount = async () => {
@@ -949,6 +1033,7 @@ export default function Dashboard() {
       if (!address || !dashboardData.userInfo) return;
       
       console.log('🏆 Loading current round pending claims...');
+      setRankingsLoading(true);
       
       let totalPendingClaims = 0;
       let prizes: any[] = [];
@@ -1163,6 +1248,8 @@ export default function Dashboard() {
         totalPendingClaims: '0',
         prizes: []
       });
+    } finally {
+      setRankingsLoading(false);
     }
   };
 
@@ -1171,8 +1258,16 @@ export default function Dashboard() {
       case 'dashboard':
         return (
           <>
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-4 md:mb-6">
+            {dashboardLoading ? (
+              <div className="text-center text-gray-400 py-12">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+                <p className="text-lg md:text-xl">Loading dashboard data...</p>
+                <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your lottery information</p>
+              </div>
+            ) : (
+              <>
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-4 md:mb-6">
               <StatCard 
                 icon=""
                 iconImage="18.png"
@@ -1306,12 +1401,14 @@ export default function Dashboard() {
                 </button>
               )}
             </div>
+              </>
+            )}
           </>
         );
 
       case 'registration':
         return (
-          <div className="max-w-md mx-auto">
+          <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
             <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700">
               <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">Join the Lottery</h2>
               
@@ -1348,6 +1445,78 @@ export default function Dashboard() {
                 </>
               )}
             </div>
+
+            {/* Referral Link Section - Only show if user is registered */}
+            {dashboardData.isRegistered && (
+              <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700">
+                <h3 className="text-lg md:text-xl font-bold mb-4 text-center flex items-center justify-center">
+                  <span className="mr-2">🔗</span>
+                  Your Referral Link
+                </h3>
+                
+                <div className="space-y-3 md:space-y-4">
+                  <p className="text-sm md:text-base text-gray-300 text-center">
+                    Share this link with friends to earn sponsor income when they register!
+                  </p>
+                  
+                  <div className="bg-gray-800 rounded-lg p-3 md:p-4 border border-gray-600">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs md:text-sm text-gray-400">Your Address:</span>
+                      <span className="text-xs md:text-sm font-mono text-blue-400">{formatAddress(address || '')}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={referralLink}
+                        readOnly
+                        className="flex-1 p-2 md:p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-200 text-xs md:text-sm font-mono"
+                        placeholder="Generating referral link..."
+                      />
+                      <button
+                        onClick={copyReferralLink}
+                        disabled={!referralLink}
+                        className={`px-3 md:px-4 py-2 md:py-3 rounded-lg font-semibold transition duration-300 text-xs md:text-sm flex items-center ${
+                          !referralLink
+                            ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                            : showReferralCopied
+                            ? 'bg-green-600 text-white'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
+                      >
+                        {showReferralCopied ? (
+                          <>
+                            <span className="mr-1">✅</span>
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <span className="mr-1">📋</span>
+                            Copy
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="text-xs md:text-sm text-gray-400 mb-2">
+                      When someone uses your referral link:
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs md:text-sm">
+                      <div className="bg-green-900 border border-green-600 rounded-lg p-2">
+                        <span className="text-green-400 font-semibold">✅</span>
+                        <span className="text-gray-300">They get auto-filled sponsor</span>
+                      </div>
+                      <div className="bg-blue-900 border border-blue-600 rounded-lg p-2">
+                        <span className="text-blue-400 font-semibold">💰</span>
+                        <span className="text-gray-300">You earn sponsor income</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         );
 
@@ -1542,15 +1711,11 @@ export default function Dashboard() {
                 </button>
               </div>
               
-              {!dashboardData.drawExecuted ? (
-                <div className="text-center text-gray-400">
-                  <p className="text-4xl md:text-6xl mb-3 md:mb-4">⏳</p>
-                  <p className="text-sm md:text-base">Draw not executed yet. Please wait for the round to complete.</p>
-                </div>
-              ) : (!dashboardData.myTickets || dashboardData.myTickets.length === 0) ? (
-                <div className="text-center text-gray-400">
-                  <p className="text-4xl md:text-6xl mb-3 md:mb-4">🎫</p>
-                  <p className="text-sm md:text-base">No tickets to claim prizes for</p>
+              {claimSectionLoading ? (
+                <div className="text-center text-gray-400 py-12">
+                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+                  <p className="text-lg md:text-xl">Loading claim data...</p>
+                  <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your prize information</p>
                 </div>
               ) : (
                 <div className="space-y-4 md:space-y-6">
@@ -1638,7 +1803,12 @@ export default function Dashboard() {
             {/* Test getTicketRank Button */}
             <TestGetTicketRankButton />
             
-            {!dashboardData.drawExecuted ? (
+            {rankingsLoading ? (
+              <div className="text-center text-gray-400">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                <p className="text-sm md:text-base">Loading ticket rankings...</p>
+              </div>
+            ) : !dashboardData.drawExecuted ? (
               <div className="text-center text-gray-400">
                 <p className="text-4xl md:text-6xl mb-3 md:mb-4">⏳</p>
                 <p className="text-sm md:text-base">Draw not executed yet. Please wait for the round to complete.</p>
