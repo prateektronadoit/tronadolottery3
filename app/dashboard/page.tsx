@@ -589,21 +589,9 @@ export default function Dashboard() {
   const [referralLink, setReferralLink] = useState('');
   const [showReferralCopied, setShowReferralCopied] = useState(false);
   
-  // NEW STATE - Track rankings loading
-  const [rankingsLoading, setRankingsLoading] = useState(false);
-  
-  // NEW STATE - Track dashboard loading
-  const [dashboardLoading, setDashboardLoading] = useState(false);
-  
-  // NEW STATE - Track claim section loading
-  const [claimSectionLoading, setClaimSectionLoading] = useState(false);
-  
-  // NEW STATE - Track all section loading states
-  const [registrationLoading, setRegistrationLoading] = useState(false);
-  const [purchaseLoading, setPurchaseLoading] = useState(false);
-  const [myTicketsLoading, setMyTicketsLoading] = useState(false);
 
-  // Add sectionLoading state
+
+  // Unified loading state for all sections
   const [sectionLoading, setSectionLoading] = useState(false);
 
   const {
@@ -733,52 +721,19 @@ export default function Dashboard() {
     loadUserLevelCounts();
   }, [isConnected, address, dashboardData.isRegistered]);
 
-  // Set rankings loading when wallet changes
-  useEffect(() => {
-    if (isConnected && address) {
-      setRankingsLoading(true);
-    }
-  }, [address]);
 
-  // Set dashboard loading when wallet changes
+
+  // Unified loading system - triggers on section change or wallet change
   useEffect(() => {
     if (isConnected && address) {
-      setDashboardLoading(true);
+      setSectionLoading(true);
       // Reset loading after a short delay to allow data to load
       const timer = setTimeout(() => {
-        setDashboardLoading(false);
-      }, 2000);
+        setSectionLoading(false);
+      }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [address]);
-
-  // Set claim section loading when wallet changes
-  useEffect(() => {
-    if (isConnected && address) {
-      setClaimSectionLoading(true);
-      // Reset loading after a short delay to allow data to load
-      const timer = setTimeout(() => {
-        setClaimSectionLoading(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [address]);
-
-  // Set all section loading states when wallet changes
-  useEffect(() => {
-    if (isConnected && address) {
-      setRegistrationLoading(true);
-      setPurchaseLoading(true);
-      setMyTicketsLoading(true);
-      // Reset loading after a short delay to allow data to load
-      const timer = setTimeout(() => {
-        setRegistrationLoading(false);
-        setPurchaseLoading(false);
-        setMyTicketsLoading(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [address]);
+  }, [activeSection, address]);
 
   // Generate referral link when address changes
   useEffect(() => {
@@ -1057,7 +1012,6 @@ export default function Dashboard() {
       if (!address || !dashboardData.userInfo) return;
       
       console.log('🏆 Loading current round pending claims...');
-      setRankingsLoading(true);
       
       let totalPendingClaims = 0;
       let prizes: any[] = [];
@@ -1271,27 +1225,26 @@ export default function Dashboard() {
         foundPrizes: false,
         totalPendingClaims: '0',
         prizes: []
-      });
-    } finally {
-      setRankingsLoading(false);
+            });
     }
   };
 
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
+        if (sectionLoading) {
+          return (
+            <div className="text-center text-gray-400 py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+              <p className="text-lg md:text-xl">Loading dashboard data...</p>
+              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your lottery information</p>
+            </div>
+          );
+        }
         return (
           <>
-            {dashboardLoading ? (
-              <div className="text-center text-gray-400 py-12">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
-                <p className="text-lg md:text-xl">Loading dashboard data...</p>
-                <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your lottery information</p>
-              </div>
-            ) : (
-              <>
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-4 md:mb-6">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-4 md:mb-6">
               <StatCard 
                 icon=""
                 iconImage="18.png"
@@ -1425,14 +1378,12 @@ export default function Dashboard() {
                 </button>
               )}
             </div>
-              </>
-            )}
           </>
         );
 
       case 'registration':
         if (sectionLoading) {
-          return (
+        return (
             <div className="text-center text-gray-400 py-12">
               <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
               <p className="text-lg md:text-xl">Loading registration data...</p>
@@ -1554,6 +1505,15 @@ export default function Dashboard() {
         );
 
       case 'purchase':
+        if (sectionLoading) {
+          return (
+            <div className="text-center text-gray-400 py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+              <p className="text-lg md:text-xl">Loading purchase data...</p>
+              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch ticket information</p>
+            </div>
+          );
+        }
         return (
           <div className="max-w-4xl mx-auto">
             <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700 mb-4 md:mb-6">
@@ -1679,6 +1639,15 @@ export default function Dashboard() {
         );
 
       case 'mytickets':
+        if (sectionLoading) {
+          return (
+            <div className="text-center text-gray-400 py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+              <p className="text-lg md:text-xl">Loading my tickets...</p>
+              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your ticket information</p>
+            </div>
+          );
+        }
         return (
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">My Tickets</h2>
@@ -1727,6 +1696,15 @@ export default function Dashboard() {
         );
 
       case 'claim':
+        if (sectionLoading) {
+          return (
+            <div className="text-center text-gray-400 py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+              <p className="text-lg md:text-xl">Loading claim data...</p>
+              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your prize information</p>
+            </div>
+          );
+        }
         return (
           <div className="max-w-4xl mx-auto">
             <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700 mb-4 md:mb-6">
@@ -1744,7 +1722,7 @@ export default function Dashboard() {
                 </button>
               </div>
               
-              {claimSectionLoading ? (
+              {sectionLoading ? (
                 <div className="text-center text-gray-400 py-12">
                   <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
                   <p className="text-lg md:text-xl">Loading claim data...</p>
@@ -1818,6 +1796,15 @@ export default function Dashboard() {
         );
 
       case 'rankings':
+        if (sectionLoading) {
+          return (
+            <div className="text-center text-gray-400 py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+              <p className="text-lg md:text-xl">Loading rankings data...</p>
+              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch ticket rankings</p>
+            </div>
+          );
+        }
         return (
           <div className="space-y-4 md:space-y-6">
             <div className="flex justify-between items-center">
@@ -1836,7 +1823,7 @@ export default function Dashboard() {
             {/* Test getTicketRank Button */}
             <TestGetTicketRankButton />
             
-            {rankingsLoading ? (
+            {sectionLoading ? (
               <div className="text-center text-gray-400">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
                 <p className="text-sm md:text-base">Loading ticket rankings...</p>
@@ -1881,7 +1868,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Detailed Rankings */}
-                {prizeData.foundPrizes ? (
+                  {prizeData.foundPrizes ? (
                   <div className="space-y-4">
                     <h3 className="text-lg md:text-xl font-semibold">🏆 Your Winning Tickets & Rankings</h3>
                       
