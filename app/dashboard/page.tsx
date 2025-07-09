@@ -188,13 +188,15 @@ const ComprehensivePrizeDisplay = ({
   getUserPrizeData, 
   getUserTotalPrize, 
   getUserSponsorInfo,
-  setNotification
+  setNotification,
+  myTicketsCount
 }: { 
   roundId: number;
   getUserPrizeData: (roundId: number) => Promise<any>;
   getUserTotalPrize: (roundId: number) => Promise<string>;
   getUserSponsorInfo: (roundId: number) => Promise<any>;
   setNotification: (notification: { message: string; type: 'success' | 'error' | 'warning' | 'info' } | null) => void;
+  myTicketsCount: number;
 }) => {
   const [prizeData, setPrizeData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -339,8 +341,6 @@ const ComprehensivePrizeDisplay = ({
           <div className="text-xs md:text-sm text-gray-300">Sponsor Income</div>
         </div>
         
-
-        
         <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
           <div className="text-lg md:text-xl font-bold text-blue-400">
             {prizeData.netPrize}
@@ -388,24 +388,6 @@ const ComprehensivePrizeDisplay = ({
             <span className="text-gray-400">Claim Distribution received from the heads (15%):</span>
             <div className="flex items-center gap-2">
               <span className="text-purple-400">{prizeData.rewardSponsorIncome} TRDO</span>
-              {/* <button 
-                onClick={() => setShowDistributionPopup(!showDistributionPopup)}
-                className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-2 py-1 rounded-full transition duration-200"
-              >
-                +
-              </button> */}
-              {showDistributionPopup && (
-                <div className="absolute z-50 bg-white text-gray-800 rounded-lg shadow-lg p-3 border border-gray-300 min-w-[280px] right-0 mt-1">
-                  <div className="text-sm font-semibold mb-2 text-gray-700">Users Array Data (Index 5)</div>
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Index 5:</span>
-                      <span className="font-mono font-semibold text-purple-700">RewardSponsorIncome = {prizeData.rewardSponsorIncome} TRDO</span>
-                    </div>
-                  </div>
-                  <div className="text-xs text-gray-500 mt-2 italic">From users mapping in smart contract</div>
-                </div>
-              )}
             </div>
           </div>
           <div className="border-t border-gray-700 pt-2 flex justify-between font-semibold">
@@ -417,46 +399,40 @@ const ComprehensivePrizeDisplay = ({
             <span className="text-blue-400">{prizeData.totalReceived} TRDO</span>
           </div>
 
-          
-          {/* Claim Prize Button Below Net Prize */}
-          <div className="flex flex-col items-end mt-4 gap-2">
-            <button
-              onClick={handleClaimPrize}
-              disabled={claimLoading || isClaimed === true}
-              className={`font-bold px-6 py-2 rounded-lg text-base shadow-md transition duration-300 flex items-center gap-2 ${
-                claimLoading || isClaimed === true
-                  ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white'
-              }`}
-            >
-              {claimLoading ? (
-                <>
-                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
-                  Claiming...
-                </>
-              ) : isClaimed === true ? (
-                <>
-                  <span className="mr-2">✅</span>
-                  Claimed
-                </>
-              ) : (
-                <>
-                  <span className="mr-2">🏆</span>
-                  Claim Prize
-                </>
-              )}
-            </button>
-            {/* Claim Status Indicator */}
-            {/* {isClaimed !== null && (
-              <div className={`px-3 py-1 rounded-full text-sm font-semibold mt-1 ${
-                isClaimed ? 'bg-green-900 text-green-300' : 'bg-blue-900 text-blue-300'
-              }`}>
-                {isClaimed ? '✅ Claimed' : '💰 Unclaimed'}
-              </div>
-            )} */}
-          </div>
+          {/* Claim Prize Button - Only show if user has tickets */}
+          {myTicketsCount > 0 && (
+            <div className="flex flex-col items-end mt-4 gap-2">
+              <button
+                onClick={handleClaimPrize}
+                disabled={claimLoading || isClaimed === true}
+                className={`font-bold px-6 py-2 rounded-lg text-base shadow-md transition duration-300 flex items-center gap-2 ${
+                  claimLoading || isClaimed === true
+                    ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white'
+                }`}
+              >
+                {claimLoading ? (
+                  <>
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                    Claiming...
+                  </>
+                ) : isClaimed === true ? (
+                  <>
+                    <span className="mr-2">✅</span>
+                    Claimed
+                  </>
+                ) : (
+                  <>
+                    <span className="mr-2">🏆</span>
+                    Claim Prize
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
       {/* Sponsor Income Network Level Popup */}
       {showSponsorPopup && (
         <div className="fixed inset-0 z-50 flex items-start justify-end bg-black bg-opacity-30">
@@ -1768,6 +1744,7 @@ export default function Dashboard() {
                         getUserTotalPrize={getUserTotalPrize}
                         getUserSponsorInfo={getUserSponsorInfo}
                         setNotification={setNotification}
+                        myTicketsCount={dashboardData.myTicketsCount || 0}
                       />
                     </div>
 
