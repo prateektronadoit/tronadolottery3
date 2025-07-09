@@ -597,6 +597,14 @@ export default function Dashboard() {
   
   // NEW STATE - Track claim section loading
   const [claimSectionLoading, setClaimSectionLoading] = useState(false);
+  
+  // NEW STATE - Track all section loading states
+  const [registrationLoading, setRegistrationLoading] = useState(false);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
+  const [myTicketsLoading, setMyTicketsLoading] = useState(false);
+
+  // Add sectionLoading state
+  const [sectionLoading, setSectionLoading] = useState(false);
 
   const {
     address,
@@ -751,6 +759,22 @@ export default function Dashboard() {
       // Reset loading after a short delay to allow data to load
       const timer = setTimeout(() => {
         setClaimSectionLoading(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [address]);
+
+  // Set all section loading states when wallet changes
+  useEffect(() => {
+    if (isConnected && address) {
+      setRegistrationLoading(true);
+      setPurchaseLoading(true);
+      setMyTicketsLoading(true);
+      // Reset loading after a short delay to allow data to load
+      const timer = setTimeout(() => {
+        setRegistrationLoading(false);
+        setPurchaseLoading(false);
+        setMyTicketsLoading(false);
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -1407,6 +1431,15 @@ export default function Dashboard() {
         );
 
       case 'registration':
+        if (sectionLoading) {
+          return (
+            <div className="text-center text-gray-400 py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+              <p className="text-lg md:text-xl">Loading registration data...</p>
+              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your registration information</p>
+            </div>
+          );
+        }
         return (
           <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
             <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700">
