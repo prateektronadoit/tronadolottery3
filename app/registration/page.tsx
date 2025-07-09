@@ -149,12 +149,26 @@ export default function Registration() {
     showNotification,
     formatBalance,
     formatAddress,
-    hasUserPurchasedTicket, // NEW FUNCTION
+    hasUserPurchasedTicket,
+    getUserTotalPrize,
+    getUserSponsorInfo,
+    getUserPrizeData,
+    getUserLevelCounts
   } = useWallet();
 
   // Extract userInfo and isUserRegistered from dashboardData
   const userInfo = dashboardData.userInfo;
   const isUserRegistered = dashboardData.isRegistered;
+
+  // Add console.log to track registration status
+  useEffect(() => {
+    console.log('📝 Registration Page - User Status:', {
+      isUserRegistered,
+      userInfo,
+      address,
+      isConnected
+    });
+  }, [isUserRegistered, userInfo, address, isConnected]);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sponsorAddress, setSponsorAddress] = useState('');
@@ -167,6 +181,10 @@ export default function Registration() {
   
   // NEW STATE - Track if user has already purchased a ticket
   const [hasPurchasedTicket, setHasPurchasedTicket] = useState(false);
+
+  // NEW STATE - Track user level counts
+  const [userLevelCounts, setUserLevelCounts] = useState<any[]>([]);
+  const [levelCountsLoading, setLevelCountsLoading] = useState(false);
 
   // Update local notification when notification changes
   useEffect(() => {
@@ -212,6 +230,29 @@ export default function Registration() {
 
     checkUserTicketPurchase();
   }, [isConnected, address, selectedRound, hasUserPurchasedTicket]);
+
+  // NEW EFFECT - Load user level counts
+  useEffect(() => {
+    const loadUserLevelCounts = async () => {
+      if (isConnected && address && isUserRegistered) {
+        try {
+          setLevelCountsLoading(true);
+          const levelCounts = await getUserLevelCounts(address);
+          setUserLevelCounts(levelCounts);
+          console.log('👥 Loaded user level counts:', levelCounts);
+        } catch (error) {
+          console.error('Error loading user level counts:', error);
+          setUserLevelCounts([]);
+        } finally {
+          setLevelCountsLoading(false);
+        }
+      } else {
+        setUserLevelCounts([]);
+      }
+    };
+
+    loadUserLevelCounts();
+  }, [isConnected, address, isUserRegistered, getUserLevelCounts]);
 
   // Calculate total cost
   const totalCost = (parseInt(numTickets) || 0) * parseFloat(dashboardData.ticketPrice || '0');
@@ -394,6 +435,91 @@ export default function Registration() {
                 </button>
               )}
             </div>
+          </Section>
+        )}
+
+        {/* User Level Counts Section */}
+        {isConnected && isUserRegistered && (
+          <Section title="👥 Your Network Levels" icon="📊">
+            <div className="bg-gray-800 rounded-lg overflow-hidden">
+              {levelCountsLoading ? (
+                <div className="p-6 md:p-8 text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-3"></div>
+                  <p className="text-sm text-gray-400">Loading your network levels...</p>
+                </div>
+              ) : userLevelCounts.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-700">
+                      <tr>
+                        <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Level</th>
+                        <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Level Name</th>
+                        <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Count</th>
+                        <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-gray-800 divide-y divide-gray-700">
+                      {userLevelCounts.map((levelData, index) => (
+                        <tr key={index} className="hover:bg-gray-700 transition-colors">
+                          <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm text-white">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-300">
+                              #{levelData.level}
+                            </span>
+                          </td>
+                          <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm text-white font-medium">
+                            {levelData.levelName}
+                          </td>
+                          <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm text-white">
+                            <span className="font-bold text-green-400">{levelData.count}</span>
+                          </td>
+                          <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              levelData.count > 0 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {levelData.count > 0 ? 'Active' : 'Empty'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="p-6 md:p-8 text-center">
+                  <div className="text-gray-400">
+                    <div className="text-3xl md:text-4xl mb-3 md:mb-4">👥</div>
+                    <div className="text-sm md:text-lg font-semibold">No network levels found</div>
+                    <div className="text-xs md:text-sm">Your network levels will appear here once you have referrals</div>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Level Summary */}
+            {userLevelCounts.length > 0 && (
+              <div className="mt-4 md:mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
+                  <div className="text-lg md:text-xl font-bold text-blue-400">
+                    {userLevelCounts.filter(level => level.count > 0).length}
+                  </div>
+                  <div className="text-xs md:text-sm text-gray-300">Active Levels</div>
+                </div>
+                <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
+                  <div className="text-lg md:text-xl font-bold text-green-400">
+                    {userLevelCounts.reduce((total, level) => total + level.count, 0)}
+                  </div>
+                  <div className="text-xs md:text-sm text-gray-300">Total Referrals</div>
+                </div>
+                <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
+                  <div className="text-lg md:text-xl font-bold text-purple-400">
+                    {userLevelCounts.find(level => level.level === 1)?.count || 0}
+                  </div>
+                  <div className="text-xs md:text-sm text-gray-300">Direct Referrals</div>
+                </div>
+              </div>
+            )}
           </Section>
         )}
 
