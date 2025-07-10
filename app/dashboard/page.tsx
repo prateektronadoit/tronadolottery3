@@ -350,17 +350,13 @@ const ComprehensivePrizeDisplay = ({
       </div>
 
       {/* Participation Status */}
-      <div className={`rounded-lg p-3 md:p-4 text-center ${
-        prizeData.participatedInRound 
-          ? 'bg-green-900 border border-green-600' 
-          : 'bg-gray-900 border border-gray-600'
-      }`}>
-        <div className={`text-sm md:text-base font-semibold ${
-          prizeData.participatedInRound ? 'text-green-300' : 'text-gray-400'
-        }`}>
-          {prizeData.participatedInRound ? '✅ Participated in Round' : '❌ Did not participate in Round'}
+      {myTicketsCount > 0 && (
+        <div className="rounded-lg p-3 md:p-4 text-center bg-green-900 border border-green-600">
+          <div className="text-sm md:text-base font-semibold text-green-300">
+            ✅ Participated in Round
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Prize Calculation Breakdown */}
       <div className="bg-gray-900 rounded-lg p-3 md:p-4 border border-gray-700">
@@ -1201,7 +1197,7 @@ export default function Dashboard() {
         foundPrizes: false,
         totalPendingClaims: '0',
         prizes: []
-            });
+      });
     }
   };
 
