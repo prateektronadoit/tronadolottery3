@@ -153,7 +153,10 @@ export default function Registration() {
     getUserTotalPrize,
     getUserSponsorInfo,
     getUserPrizeData,
-    getUserLevelCounts
+    getUserLevelCounts,
+    isTransactionPending,
+    transactionType,
+    isRefreshing
   } = useWallet();
 
   // Extract userInfo and isUserRegistered from dashboardData
@@ -382,6 +385,46 @@ export default function Registration() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
               <p className="text-white text-lg">Switching Wallet...</p>
               <p className="text-gray-400 text-sm mt-2">Please wait while we update your data</p>
+            </div>
+          </div>
+        )}
+
+        {/* Transaction Pending Overlay */}
+        {isTransactionPending && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div className="bg-gray-900 p-8 rounded-lg border border-gray-700 max-w-md w-full mx-4">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                <h3 className="text-xl font-bold mb-2">
+                  {transactionType === 'register' && 'Processing Registration...'}
+                  {transactionType === 'purchase' && 'Processing Ticket Purchase...'}
+                  {transactionType === 'claim' && 'Processing Prize Claim...'}
+                </h3>
+                <p className="text-gray-400 mb-4">
+                  Please wait while your transaction is being confirmed on the blockchain.
+                </p>
+                <div className="text-sm text-gray-500">
+                  This may take a few moments...
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Refreshing Data Overlay */}
+        {isRefreshing && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div className="bg-gray-900 p-8 rounded-lg border border-gray-700 max-w-md w-full mx-4">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+                <h3 className="text-xl font-bold mb-2 text-green-400">Refreshing Data...</h3>
+                <p className="text-gray-400 mb-4">
+                  Please wait while we update your data with the latest information.
+                </p>
+                <div className="text-sm text-gray-500">
+                  This will only take a moment...
+                </div>
+              </div>
             </div>
           </div>
         )}

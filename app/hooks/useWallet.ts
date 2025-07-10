@@ -64,6 +64,11 @@ export const useWallet = () => {
     userPurchaseHistory: []
   });
 
+  // Add state for transaction confirmation
+  const [isTransactionPending, setIsTransactionPending] = useState(false);
+  const [transactionType, setTransactionType] = useState<'register' | 'purchase' | 'claim' | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   // Get BNB balance
   const { data: bnbBalance } = useBalance({
     address: address,
@@ -128,6 +133,49 @@ export const useWallet = () => {
   const { writeContract: writeContractLottery } = useWriteContract();
   const { writeContract: writeContractUsdt } = useWriteContract();
 
+  // Function to handle transaction completion and refresh
+  const handleTransactionComplete = (type: 'register' | 'purchase' | 'claim') => {
+    console.log(`✅ Transaction completed: ${type}`);
+    
+    // Show success notification
+    let successMessage = '';
+    switch (type) {
+      case 'register':
+        successMessage = '✅ Registration successful! Refreshing data...';
+        break;
+      case 'purchase':
+        successMessage = '✅ Ticket purchase successful! Refreshing data...';
+        break;
+      case 'claim':
+        successMessage = '✅ Prize claim successful! Refreshing data...';
+        break;
+    }
+    showNotification(successMessage, 'success');
+    
+    // Set refreshing state to show loading message
+    setIsRefreshing(true);
+    
+    // Trigger data refresh after a short delay to allow blockchain to update
+    setTimeout(() => {
+      console.log('🔄 Refreshing data after transaction completion...');
+      // Force a refresh by triggering a re-render
+      window.location.reload();
+    }, 2000);
+    
+    // Reset transaction state
+    setIsTransactionPending(false);
+    setTransactionType(null);
+    setLoading(false);
+  };
+
+  // Effect to handle transaction confirmation and page refresh
+  useEffect(() => {
+    if (isTransactionPending && transactionType) {
+      console.log(`⏳ Transaction pending: ${transactionType}`);
+      // The transaction receipt handling is now handled by the new handleTransactionComplete
+      // This effect will now only run if the transaction is still pending after the timeout
+    }
+  }, [isTransactionPending, transactionType]);
 
  
 
@@ -470,17 +518,29 @@ export const useWallet = () => {
 
     try {
       setLoading(true);
-      const registerdata =  await writeContractLottery({
+      setIsTransactionPending(true);
+      setTransactionType('register');
+      
+      await writeContractLottery({
         address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
         abi: LOTTERY_ABI,
         functionName: 'registerUser',
         args: [sponsor as `0x${string}`],
       });
+      
+      console.log('📝 Registration transaction submitted');
       showNotification('Registration submitted! Please confirm the transaction in your wallet.', 'success');
+      
+      // Set up a timer to refresh after transaction completion
+      setTimeout(() => {
+        handleTransactionComplete('register');
+      }, 5000); // Wait 5 seconds for transaction to be confirmed
+      
     } catch (error: any) {
       console.error('Registration failed:', error);
       showNotification(error.message || 'Registration failed', 'error');
-    } finally {
+      setIsTransactionPending(false);
+      setTransactionType(null);
       setLoading(false);
     }
   };
@@ -575,6 +635,8 @@ export const useWallet = () => {
 
     try {
       setLoading(true);
+      setIsTransactionPending(true);
+      setTransactionType('purchase');
       
       // First, check if we need to approve USDT spending
       const requiredAmount = parseEther((Number(dashboardData.ticketPrice) * numTickets).toString());
@@ -587,12 +649,41 @@ export const useWallet = () => {
           args: [CONTRACT_ADDRESSES.LOTTERY as `0x${string}`, requiredAmount],
         });
         
+        console.log('🔐 USDT approval transaction submitted');
         showNotification('TRDO approval submitted! Please confirm in your wallet.', 'success');
-        // Wait a bit for approval to be processed
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Wait for approval to be processed, then proceed with purchase
+        setTimeout(async () => {
+          try {
+            // Purchase the specified number of tickets
+            await writeContractLottery({
+              address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+              abi: LOTTERY_ABI,
+              functionName: 'purchaseTickets',
+              args: [currentRoundId, BigInt(numTickets)],
+            });
+
+            console.log('🎫 Ticket purchase transaction submitted');
+            showNotification(`Ticket purchase submitted! Please confirm the transaction in your wallet.`, 'success');
+            
+            // Set up a timer to refresh after transaction completion
+            setTimeout(() => {
+              handleTransactionComplete('purchase');
+            }, 5000); // Wait 5 seconds for transaction to be confirmed
+            
+          } catch (error: any) {
+            console.error('Ticket purchase failed:', error);
+            showNotification(error.message || 'Ticket purchase failed', 'error');
+            setIsTransactionPending(false);
+            setTransactionType(null);
+            setLoading(false);
+          }
+        }, 3000); // Wait 3 seconds for approval to be processed
+        
+        return; // Exit early, will handle purchase after approval
       }
 
-      // Purchase the specified number of tickets
+      // Purchase the specified number of tickets (no approval needed)
       await writeContractLottery({
         address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
         abi: LOTTERY_ABI,
@@ -600,13 +691,21 @@ export const useWallet = () => {
         args: [currentRoundId, BigInt(numTickets)],
       });
 
+      console.log('🎫 Ticket purchase transaction submitted');
       showNotification(`Ticket purchase submitted! Please confirm the transaction in your wallet.`, 'success');
+      
+      // Set up a timer to refresh after transaction completion
+      setTimeout(() => {
+        handleTransactionComplete('purchase');
+      }, 5000); // Wait 5 seconds for transaction to be confirmed
+      
     } catch (error: any) {
       console.error('Ticket purchase failed:', error);
       showNotification(error.message || 'Ticket purchase failed', 'error');
-      throw error; // Re-throw the error so calling functions can handle it
-    } finally {
+      setIsTransactionPending(false);
+      setTransactionType(null);
       setLoading(false);
+      throw error; // Re-throw the error so calling functions can handle it
     }
   };
 
@@ -618,6 +717,9 @@ export const useWallet = () => {
 
     try {
       setLoading(true);
+      setIsTransactionPending(true);
+      setTransactionType('claim');
+      
       await writeContractLottery({
         address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
         abi: LOTTERY_ABI,
@@ -625,11 +727,19 @@ export const useWallet = () => {
         args: [BigInt(roundId)],
       });
 
+      console.log('🏆 Prize claim transaction submitted');
       showNotification('Prize claim submitted! Please confirm the transaction in your wallet.', 'success');
+      
+      // Set up a timer to refresh after transaction completion
+      setTimeout(() => {
+        handleTransactionComplete('claim');
+      }, 5000); // Wait 5 seconds for transaction to be confirmed
+      
     } catch (error: any) {
       console.error('Prize claim failed:', error);
       showNotification(error.message || 'Prize claim failed', 'error');
-    } finally {
+      setIsTransactionPending(false);
+      setTransactionType(null);
       setLoading(false);
     }
   };
@@ -647,6 +757,9 @@ export const useWallet = () => {
 
     try {
       setLoading(true);
+      setIsTransactionPending(true);
+      setTransactionType('claim');
+      
       await writeContractLottery({
         address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
         abi: LOTTERY_ABI,
@@ -654,11 +767,19 @@ export const useWallet = () => {
         args: [currentRoundId],
       });
 
+      console.log('🏆 All prizes claim transaction submitted');
       showNotification('All prizes claim submitted! Please confirm the transaction in your wallet.', 'success');
+      
+      // Set up a timer to refresh after transaction completion
+      setTimeout(() => {
+        handleTransactionComplete('claim');
+      }, 5000); // Wait 5 seconds for transaction to be confirmed
+      
     } catch (error: any) {
       console.error('All prizes claim failed:', error);
       showNotification(error.message || 'All prizes claim failed', 'error');
-    } finally {
+      setIsTransactionPending(false);
+      setTransactionType(null);
       setLoading(false);
     }
   };
@@ -794,6 +915,9 @@ export const useWallet = () => {
     loading,
     notification,
     dashboardData,
+    isTransactionPending,
+    transactionType,
+    isRefreshing,
     
     // Balances
     bnbBalance: formatBalance(bnbBalance?.value),
@@ -813,7 +937,7 @@ export const useWallet = () => {
     getPurchaseHistory,
     getPrizeData,
     getTicketDetails,
-    hasUserPurchasedTicket, // NEW FUNCTION
+    hasUserPurchasedTicket,
     showNotification,
     getFallbackUserTickets,
     

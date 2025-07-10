@@ -592,7 +592,10 @@ export default function Dashboard() {
     getUserSponsorInfo,
     getUserPrizeData,
     getUserLevelCounts,
-    checkIsClaimed
+    checkIsClaimed,
+    isTransactionPending,
+    transactionType,
+    isRefreshing
   } = useWallet();
 
   // Add console.log to track dashboardData changes
@@ -1880,7 +1883,7 @@ export default function Dashboard() {
               </button>
             </div>
             {/* Test getTicketRank Button */}
-            <TestGetTicketRankButton />
+            
             
             {sectionLoading ? (
               <div className="text-center text-gray-400">
@@ -2093,6 +2096,46 @@ export default function Dashboard() {
       
       {/* Main Content */}
       <div className="md:ml-64 flex-1 bg-gradient-to-b from-blue-950 to-blue-900 text-white">
+        {/* Transaction Pending Overlay */}
+        {isTransactionPending && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div className="bg-gray-900 p-8 rounded-lg border border-gray-700 max-w-md w-full mx-4">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                <h3 className="text-xl font-bold mb-2">
+                  {transactionType === 'register' && 'Processing Registration...'}
+                  {transactionType === 'purchase' && 'Processing Ticket Purchase...'}
+                  {transactionType === 'claim' && 'Processing Prize Claim...'}
+                </h3>
+                <p className="text-gray-400 mb-4">
+                  Please wait while your transaction is being confirmed on the blockchain.
+                </p>
+                <div className="text-sm text-gray-500">
+                  This may take a few moments...
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Refreshing Data Overlay */}
+        {isRefreshing && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div className="bg-gray-900 p-8 rounded-lg border border-gray-700 max-w-md w-full mx-4">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+                <h3 className="text-xl font-bold mb-2 text-green-400">Refreshing Data...</h3>
+                <p className="text-gray-400 mb-4">
+                  Please wait while we update your data with the latest information.
+                </p>
+                <div className="text-sm text-gray-500">
+                  This will only take a moment...
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Wallet Switching Overlay */}
         {isWalletSwitching && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
@@ -2122,7 +2165,7 @@ export default function Dashboard() {
           </div>
           <ConnectButton />
         </header>
-        
+
         {/* Dashboard Content */}
         <div className="p-3 md:p-4 lg:p-6">
           {renderContent()}
@@ -2134,7 +2177,7 @@ export default function Dashboard() {
 
       {/* Notifications */}
       <Notification 
-          notification={notification}
+        notification={notification}
         onClose={() => setNotification(null)} 
       />
 
@@ -2153,7 +2196,7 @@ export default function Dashboard() {
           >
             <div className="flex justify-between items-center mb-3 md:mb-4">
               <h2 className="text-xl md:text-2xl font-bold">🎫 Ticket Details</h2>
-              <button 
+              <button
                 className="text-gray-400 hover:text-white text-xl md:text-2xl font-bold"
                 onClick={() => {
                   setShowTicketModal(false);
@@ -2174,7 +2217,7 @@ export default function Dashboard() {
                 <span className="text-gray-300 text-sm md:text-base">Owner:</span>
                 <span className="font-mono text-sm md:text-base">{formatAddress(selectedTicket.owner)}</span>
               </div>
-              
+
               {selectedTicket.isMyTicket && (
                 <div className="text-green-400 text-center font-semibold text-sm md:text-base">
                   ✅ This is your ticket!
@@ -2226,7 +2269,7 @@ export default function Dashboard() {
             </div>
             
             <div className="mt-4 md:mt-6 flex justify-end">
-              <button 
+              <button
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2 rounded-lg transition duration-300 text-sm md:text-base"
                 onClick={() => {
                   setShowTicketModal(false);
@@ -2243,50 +2286,5 @@ export default function Dashboard() {
   );
 }
 
-// Replace TestGetTicketOwnerButton with this component:
-function TestGetTicketRankButton() {
-  const { address } = useAccount();
-  // const { dashboardData } = useWallet();
-  // const [loading, setLoading] = useState(false);
 
-   //Testing env
-   const handleTest = async () => {
-    // if (!dashboardData.currentRound || !dashboardData.totalTickets) {
-    //   console.log('No current round or total tickets');
-    //   return;
-    // }
-    // setLoading(true);
-    // const roundId = dashboardData.currentRound;
-    // const totalTickets = dashboardData.myTicketsCount;
-    // console.log('Adiii:', totalTickets);
-    // console.log('Adiii:', roundId);  
-
-    // for (let ticketNumber = 1; ticketNumber <= 1; ticketNumber++) {
-      try {
-        console.log('claim tickets rank');
-        const rank = await publicClient.readContract({
-          address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
-          abi: LOTTERY_ABI,
-          functionName: 'isClaimed',
-          args: [address as `0x${string}`, 3]
-        });
-        // console.log('getTicketRank:', { roundId, ticketNumber, rank: rank?.toString() });
-        console.log('getTicketRank:', rank);
-      } catch (err) {
-        console.error('Error calling getTicketRank:', err);
-      }
-    // }
-  };
-
-
-  return (
-    <button
-      onClick={handleTest}
-      // disabled={loading}
-      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition duration-300 flex items-center mt-2"
-    >
-      {'Testing getTicketRank...'}
-    </button>
-  );
-}
 
