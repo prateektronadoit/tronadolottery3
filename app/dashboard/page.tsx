@@ -35,12 +35,14 @@ const Sidebar = ({
   isOpen, 
   toggleSidebar, 
   activeSection, 
-  setActiveSection 
+  setActiveSection,
+  navigateToSection
 }: { 
   isOpen: boolean; 
   toggleSidebar: () => void;
   activeSection: string;
   setActiveSection: (section: string) => void;
+  navigateToSection: (section: string) => void;
 }) => {
   const menuItems = [
     { id: 'dashboard', icon: '🏠', label: 'Dashboard' },
@@ -83,7 +85,7 @@ const Sidebar = ({
             {menuItems.map((item) => (
               <li key={item.id} className="mb-2 px-2">
                 <button
-                  onClick={() => setActiveSection(item.id)}
+                  onClick={() => navigateToSection(item.id)}
                   className={`flex items-center p-3 w-full text-left rounded transition-all duration-200 ${
                     activeSection === item.id 
                       ? 'text-white bg-blue-900' 
@@ -564,6 +566,9 @@ export default function Dashboard() {
   // NEW STATE - Track wallet switching
   const [isWalletSwitching, setIsWalletSwitching] = useState(false);
 
+  // NEW STATE - Track if URL parameters have been processed
+  const [urlProcessed, setUrlProcessed] = useState(false);
+
   // Unified loading state for all sections
   const [sectionLoading, setSectionLoading] = useState(false);
 
@@ -615,28 +620,84 @@ export default function Dashboard() {
 
   // Handle URL parameters for direct navigation and referral
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !urlProcessed) {
       const urlParams = new URLSearchParams(window.location.search);
       const section = urlParams.get('section');
-      if (section && ['dashboard', 'registration', 'purchase', 'mytickets', 'claim'].includes(section)) {
+      const refId = urlParams.get('refId');
+      
+      // Set section from URL parameter if valid
+      if (section && ['dashboard', 'registration', 'purchase', 'mytickets', 'claim', 'rankings'].includes(section)) {
         setActiveSection(section);
       }
       
-      // Handle referral parameter
-      const refId = urlParams.get('refId');
+      // Handle referral parameter - only redirect to registration if:
+      // 1. There's a refId parameter
+      // 2. The refId is not the zero address
+      // 3. There's no explicit section parameter OR the user is not registered
       if (refId && refId !== '0x0000000000000000000000000000000000000000') {
         setSponsorAddress(refId);
-        // If we're not already on registration page, navigate there
-        if (activeSection !== 'registration') {
+        
+        // Only redirect to registration if no explicit section is set or user is not registered
+        if (!section && (!dashboardData.isRegistered || !isConnected)) {
           setActiveSection('registration');
         }
       }
+      
+      setUrlProcessed(true);
     }
+  }, [dashboardData.isRegistered, isConnected, urlProcessed]);
+
+  // Reset URL processed flag when URL changes
+  useEffect(() => {
+    const handleUrlChange = () => {
+      setUrlProcessed(false);
+    };
+    
+    window.addEventListener('popstate', handleUrlChange);
+    return () => window.removeEventListener('popstate', handleUrlChange);
   }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  // Function to update URL with current section
+  const updateURLWithSection = (section: string) => {
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('section', section);
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
+
+  // Function to navigate to a section and update URL
+  const navigateToSection = (section: string) => {
+    setActiveSection(section);
+    
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (section === 'dashboard') {
+        url.searchParams.delete('section');
+      } else {
+        url.searchParams.set('section', section);
+      }
+      window.history.pushState({}, '', url.toString());
+    }
+  };
+
+  // Update URL when activeSection changes
+  useEffect(() => {
+    if (activeSection && activeSection !== 'dashboard') {
+      updateURLWithSection(activeSection);
+    } else if (activeSection === 'dashboard') {
+      // Remove section parameter for dashboard (default section)
+      if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('section');
+        window.history.replaceState({}, '', url.toString());
+      }
+    }
+  }, [activeSection]);
 
   // Function to generate referral link
   const generateReferralLink = () => {
@@ -1359,7 +1420,7 @@ export default function Dashboard() {
             {/* Quick Action Buttons */}
             <div className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => setActiveSection('purchase')}
+                onClick={() => navigateToSection('purchase')}
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg text-lg md:text-xl transition duration-300 flex items-center justify-center"
               >
                 <span className="mr-2">🎫</span>
@@ -1367,7 +1428,7 @@ export default function Dashboard() {
               </button>
               {!dashboardData.isRegistered && (
                 <button
-                  onClick={() => setActiveSection('registration')}
+                  onClick={() => navigateToSection('registration')}
                   className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg text-lg md:text-xl transition duration-300 flex items-center justify-center"
                 >
                   <span className="mr-2">📝</span>
@@ -1521,7 +1582,7 @@ export default function Dashboard() {
                   <p className="text-4xl md:text-6xl mb-3 md:mb-4">📝</p>
                   <p className="text-sm md:text-base">Please register first before purchasing tickets</p>
                   <button
-                    onClick={() => setActiveSection('registration')}
+                    onClick={() => navigateToSection('registration')}
                     className="mt-3 md:mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2 rounded text-sm md:text-base"
                   >
                     Register Now
@@ -1534,7 +1595,7 @@ export default function Dashboard() {
                   <p className="text-sm md:text-base font-semibold text-green-400 mb-2">Tickets Already Purchased!</p>
                   <p className="text-xs md:text-sm">You can only purchase tickets once per round. Your tickets are ready for the draw.</p>
                   <button
-                    onClick={() => setActiveSection('mytickets')}
+                    onClick={() => navigateToSection('mytickets')}
                     className="mt-3 md:mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2 rounded text-sm md:text-base"
                   >
                     View My Tickets
@@ -1654,7 +1715,7 @@ export default function Dashboard() {
                 <p className="text-4xl md:text-6xl mb-3 md:mb-4">🎫</p>
                 <p className="text-sm md:text-base">No tickets purchased yet</p>
                 <button
-                  onClick={() => setActiveSection('purchase')}
+                  onClick={() => navigateToSection('purchase')}
                   className="mt-3 md:mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2 rounded text-sm md:text-base"
                 >
                   Buy Tickets
@@ -2027,6 +2088,7 @@ export default function Dashboard() {
         toggleSidebar={toggleSidebar}
         activeSection={activeSection}
         setActiveSection={setActiveSection}
+        navigateToSection={navigateToSection}
       />
       
       {/* Main Content */}
