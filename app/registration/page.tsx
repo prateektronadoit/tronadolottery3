@@ -170,6 +170,19 @@ export default function Registration() {
     });
   }, [isUserRegistered, userInfo, address, isConnected]);
 
+  // Track wallet switching
+  useEffect(() => {
+    if (isConnected && address) {
+      setIsWalletSwitching(true);
+      const timer = setTimeout(() => {
+        setIsWalletSwitching(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setIsWalletSwitching(false);
+    }
+  }, [address]);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sponsorAddress, setSponsorAddress] = useState('');
   const [numTickets, setNumTickets] = useState('');
@@ -185,6 +198,9 @@ export default function Registration() {
   // NEW STATE - Track user level counts
   const [userLevelCounts, setUserLevelCounts] = useState<any[]>([]);
   const [levelCountsLoading, setLevelCountsLoading] = useState(false);
+
+  // NEW STATE - Track wallet switching
+  const [isWalletSwitching, setIsWalletSwitching] = useState(false);
 
   // Update local notification when notification changes
   useEffect(() => {
@@ -214,45 +230,51 @@ export default function Registration() {
     }
   }, [userInfo]);
 
-  // NEW EFFECT - Check if user has already purchased a ticket
+  // Combined effect for user-specific data loading with debouncing
   useEffect(() => {
-    const checkUserTicketPurchase = async () => {
+    const loadUserData = async () => {
       if (isConnected && address && selectedRound) {
         try {
+          // Check if user has purchased tickets
           const hasPurchased = await hasUserPurchasedTicket(selectedRound);
           setHasPurchasedTicket(hasPurchased);
+          
+          // Load user level counts if registered
+          if (isUserRegistered) {
+            setLevelCountsLoading(true);
+            const levelCounts = await getUserLevelCounts(address);
+            setUserLevelCounts(levelCounts);
+            setLevelCountsLoading(false);
+          }
         } catch (error) {
-          console.error('Error checking user ticket purchase:', error);
+          console.error('Error loading user data:', error);
           setHasPurchasedTicket(false);
-        }
-      }
-    };
-
-    checkUserTicketPurchase();
-  }, [isConnected, address, selectedRound, hasUserPurchasedTicket]);
-
-  // NEW EFFECT - Load user level counts
-  useEffect(() => {
-    const loadUserLevelCounts = async () => {
-      if (isConnected && address && isUserRegistered) {
-        try {
-          setLevelCountsLoading(true);
-          const levelCounts = await getUserLevelCounts(address);
-          setUserLevelCounts(levelCounts);
-          console.log('👥 Loaded user level counts:', levelCounts);
-        } catch (error) {
-          console.error('Error loading user level counts:', error);
           setUserLevelCounts([]);
-        } finally {
           setLevelCountsLoading(false);
         }
       } else {
+        // Reset state when wallet is not connected or no selected round
+        setHasPurchasedTicket(false);
         setUserLevelCounts([]);
+        setLevelCountsLoading(false);
       }
     };
 
-    loadUserLevelCounts();
-  }, [isConnected, address, isUserRegistered, getUserLevelCounts]);
+    // Add debouncing to prevent rapid state changes
+    const timeoutId = setTimeout(loadUserData, 100);
+    return () => clearTimeout(timeoutId);
+  }, [isConnected, address, selectedRound, isUserRegistered]);
+
+  // Reset local state when wallet changes
+  useEffect(() => {
+    if (!isConnected || !address) {
+      setHasPurchasedTicket(false);
+      setUserLevelCounts([]);
+      setSponsorAddress('');
+      setNumTickets('');
+      setSelectedRound(0);
+    }
+  }, [isConnected, address]);
 
   // Calculate total cost
   const totalCost = (parseInt(numTickets) || 0) * parseFloat(dashboardData.ticketPrice || '0');
@@ -353,6 +375,17 @@ export default function Registration() {
       
       {/* Main content */}
       <div className="flex-1 lg:ml-64 p-3 md:p-4 lg:p-6">
+        {/* Wallet Switching Overlay */}
+        {isWalletSwitching && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div className="bg-gray-900 rounded-lg p-6 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-white text-lg">Switching Wallet...</p>
+              <p className="text-gray-400 text-sm mt-2">Please wait while we update your data</p>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 lg:mb-8 gap-3">
           <div>
@@ -603,11 +636,11 @@ export default function Registration() {
                 
                 <button 
                   onClick={handlePurchaseTickets}
-                  disabled={isLoading || !selectedRound || !numTickets || parseInt(numTickets) < 1 || parseInt(numTickets) > 50 || totalCost > usdtBalanceNum}
+                  disabled={isLoading || isWalletSwitching || !selectedRound || !numTickets || parseInt(numTickets) < 1 || parseInt(numTickets) > 50 || totalCost > usdtBalanceNum}
                   className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 md:py-3 px-4 md:px-6 lg:px-8 rounded-md text-sm md:text-base lg:text-lg transition-all duration-200 flex items-center"
                 >
                   {isLoading ? <LoadingSpinner /> : <span className="mr-2">🛒</span>}
-                  {isLoading ? 'Purchasing...' : `Purchase ${numTickets || '0'} Ticket${parseInt(numTickets) > 1 ? 's' : ''}`}
+                  {isLoading ? 'Purchasing...' : isWalletSwitching ? 'Switching Wallet...' : `Purchase ${numTickets || '0'} Ticket${parseInt(numTickets) > 1 ? 's' : ''}`}
                 </button>
               </>
             )}

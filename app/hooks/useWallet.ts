@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAccount, useDisconnect, useBalance, useReadContract, useWriteContract } from 'wagmi';
 import { parseEther, formatEther, createPublicClient, http } from 'viem';
 // import { polygon } from 'wagmi/chains';
@@ -211,6 +211,33 @@ export const useWallet = () => {
     }
   }, [currentRoundId, roundData, userTickets, userTicketsError]);
 
+  // Memoize expensive calculations
+  const memoizedDashboardData = useMemo(() => {
+    if (!currentRoundId || !roundData) return null;
+    
+    const roundDataArray = roundData as any[];
+    const ticketPrice = formatUSDT(formatEther(roundDataArray[1] || BigInt(0)));
+    const totalTickets = Number(roundDataArray[0] || BigInt(0));
+    const ticketsSold = Number(roundDataArray[2] || BigInt(0));
+    
+    // Calculate prize pool (75% of total revenue) - matching reference code
+    const totalRevenue = (roundDataArray[1] || BigInt(0)) * BigInt(ticketsSold);
+    const prizePool = (totalRevenue * BigInt(75)) / BigInt(100);
+    
+    return {
+      currentRound: Number(currentRoundId),
+      totalTickets,
+      ticketPrice,
+      ticketsSold,
+      prizePool: formatUSDT(formatEther(prizePool)),
+      isActive: roundDataArray[3],
+      drawExecuted: roundDataArray[4],
+      allClaimed: roundDataArray[5],
+      isSettled: roundDataArray[6],
+      winningNumber: Number(roundDataArray[7] || BigInt(0)),
+    };
+  }, [currentRoundId, roundData]);
+
   // Separate effect to handle user registration data independently of round data
   useEffect(() => {
     if (userInfo) {
@@ -235,6 +262,28 @@ export const useWallet = () => {
       }));
     }
   }, [userInfo, address]);
+
+  // Reset dashboard data when wallet disconnects
+  useEffect(() => {
+    if (!isConnected || !address) {
+      setDashboardData({
+        currentRound: 0,
+        totalTickets: 0,
+        ticketsSold: 0,
+        ticketPrice: '0',
+        prizePool: '0',
+        drawExecuted: false,
+        winningNumber: 0,
+        myTicketsCount: 0,
+        myTickets: [],
+        isRegistered: false,
+        userInfo: null,
+        userPurchaseHistory: []
+      });
+      setLoading(false);
+      setNotification(null);
+    }
+  }, [isConnected, address]);
 
   // Function to get user total prize for a specific round
   const getUserTotalPrize = async (roundId: number, userAddress?: string) => {
