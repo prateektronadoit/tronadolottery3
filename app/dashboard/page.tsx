@@ -387,7 +387,7 @@ const ComprehensivePrizeDisplay = ({
             </div>
           </div>
           <div className="border-t border-gray-700 pt-2 flex justify-between font-semibold">
-            <span className="text-gray-300">Total Claimable Amount:</span>
+            <span className="text-gray-300">Total Claimable Amount (demo):</span>
             <span className="text-blue-400">{prizeData.totalPrize} TRDO</span>
           </div>
           <div className="border-t border-gray-700 pt-2 flex justify-between font-semibold">
