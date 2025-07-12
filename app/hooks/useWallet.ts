@@ -507,7 +507,7 @@ export const useWallet = () => {
 
   const showNotification = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 5000);
+    setTimeout(() => setNotification(null), 3000);
   };
 
   const registerUser = async (sponsor: string) => {

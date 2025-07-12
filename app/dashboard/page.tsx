@@ -152,16 +152,18 @@ const Notification = ({ notification, onClose }: { notification: any; onClose: (
   if (!notification) return null;
 
   const bgColor = notification.type === 'error' ? 'bg-red-500' : 
-                  notification.type === 'warning' ? 'bg-yellow-500' : 'bg-green-500';
+                  notification.type === 'warning' ? 'bg-yellow-500' : 
+                  notification.type === 'info' ? 'bg-blue-500' : 'bg-green-500';
 
   return (
-    <div className={`fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center`}>
+    <div className={`fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center animate-in slide-in-from-right duration-300 transition-all`}>
       <span className="mr-2">
         {notification.type === 'error' ? '❌' : 
-         notification.type === 'warning' ? '⚠️' : '✅'}
+         notification.type === 'warning' ? '⚠️' : 
+         notification.type === 'info' ? 'ℹ️' : '✅'}
       </span>
       {notification.message}
-      <button onClick={onClose} className="ml-4 text-white hover:text-gray-200">
+      <button onClick={onClose} className="ml-4 text-white hover:text-gray-200 transition-colors">
         ✕
       </button>
     </div>
@@ -573,6 +575,17 @@ export default function Dashboard() {
 
   // Unified loading state for all sections
   const [sectionLoading, setSectionLoading] = useState(false);
+
+  // Auto-hide notification after 3 seconds
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   const {
     address,
