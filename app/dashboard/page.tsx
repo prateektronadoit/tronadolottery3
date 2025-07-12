@@ -191,7 +191,8 @@ const ComprehensivePrizeDisplay = ({
   getUserTotalPrize, 
   getUserSponsorInfo,
   setNotification,
-  myTicketsCount
+  myTicketsCount,
+  drawExecuted
 }: { 
   roundId: number;
   getUserPrizeData: (roundId: number) => Promise<any>;
@@ -199,6 +200,7 @@ const ComprehensivePrizeDisplay = ({
   getUserSponsorInfo: (roundId: number) => Promise<any>;
   setNotification: (notification: { message: string; type: 'success' | 'error' | 'warning' | 'info' } | null) => void;
   myTicketsCount: number;
+  drawExecuted: boolean;
 }) => {
   const [prizeData, setPrizeData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -397,8 +399,8 @@ const ComprehensivePrizeDisplay = ({
             <span className="text-blue-400">{prizeData.totalReceived} TRDO</span>
           </div>
 
-          {/* Claim Prize Button - Only show if user has tickets */}
-          {myTicketsCount > 0 && (
+          {/* Claim Prize Button - Only show if user has tickets and draw is executed */}
+          {myTicketsCount > 0 && drawExecuted && (
             <div className="flex flex-col items-end mt-4 gap-2">
               <button
                 onClick={handleClaimPrize}
@@ -482,12 +484,12 @@ const ComprehensivePrizeDisplay = ({
                     </div>
                     <div className="text-xs text-gray-500">Total Network</div>
                   </div>
-                  <div className="bg-white rounded-lg p-3 text-center border border-gray-200">
+                  {/* <div className="bg-white rounded-lg p-3 text-center border border-gray-200">
                     <div className="text-lg md:text-xl font-bold text-green-600">
                       {userLevelCounts.filter(level => level.count > 0).length}
                     </div>
                     <div className="text-xs text-gray-500">Active Levels</div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ) : (
@@ -1830,6 +1832,7 @@ export default function Dashboard() {
                         getUserSponsorInfo={getUserSponsorInfo}
                         setNotification={setNotification}
                         myTicketsCount={dashboardData.myTicketsCount || 0}
+                        drawExecuted={dashboardData.drawExecuted || false}
                       />
                     </div>
 
