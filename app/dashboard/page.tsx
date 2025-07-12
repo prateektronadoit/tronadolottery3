@@ -608,6 +608,7 @@ export default function Dashboard() {
     getUserPrizeData,
     getUserLevelCounts,
     checkIsClaimed,
+    refreshDrawStatus,
     isTransactionPending,
     transactionType,
     isRefreshing
@@ -1786,16 +1787,27 @@ export default function Dashboard() {
             <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700 mb-4 md:mb-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-2">
                 <h2 className="text-xl md:text-2xl font-bold">🏆 Claim Prizes</h2>
-                <button 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center text-sm md:text-base"
-                  onClick={() => {
-                    loadPrizeData();
-                    setNotification({ type: 'info', message: 'Refreshing prize data...' });
-                  }}
-                >
-                  <span className="mr-2">🔄</span>
-                  Refresh
-                </button>
+                <div className="flex gap-2">
+                  <button 
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center text-sm md:text-base"
+                    onClick={() => {
+                      refreshDrawStatus();
+                    }}
+                  >
+                    <span className="mr-2">🎲</span>
+                    Check Draw Status
+                  </button>
+                  {/* <button 
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center text-sm md:text-base"
+                    onClick={() => {
+                      loadPrizeData();
+                      setNotification({ type: 'info', message: 'Refreshing prize data...' });
+                    }}
+                  >
+                    <span className="mr-2">🔄</span>
+                    Refresh
+                  </button> */}
+                </div>
               </div>
               
               {sectionLoading ? (
@@ -1807,7 +1819,7 @@ export default function Dashboard() {
               ) : (
                 <div className="space-y-4 md:space-y-6">
                   {/* Prize Statistics */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
                     <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
                       <div className="text-xl md:text-2xl font-bold text-blue-400">{dashboardData.userInfo?.totalTicketsPurchased || 0}</div>
                       <div className="text-xs md:text-sm text-gray-300">Total Tickets</div>
@@ -1823,6 +1835,14 @@ export default function Dashboard() {
                         {isClaimedFromContract === true ? '0' : prizeData.totalPendingClaims}
                       </div>
                       <div className="text-xs md:text-sm text-gray-300">Pending Claims</div>
+                    </div>
+                    <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
+                      <div className={`text-xl md:text-2xl font-bold ${dashboardData.drawExecuted ? 'text-green-400' : 'text-orange-400'}`}>
+                        {dashboardData.drawExecuted ? '✅' : '⏳'}
+                      </div>
+                      <div className="text-xs md:text-sm text-gray-300">
+                        {dashboardData.drawExecuted ? 'Draw Complete' : 'Draw Pending'}
+                      </div>
                     </div>
                   </div>
 

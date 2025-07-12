@@ -48,7 +48,7 @@ export const useWallet = () => {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'warning' | 'info' } | null>(null);
   const [dashboardData, setDashboardData] = useState<any>({
     currentRound: 0,
     totalTickets: 0,
@@ -333,6 +333,51 @@ export const useWallet = () => {
     }
   }, [isConnected, address]);
 
+  // Polling mechanism to check for draw execution status
+  useEffect(() => {
+    if (!isConnected || !address || !currentRoundId) return;
+
+    const pollDrawStatus = async () => {
+      try {
+        const roundInfo = await publicClient.readContract({
+          address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+          abi: LOTTERY_ABI,
+          functionName: 'getRoundInfo',
+          args: [currentRoundId],
+        }) as any[];
+
+        const newDrawExecuted = roundInfo[4]; // drawExecuted is at index 4
+        
+        // If draw status changed from false to true, update the dashboard data
+        if (newDrawExecuted && !dashboardData.drawExecuted) {
+          console.log('🎉 Draw executed detected! Updating dashboard data...');
+          
+          // Update only the draw-related data
+          setDashboardData((prevData: any) => ({
+            ...prevData,
+            drawExecuted: newDrawExecuted,
+            winningNumber: Number(roundInfo[7] || BigInt(0)), // winningNumber is at index 7
+            allClaimed: roundInfo[5], // allClaimed is at index 5
+            isSettled: roundInfo[6], // isSettled is at index 6
+          }));
+          
+          // Show notification to user
+          showNotification('🎉 Draw has been executed! You can now claim your prizes!', 'success');
+        }
+      } catch (error) {
+        console.error('Error polling draw status:', error);
+      }
+    };
+
+    // Poll every 10 seconds if draw is not yet executed
+    const interval = setInterval(pollDrawStatus, 10000);
+    
+    // Also poll immediately
+    pollDrawStatus();
+
+    return () => clearInterval(interval);
+  }, [isConnected, address, currentRoundId, dashboardData.drawExecuted]);
+
   // Function to get user total prize for a specific round
   const getUserTotalPrize = async (roundId: number, userAddress?: string) => {
     if (!userAddress && !address) {
@@ -505,7 +550,7 @@ export const useWallet = () => {
     return levelNames[level] || `Level ${level}`;
   };
 
-  const showNotification = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+  const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'success') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
@@ -908,6 +953,49 @@ export const useWallet = () => {
     }
   };
 
+  // Manual refresh function to check draw status immediately
+  const refreshDrawStatus = async () => {
+    if (!isConnected || !address || !currentRoundId) {
+      showNotification('Please connect your wallet first', 'error');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const roundInfo = await publicClient.readContract({
+        address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+        abi: LOTTERY_ABI,
+        functionName: 'getRoundInfo',
+        args: [currentRoundId],
+      }) as any[];
+
+      const newDrawExecuted = roundInfo[4];
+      
+      if (newDrawExecuted && !dashboardData.drawExecuted) {
+        console.log('🎉 Draw executed detected! Updating dashboard data...');
+        
+        setDashboardData((prevData: any) => ({
+          ...prevData,
+          drawExecuted: newDrawExecuted,
+          winningNumber: Number(roundInfo[7] || BigInt(0)),
+          allClaimed: roundInfo[5],
+          isSettled: roundInfo[6],
+        }));
+        
+        showNotification('🎉 Draw has been executed! You can now claim your prizes!', 'success');
+      } else if (newDrawExecuted && dashboardData.drawExecuted) {
+        showNotification('Draw has already been executed', 'info');
+      } else {
+        showNotification('Draw has not been executed yet', 'info');
+      }
+    } catch (error) {
+      console.error('Error refreshing draw status:', error);
+      showNotification('Failed to refresh draw status', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     // State
     address,
@@ -947,6 +1035,7 @@ export const useWallet = () => {
     getUserPrizeData,
     getUserLevelCounts,
     checkIsClaimed,
+    refreshDrawStatus,
 
     
     // Contract addresses for reference
