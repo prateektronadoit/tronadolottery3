@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import ClientLayoutShell from './ClientLayoutShell';
 import { usePathname } from 'next/navigation';
+import Script from "next/script";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,6 +28,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <Script src="/assets/scripts/lang-config.js" strategy="beforeInteractive" />
+        <Script src="/assets/scripts/translation.js" strategy="beforeInteractive" />
+        <Script
+          src="//translate.google.com/translate_a/element.js?cb=TranslateInit"
+          strategy="afterInteractive"
+        />
+      </head>
       <body className={`${poppins.variable} font-sans antialiased`}>
         <Providers>
           {typeof window !== 'undefined' && window.location.pathname === '/about' ? (

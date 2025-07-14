@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+// import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 import PlatformFeatures from '@/components/PlatformFeatures';
 import HowItWorks from '@/components/HowItWorks';
@@ -46,6 +47,9 @@ export default function HomePage() {
         
         <div className="absolute top-0 left-0 right-0 z-50 w-full">
           <Header />
+          {/* <div className="absolute top-20 right-4 z-60">
+            <LanguageSwitcher />
+          </div> */}
         </div>
         
         {/* Hero Content - Centered on the left half of the screen */}

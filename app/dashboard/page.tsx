@@ -7,6 +7,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { useWallet } from '../hooks/useWallet';
 import { createPublicClient, http, formatEther } from 'viem';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 // import { polygon } from 'wagmi/chains';
 import { bscTestnet } from 'wagmi/chains';
 
@@ -2199,7 +2200,23 @@ export default function Dashboard() {
               {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
             </h1>
           </div>
-          <ConnectButton />
+          <div className="flex items-center gap-4">
+            {dashboardData.drawExecuted && (
+              <button
+                onClick={() => window.location.reload()}
+                className="flex items-center px-2 md:px-3 py-1.5 md:py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg border border-gray-600 hover:border-gray-500 transition-colors duration-200 mr-2 text-xs md:text-base"
+                title="Refresh Page"
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582M20 20v-5h-.581M5.635 19.364A9 9 0 104.582 9m0 0V4m0 5h5" />
+                </svg>
+                <span className="hidden xs:inline">Refresh Round Data</span>
+                <span className="inline xs:hidden">Refresh</span>
+              </button>
+            )}
+            <LanguageSwitcher />
+            <ConnectButton />
+          </div>
         </header>
 
         {/* Dashboard Content */}

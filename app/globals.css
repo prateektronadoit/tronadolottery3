@@ -216,3 +216,11 @@ body {
 .radial-gradient-bronze {
   background: radial-gradient(circle at 30% 30%, rgba(205, 127, 50, 0.4) 0%, rgba(184, 115, 51, 0.3) 30%, rgba(160, 82, 45, 0.2) 60%, transparent 100%);
 }
+
+/* Google Translate Styles */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
