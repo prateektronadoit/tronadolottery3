@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 const ReCAPTCHA = dynamic(() => import('react-google-recaptcha'), { ssr: false });
 
 export default function VerifyAge() {
@@ -110,6 +111,11 @@ export default function VerifyAge() {
           className="mx-auto drop-shadow-[0_0_25px_rgba(255,215,0,0.7)]"
           priority
         />
+      </div>
+      
+      {/* Language Switcher */}
+      <div className="absolute top-10 right-4 z-20">
+        <LanguageSwitcher />
       </div>
       
       {/* Main Content Container with flex column layout */}

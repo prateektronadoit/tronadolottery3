@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAccount, useDisconnect } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -120,7 +121,10 @@ export default function Header() {
               <div className="font-bold text-base"></div>
             </div>
           </Link>
-          
+          {/* Mobile Language Switcher */}
+          <div className="md:hidden mr-2">
+            <LanguageSwitcher />
+          </div>
           {/* Mobile menu toggle button with enhanced styling */}
           <button 
             className="text-white focus:outline-none p-2 rounded hover:bg-cyan-500/40 transition-colors" 
@@ -225,6 +229,10 @@ export default function Header() {
             </Link>
             
             <div className="flex items-center space-x-4 ml-auto">
+              {/* Language Switcher for Desktop */}
+              <div className="hidden md:block">
+                <LanguageSwitcher />
+              </div>
               {/* Register Now Button for Desktop or Profile Icon */}
               {!auth ? (
                 <button 
