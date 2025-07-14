@@ -996,6 +996,32 @@ export const useWallet = () => {
     }
   };
 
+  useEffect(() => {
+    if (!isConnected || !address || !currentRoundId) return;
+
+    const pollDashboardData = async () => {
+      try {
+        // This will trigger all your useReadContract hooks to refetch,
+        // and your useEffect that updates dashboardData will run.
+        // If you want to force a manual fetch, you can call your data-fetching logic here.
+        // For example, you could call refreshDrawStatus() or any other manual refresh function.
+        // If you want to refetch all, you may need to trigger a state change or use a refetch function if available.
+        // Example:
+        // await refreshDrawStatus();
+      } catch (error) {
+        console.error('Error polling dashboard data:', error);
+      }
+    };
+
+    // Poll every 15 seconds
+    const interval = setInterval(pollDashboardData, 15000);
+
+    // Also poll immediately on mount
+    pollDashboardData();
+
+    return () => clearInterval(interval);
+  }, [isConnected, address, currentRoundId]);
+
   return {
     // State
     address,

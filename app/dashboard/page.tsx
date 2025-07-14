@@ -49,9 +49,9 @@ const Sidebar = ({
     { id: 'dashboard', icon: '🏠', label: 'Dashboard' },
     { id: 'registration', icon: '📝', label: 'Registration' },
     { id: 'purchase', icon: '🎫', label: 'Purchase' },
-    { id: 'mytickets', icon: '🎟️', label: 'My Tickets' },
     { id: 'rankings', icon: '🏅', label: 'Rankings' },
-    { id: 'claim', icon: '🏆', label: 'Claim Prizes' }
+    { id: 'claim', icon: '🏆', label: 'Claim Prizes' },
+    { id: 'community', icon: '👥', label: 'My Community' }, // new section
   ];
 
   return (
@@ -336,23 +336,31 @@ const ComprehensivePrizeDisplay = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
           <div className="text-lg md:text-xl font-bold text-green-400">
-            {prizeData.totalPrize}
+            {prizeData.sponsorIncome}
           </div>
-          <div className="text-xs md:text-sm text-gray-300">Total Prize</div>
+          <div className="text-xs md:text-sm text-gray-300">Downline Income (Purchase Time)</div>
         </div>
         
         <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
           <div className="text-lg md:text-xl font-bold text-purple-400">
-            {prizeData.sponsorIncome}
+            {prizeData.rewardSponsorIncome}
           </div>
-          <div className="text-xs md:text-sm text-gray-300">Sponsor Income</div>
+          <div className="text-xs md:text-sm text-gray-300">Downline Income (Claim Time)</div>
         </div>
         
         <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
           <div className="text-lg md:text-xl font-bold text-blue-400">
             {prizeData.netPrize}
           </div>
-          <div className="text-xs md:text-sm text-gray-300">Net Prize</div>
+          <div className="text-xs md:text-sm text-gray-300">Winning Prize</div>
+        </div>
+
+
+        <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
+          <div className="text-lg md:text-xl font-bold text-blue-400">
+            {prizeData.totalReceived}
+          </div>
+          <div className="text-xs md:text-sm text-gray-300">Total Claimable Amount</div>
         </div>
       </div>
 
@@ -364,44 +372,9 @@ const ComprehensivePrizeDisplay = ({
           </div>
         </div>
       )}
-
-      {/* Prize Calculation Breakdown */}
-      <div className="bg-gray-900 rounded-lg p-3 md:p-4 border border-gray-700">
-        <h5 className="text-sm md:text-base font-semibold mb-2 md:mb-3 text-gray-300">
-          💡 Prize Calculation Breakdown
-        </h5>
+       
         <div className="space-y-2 text-xs md:text-sm">
-          <div className="flex justify-between">
-            <span className="text-gray-400">Winning Prize:</span>
-            <span className="text-green-400">{prizeData.netPrize} TRDO</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Sponsor Income:</span>
-            <div className="flex items-center gap-2">
-              <span className="text-purple-400">{prizeData.sponsorIncome} TRDO</span>
-              <button 
-                onClick={() => setShowSponsorPopup(true)}
-                className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-2 py-1 rounded-full transition duration-200"
-              >
-                Level Wise HeadCounts
-              </button>
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Claim Distribution received from the heads (15%):</span>
-            <div className="flex items-center gap-2">
-              <span className="text-purple-400">{prizeData.rewardSponsorIncome} TRDO</span>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 pt-2 flex justify-between font-semibold">
-            <span className="text-gray-300">Total Claimable Amount (demo):</span>
-            <span className="text-blue-400">{prizeData.totalPrize} TRDO</span>
-          </div>
-          <div className="border-t border-gray-700 pt-2 flex justify-between font-semibold">
-            <span className="text-gray-300">Total Received Amount:</span>
-            <span className="text-blue-400">{prizeData.totalReceived} TRDO</span>
-          </div>
-
+      
           {/* Claim Prize Button - Only show if user has tickets and draw is executed */}
           {myTicketsCount > 0 && drawExecuted && (
             <div className="flex flex-col items-end mt-4 gap-2">
@@ -434,7 +407,6 @@ const ComprehensivePrizeDisplay = ({
             </div>
           )}
         </div>
-      </div>
 
       {/* Sponsor Income Network Level Popup */}
       {showSponsorPopup && (
@@ -507,7 +479,114 @@ const ComprehensivePrizeDisplay = ({
   );
 };
 
+// Confetti Celebration Component
+const ConfettiCelebration = ({ onClose, winningTicketInfo }: { onClose: () => void; winningTicketInfo: { ticketNumber: number; rank: number } | null }) => {
+  // Remove auto-close timer - make it persistent for winners
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     onClose();
+  //   }, 8000); // Auto close after 8 seconds
+  //   
+  //   return () => clearTimeout(timer);
+  // }, [onClose]);
+
+  const getRankText = (rank: number) => {
+    switch (rank) {
+      case 1: return '1st Place 🥇';
+      case 2: return '2nd Place 🥈';
+      case 3: return '3rd Place 🥉';
+      case 4: return '4th Place';
+      case 5: return '5th Place';
+      default: return `${rank}th Place`;
+    }
+  };
+
+  return (
+    <div className="relative bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-2xl p-6 md:p-8 text-center shadow-xl border-4 border-yellow-300" style={{ 
+      boxShadow: '0 0 30px rgba(255, 215, 0, 0.6), 0 0 60px rgba(255, 165, 0, 0.4), 0 0 90px rgba(255, 69, 0, 0.2)'
+    }}>
+      {/* Celebration Strips */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`strip-${i}`}
+            className="absolute w-1 h-16 bg-gradient-to-b from-transparent via-yellow-300 to-transparent animate-bounce"
+            style={{
+              left: `${10 + (i * 10)}%`,
+              top: '-20%',
+              animationDelay: `${i * 0.3}s`,
+              animationDuration: '2s',
+              transform: 'rotate(45deg)',
+              opacity: 0.8
+            }}
+          />
+        ))}
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`strip-right-${i}`}
+            className="absolute w-1 h-16 bg-gradient-to-b from-transparent via-orange-300 to-transparent animate-bounce"
+            style={{
+              right: `${10 + (i * 10)}%`,
+              top: '-20%',
+              animationDelay: `${(i + 4) * 0.3}s`,
+              animationDuration: '2.5s',
+              transform: 'rotate(-45deg)',
+              opacity: 0.8
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Confetti Animation */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(30)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute animate-bounce"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 3}s`,
+              color: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'][Math.floor(Math.random() * 6)]
+            }}
+          >
+            {['🎉', '🎊', '✨', '💫', '🌟', '⭐'][Math.floor(Math.random() * 6)]}
+          </div>
+        ))}
+      </div>
+      
+      <div className="relative z-10">
+        <div className="text-4xl md:text-5xl mb-3 animate-bounce" style={{ animationDuration: '2s' }}>🎉</div>
+        <h2 className="text-xl md:text-2xl font-bold text-white mb-3 drop-shadow-lg">
+          CONGRATULATIONS!
+        </h2>
+        <p className="text-lg md:text-xl text-white mb-4 font-semibold drop-shadow-md">
+          You Won Rewards! 🏆
+        </p>
+        {winningTicketInfo && (
+          <p className="text-sm md:text-base text-white/90 mb-4 drop-shadow-sm">
+            Your ticket #{winningTicketInfo.ticketNumber} is ranked {getRankText(winningTicketInfo.rank)}!<br />
+            Check your prizes below.
+          </p>
+        )}
+        {/* <button
+          onClick={onClose}
+          className="bg-white text-orange-600 px-6 py-2 rounded-full font-bold text-sm md:text-base hover:bg-gray-100 transition-colors duration-300 shadow-lg"
+        >
+          🎯 View My Prizes
+        </button> */}
+      </div>
+    </div>
+  );
+};
+
 export default function Dashboard() {
+  // Timer state at the top to avoid ReferenceError
+  const [showTimer, setShowTimer] = useState(false);
+  const [roundCreatedAt, setRoundCreatedAt] = useState<number | null>(null);
+  const [timeSince, setTimeSince] = useState('');
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sponsorAddress, setSponsorAddress] = useState('');
@@ -573,6 +652,12 @@ export default function Dashboard() {
 
   // NEW STATE - Track if URL parameters have been processed
   const [urlProcessed, setUrlProcessed] = useState(false);
+
+  // NEW STATE - Track confetti celebration
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [hasShownConfetti, setHasShownConfetti] = useState(false);
+  const [winningTicketInfo, setWinningTicketInfo] = useState<{ ticketNumber: number; rank: number } | null>(null);
+  const [dataRefreshed, setDataRefreshed] = useState(false);
 
   // Unified loading state for all sections
   const [sectionLoading, setSectionLoading] = useState(false);
@@ -786,6 +871,12 @@ export default function Dashboard() {
 
   // Reset local state when wallet changes
   useEffect(() => {
+    // Immediately hide confetti when wallet changes to prevent showing previous wallet's data
+    setShowConfetti(false);
+    setHasShownConfetti(false);
+    setWinningTicketInfo(null);
+    setDataRefreshed(false);
+    
     if (!isConnected || !address) {
       setHasPurchasedTicket(false);
       setUserLevelCounts([]);
@@ -797,9 +888,25 @@ export default function Dashboard() {
     }
   }, [isConnected, address]);
 
+  // Reset confetti state when round changes
+  useEffect(() => {
+    // Only reset confetti if we're moving to a new round AND draw is not executed
+    // This keeps confetti persistent for winners in the current round
+    if (dashboardData.currentRound && !dashboardData.drawExecuted) {
+      setHasShownConfetti(false);
+      setShowConfetti(false);
+      setWinningTicketInfo(null);
+      setDataRefreshed(false);
+    }
+  }, [dashboardData.currentRound, dashboardData.drawExecuted]);
 
-
-
+  // Immediately clear confetti when wallet address changes
+  useEffect(() => {
+    setShowConfetti(false);
+    setHasShownConfetti(false);
+    setWinningTicketInfo(null);
+    setDataRefreshed(false);
+  }, [address]);
 
   // Unified loading system - triggers on section change or wallet change
   useEffect(() => {
@@ -1093,6 +1200,7 @@ export default function Dashboard() {
       
       let totalPendingClaims = 0;
       let prizes: any[] = [];
+      let hasTop5Rank = false; // Track if user has tickets ranked 1-5
       
       // Only check current round
       const currentRound = dashboardData.currentRound || 1;
@@ -1157,6 +1265,11 @@ export default function Dashboard() {
         let totalRoundPrize = BigInt(0);
         
         for (const ticketNumber of userTickets) {
+          // Stop searching if we already found a top 5 rank
+          if (hasTop5Rank) {
+            break;
+          }
+          
           // Only check tickets that are within the sold range
           if (parseInt(ticketNumber.toString()) > (dashboardData.ticketsSold || 0)) {
             console.log(`Skipping ticket ${ticketNumber} - not sold yet (only ${dashboardData.ticketsSold} sold)`);
@@ -1174,33 +1287,44 @@ export default function Dashboard() {
             
             // Only check rank if ticket is owned by someone (not zero address)
             if (ticketOwner && ticketOwner !== '0x0000000000000000000000000000000000000000') {
-          try {
-            // Get ticket rank (0 = no prize, 1-10 = winning ranks)
-            const ticketRank = await publicClient.readContract({
-              address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
-              abi: LOTTERY_ABI,
-              functionName: 'getTicketRank',
-              args: [BigInt(currentRound), BigInt(ticketNumber)],
-            }) as bigint;
-            
-            if (parseInt(ticketRank.toString()) > 0) {
+              try {
+                // Get ticket rank (0 = no prize, 1-10 = winning ranks)
+                const ticketRank = await publicClient.readContract({
+                  address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+                  abi: LOTTERY_ABI,
+                  functionName: 'getTicketRank',
+                  args: [BigInt(currentRound), BigInt(ticketNumber)],
+                }) as bigint;
+                
+                const rank = parseInt(ticketRank.toString());
+                
+                // Check if this is a top 5 rank (1-5) - if found, we can stop searching
+                if (rank >= 1 && rank <= 5) {
+                  hasTop5Rank = true;
+                  console.log(`🎉 Found top 5 rank (${rank}) for ticket ${ticketNumber}! Stopping search.`);
+                  // Store winning ticket info for confetti display
+                  setWinningTicketInfo({ ticketNumber: parseInt(ticketNumber.toString()), rank: rank });
+                  // Continue processing this ticket for prize data, but we won't search more tickets
+                }
+                
+                if (rank > 0) {
                   try {
-              // Calculate prize for this ticket
-              const ticketPrize = await publicClient.readContract({
-                address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
-                abi: LOTTERY_ABI,
-                functionName: 'calculateTicketPrize',
-                args: [BigInt(currentRound), BigInt(ticketNumber)],
-              }) as bigint;
-              
-              if (BigInt(ticketPrize) > 0) {
-                roundPrizes.push({
-                  ticketNumber: ticketNumber.toString(),
-                  rank: parseInt(ticketRank.toString()),
-                  prize: ticketPrize.toString()
-                });
-                totalRoundPrize += BigInt(ticketPrize);
-              }
+                    // Calculate prize for this ticket
+                    const ticketPrize = await publicClient.readContract({
+                      address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+                      abi: LOTTERY_ABI,
+                      functionName: 'calculateTicketPrize',
+                      args: [BigInt(currentRound), BigInt(ticketNumber)],
+                    }) as bigint;
+                    
+                    if (BigInt(ticketPrize) > 0) {
+                      roundPrizes.push({
+                        ticketNumber: ticketNumber.toString(),
+                        rank: rank,
+                        prize: ticketPrize.toString()
+                      });
+                      totalRoundPrize += BigInt(ticketPrize);
+                    }
                   } catch (prizeError) {
                     console.warn(`Could not calculate prize for ticket ${ticketNumber} in round ${currentRound}:`, prizeError);
                   }
@@ -1214,6 +1338,10 @@ export default function Dashboard() {
                 try {
                   if (dashboardData.winningNumber === parseInt(ticketNumber.toString())) {
                     // This is the winning ticket, give it rank 1
+                    hasTop5Rank = true; // Winning ticket is rank 1
+                    console.log(`🎉 Found winning ticket ${ticketNumber}! Stopping search.`);
+                    // Store winning ticket info for confetti display
+                    setWinningTicketInfo({ ticketNumber: parseInt(ticketNumber.toString()), rank: 1 });
                     const ticketPrize = await publicClient.readContract({
                       address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
                       abi: LOTTERY_ABI,
@@ -1240,6 +1368,13 @@ export default function Dashboard() {
           } catch (error) {
             console.warn(`Could not check ticket ${ticketNumber} in round ${currentRound}:`, error);
           }
+        }
+        
+        // Show confetti celebration if user has top 5 rank and draw is executed
+        if (hasTop5Rank && dashboardData.drawExecuted && dataRefreshed && address && dashboardData.userInfo) {
+          console.log('🎉 User has top 5 rank! Showing persistent confetti celebration!');
+          setShowConfetti(true);
+          setHasShownConfetti(true);
         }
         
         // If current round has prizes, check claim status
@@ -1297,6 +1432,9 @@ export default function Dashboard() {
         prizes
       });
       
+      // Mark data as refreshed for current wallet
+      setDataRefreshed(true);
+      
     } catch (error) {
       console.error('❌ Error loading current round prize data:', error);
       setPrizeData({
@@ -1304,6 +1442,8 @@ export default function Dashboard() {
         totalPendingClaims: '0',
         prizes: []
       });
+      // Mark data as refreshed even on error to prevent infinite loading
+      setDataRefreshed(true);
     }
   };
 
@@ -1321,6 +1461,17 @@ export default function Dashboard() {
         }
         return (
           <>
+            {/* Timer Countdown Box */}
+            {roundCreatedAt && (
+              <div className="flex justify-center mb-6">
+                <div className="bg-gray-900 border-2 border-blue-500 rounded-xl px-8 py-6 shadow-lg flex flex-col items-center">
+                  <div className="text-xs text-gray-400 mb-2">Time since round creation</div>
+                  <div className="text-4xl md:text-5xl font-mono font-bold text-green-400 tracking-widest">
+                    {timeSince}
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-4 md:mb-6">
               <StatCard 
@@ -1388,8 +1539,15 @@ export default function Dashboard() {
               />
             </div>
 
+            {/* Confetti Celebration - Show in dashboard section */}
+            {showConfetti && (
+              <div className="mb-6 md:mb-8">
+                <ConfettiCelebration onClose={() => setShowConfetti(false)} winningTicketInfo={winningTicketInfo} />
+              </div>
+            )}
+
             {/* Live Tickets Board */}
-            <div className="mt-6 md:mt-8 relative overflow-hidden rounded-lg">
+            {/* <div className="mt-6 md:mt-8 relative overflow-hidden rounded-lg">
               <div className="absolute inset-0 z-0">
                 <Image
                   src="/dbg.png"
@@ -1399,9 +1557,9 @@ export default function Dashboard() {
                   priority
                   quality={100}
                 />
-              </div>
+              </div> */}
               
-              <div className="relative z-10 p-3 md:p-6">
+              {/* <div className="relative z-10 p-3 md:p-6">
                 <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center text-white">🎫 Live Tickets Board</h2>
                 
                 <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-1 md:gap-2 mb-4 md:mb-6">
@@ -1415,47 +1573,12 @@ export default function Dashboard() {
                     </button>
                   ))}
                 </div>
-                
-                <div className="flex flex-wrap justify-center gap-2 md:gap-4 text-xs md:text-sm text-white">
-                  <div className="flex items-center">
-                    <span className="block w-3 h-3 md:w-4 md:h-4 bg-blue-600 rounded mr-1 md:mr-2"></span>
-                    <span>My Tickets</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="block w-3 h-3 md:w-4 md:h-4 bg-orange-500 rounded mr-1 md:mr-2"></span>
-                    <span>Sold</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="block w-3 h-3 md:w-4 md:h-4 bg-yellow-500 rounded mr-1 md:mr-2"></span>
-                    <span>Winners</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="block w-3 h-3 md:w-4 md:h-4 bg-gray-700 rounded mr-1 md:mr-2"></span>
-                    <span>Available</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </div> 
+            {/* </div> */}
 
-            {/* Quick Action Buttons */}
-            <div className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => navigateToSection('purchase')}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg text-lg md:text-xl transition duration-300 flex items-center justify-center"
-              >
-                <span className="mr-2">🎫</span>
-                Buy Tickets Now
-              </button>
-              {!dashboardData.isRegistered && (
-                <button
-                  onClick={() => navigateToSection('registration')}
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg text-lg md:text-xl transition duration-300 flex items-center justify-center"
-                >
-                  <span className="mr-2">📝</span>
-                  Register First
-                </button>
-              )}
-            </div>
+            {dashboardData.drawExecuted && (
+              <TopRankedTicketsSection currentRound={dashboardData.currentRound} />
+            )}
           </>
         );
 
@@ -1716,63 +1839,6 @@ export default function Dashboard() {
           </div>
         );
 
-      case 'mytickets':
-        if (sectionLoading) {
-          return (
-            <div className="text-center text-gray-400 py-12">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
-              <p className="text-lg md:text-xl">Loading my tickets...</p>
-              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your ticket information</p>
-            </div>
-          );
-        }
-        return (
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">My Tickets</h2>
-            
-            {(!dashboardData.myTickets || dashboardData.myTickets.length === 0) ? (
-              <div className="text-center text-gray-400">
-                <p className="text-4xl md:text-6xl mb-3 md:mb-4">🎫</p>
-                <p className="text-sm md:text-base">No tickets purchased yet</p>
-                <button
-                  onClick={() => navigateToSection('purchase')}
-                  className="mt-3 md:mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2 rounded text-sm md:text-base"
-                >
-                  Buy Tickets
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 md:gap-4 mb-4 md:mb-6">
-                  {dashboardData.myTickets.map((ticketNumber: number) => (
-                    <div
-                      key={ticketNumber}
-                      className={`aspect-square rounded-lg flex items-center justify-center text-sm md:text-xl font-bold ${
-                        dashboardData.drawExecuted && dashboardData.winningNumber === ticketNumber
-                          ? 'bg-yellow-500 text-black animate-pulse'
-                          : 'bg-blue-600 text-white'
-                      }`}
-                    >
-                      {String(ticketNumber).padStart(3, '0')}
-                    </div>
-                  ))}
-                </div>
-                
-                {dashboardData.drawExecuted && (
-                  <div className="text-center">
-                    {/* <button
-                      onClick={() => handleClaim()}
-                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold"
-                    >
-                      Claim All Prizes
-                    </button> */}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        );
-
       case 'claim':
         if (sectionLoading) {
           return (
@@ -1871,7 +1937,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* User Sponsor Income Summary */}
-                    <div className="bg-gray-900 rounded-lg p-3 md:p-4 border border-gray-600">
+                    {/* <div className="bg-gray-900 rounded-lg p-3 md:p-4 border border-gray-600">
                       <h4 className="text-base md:text-lg font-medium mb-2 md:mb-3 text-purple-400">
                         📊 Your Sponsor Income Summary
                       </h4>
@@ -1881,7 +1947,7 @@ export default function Dashboard() {
                         </div>
                         <div className="text-xs md:text-sm text-gray-300">Total Sponsor Income</div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   
@@ -1920,7 +1986,7 @@ export default function Dashboard() {
               </button>
             </div>
             {/* Test getTicketRank Button */}
-            
+            <TestGetTicketRankButton />
             
             {sectionLoading ? (
               <div className="text-center text-gray-400">
@@ -2116,10 +2182,99 @@ export default function Dashboard() {
           </div>
         );
 
+      case 'community':
+        return (
+          <div className="bg-white rounded-xl p-5 mt-8 mx-auto border shadow-2xl max-w-md w-full">
+            <h4 className="text-lg md:text-xl font-semibold mb-4 text-purple-700 text-center flex items-center justify-center gap-2">
+              <span role='img' aria-label='chart'>📊</span>
+              <span>Your Network Levels</span>
+            </h4>
+            {levelCountsLoading ? (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500"></div>
+                <span className="ml-2 text-sm text-gray-500">Loading levels...</span>
+              </div>
+            ) : userLevelCounts.length > 0 ? (
+              <div className="bg-gray-100 rounded-lg p-3 border border-gray-200">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs md:text-sm">
+                    <thead>
+                      <tr className="border-b border-gray-300">
+                        <th className="py-2 px-2 text-left text-gray-700 font-semibold">Level</th>
+                        <th className="py-2 px-2 text-left text-gray-700 font-semibold">Count</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {userLevelCounts.map((level: any, index: number) => (
+                        <tr key={index} className="border-b border-gray-200 hover:bg-purple-50">
+                          <td className="py-2 px-2 text-gray-800 font-medium">
+                            Level {level.level}
+                          </td>
+                          <td className="py-2 px-2 text-gray-800">
+                            {level.count}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {/* Summary Cards */}
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <div className="bg-white rounded-lg p-3 text-center border border-gray-200">
+                    <div className="text-lg md:text-xl font-bold text-blue-600">
+                      {userLevelCounts.reduce((total, level) => total + level.count, 0)}
+                    </div>
+                    <div className="text-xs text-gray-500">Total Network</div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-500 text-sm text-center py-4">
+                No level data available
+              </div>
+            )}
+          </div>
+        );
+
       default:
         return null;
     }
   };
+
+  // Fetch round creation time from contract (index 8)
+  useEffect(() => {
+    async function fetchRoundCreatedAt() {
+      if (!dashboardData.currentRound) return;
+      try {
+        // Assuming you have a function to fetch round data from contract
+        const roundData = await publicClient.readContract({
+          address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+          abi: LOTTERY_ABI,
+          functionName: 'rounds',
+          args: [BigInt(dashboardData.currentRound)],
+        });
+        setRoundCreatedAt(Number((roundData as any[])[8]));
+      } catch (err) {
+        setRoundCreatedAt(null);
+      }
+    }
+    fetchRoundCreatedAt();
+  }, [dashboardData.currentRound]);
+
+  // Update timer every minute
+  useEffect(() => {
+    if (!roundCreatedAt) return;
+    const update = () => {
+      const now = Math.floor(Date.now() / 1000);
+      const diff = now - roundCreatedAt;
+      const hours = Math.floor(diff / 3600);
+      const minutes = Math.floor((diff % 3600) / 60);
+      setTimeSince(`${hours} hours, ${minutes} minutes`);
+    };
+    update();
+    const timer = setInterval(update, 60000);
+    return () => clearInterval(timer);
+  }, [roundCreatedAt]);
 
   return (
     <div className="bg-black min-h-screen flex">
@@ -2341,3 +2496,284 @@ export default function Dashboard() {
 
 
 
+// Replace TestGetTicketOwnerButton with this component:
+function TestGetTicketRankButton() {
+  const { address } = useAccount();
+  // const { dashboardData } = useWallet();
+  // const [loading, setLoading] = useState(false);
+
+   //Testing env
+   const handleTest = async () => {
+    // if (!dashboardData.currentRound || !dashboardData.totalTickets) {
+    //   console.log('No current round or total tickets');
+    //   return;
+    // }
+    // setLoading(true);
+    // const roundId = dashboardData.currentRound;
+    // const totalTickets = dashboardData.myTicketsCount;
+    // console.log('Adiii:', totalTickets);
+    // console.log('Adiii:', roundId);  
+
+    // for (let ticketNumber = 1; ticketNumber <= 1; ticketNumber++) {
+      try {
+        console.log('claim tickets rank');
+        const rank = await publicClient.readContract({
+          address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+          abi: LOTTERY_ABI,
+          functionName: 'isClaimed',
+          args: [address as `0x${string}`, 3]
+        });
+        // console.log('getTicketRank:', { roundId, ticketNumber, rank: rank?.toString() });
+        console.log('getTicketRank:', rank);
+      } catch (err) {
+        console.error('Error calling getTicketRank:', err);
+      }
+    // }
+  };
+
+
+  return (
+    <button
+      onClick={handleTest}
+      // disabled={loading}
+      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition duration-300 flex items-center mt-2"
+    >
+      {'Testing getTicketRank...'}
+    </button>
+  );
+}
+
+function TopRankedTicketsSection({ currentRound }: { currentRound: number }) {
+  const [topTickets, setTopTickets] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchTopTickets() {
+      setLoading(true);
+      try {
+        const ticketPromises = [];
+        for (let ticketNumber = 1; ticketNumber <= 100; ticketNumber++) {
+          ticketPromises.push(
+            publicClient.readContract({
+              address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+              abi: LOTTERY_ABI,
+              functionName: 'getTicketRank',
+              args: [BigInt(currentRound), BigInt(ticketNumber)]
+            }).then((rank: any) => ({ ticketNumber, rank: Number(rank) }))
+          );
+        }
+        const ticketRanks = await Promise.all(ticketPromises);
+        const rankedTickets = ticketRanks.filter(t => t.rank > 0).sort((a, b) => a.rank - b.rank).slice(0, 5);
+        const detailedTickets = await Promise.all(rankedTickets.map(async (t) => {
+          const [owner, rawPrize] = await Promise.all([
+            publicClient.readContract({
+              address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+              abi: LOTTERY_ABI,
+              functionName: 'getTicketOwner',
+              args: [BigInt(currentRound), BigInt(t.ticketNumber)]
+            }),
+            publicClient.readContract({
+              address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+              abi: LOTTERY_ABI,
+              functionName: 'calculateTicketPrize',
+              args: [BigInt(currentRound), BigInt(t.ticketNumber)]
+            })
+          ]);
+          // Type guard for rawPrize
+          let safePrize: string | number | bigint = 0n;
+          if (typeof rawPrize === 'bigint' || typeof rawPrize === 'number' || typeof rawPrize === 'string') {
+            safePrize = rawPrize;
+          }
+          return {
+            ticketNumber: t.ticketNumber,
+            rank: t.rank,
+            owner,
+            prize: formatEther(BigInt(safePrize))
+          };
+        }));
+        setTopTickets(detailedTickets);
+      } catch (err) {
+        setTopTickets([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (currentRound) fetchTopTickets();
+  }, [currentRound]);
+
+  if (loading) {
+    return <div className="text-center text-gray-400 py-4">Loading top tickets...</div>;
+  }
+  if (!topTickets.length) {
+    return <div className="text-center text-gray-400 py-4">No ranked tickets found.</div>;
+  }
+
+  const top3 = topTickets.slice(0, 3);
+  const next2 = topTickets.slice(3, 5);
+
+  const rankColors = [
+    'from-yellow-400 to-yellow-200',
+    'from-gray-400 to-gray-200',
+    'from-amber-700 to-yellow-400'
+  ];
+  const rankTextColors = [
+    'text-yellow-700',
+    'text-gray-700',
+    'text-amber-900'
+  ];
+  const rankShadow = [
+    'drop-shadow-[0_2px_8px_rgba(255,215,0,0.7)]',
+    'drop-shadow-[0_2px_8px_rgba(180,180,180,0.7)]',
+    'drop-shadow-[0_2px_8px_rgba(205,127,50,0.7)]'
+  ];
+
+  // Helper to shorten address
+  const shorten = (addr: string) => addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : '';
+
+  return (
+    <>
+      {/* Card flip styles and animated border */}
+      <style>{`
+        .flip-card {
+          perspective: 1200px;
+        }
+        .flip-card-outer {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          border-radius: 1.5rem;
+          background: linear-gradient(270deg, #ffe066, #a3a3a3, #ffb300, #1e3a8a, #0ea5e9, #ffe066);
+          background-size: 1200% 1200%;
+          animation: borderGradientMove 6s ease-in-out infinite;
+          padding: 3px;
+          box-shadow: 0 0 24px 0 rgba(255, 215, 0, 0.25), 0 2px 16px 0 rgba(30, 58, 138, 0.12);
+        }
+        @keyframes borderGradientMove {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .flip-card-inner {
+          transition: transform 0.7s cubic-bezier(.4,2,.6,1);
+          transform-style: preserve-3d;
+          will-change: transform;
+          border-radius: 1.5rem;
+          width: 100%;
+          height: 100%;
+          background: #18181b;
+          position: relative;
+        }
+        .flip-card:hover .flip-card-inner, .flip-card:focus .flip-card-inner {
+          transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+          backface-visibility: hidden;
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          border-radius: 1.5rem;
+          overflow: hidden;
+        }
+        .flip-card-back {
+          transform: rotateY(180deg);
+        }
+        /* For small cards */
+        .glassy-card-outer {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          border-radius: 1rem;
+          background: linear-gradient(270deg, #0ea5e9, #818cf8, #0ea5e9);
+          background-size: 600% 600%;
+          animation: borderGradientMove 8s ease-in-out infinite;
+          padding: 2px;
+          box-shadow: 0 0 16px 0 rgba(14, 165, 233, 0.18), 0 2px 8px 0 rgba(30, 58, 138, 0.10);
+        }
+        .glassy-card-inner {
+          transition: transform 0.7s cubic-bezier(.4,2,.6,1);
+          transform-style: preserve-3d;
+          will-change: transform;
+          border-radius: 1rem;
+          width: 100%;
+          height: 100%;
+          background: rgba(255,255,255,0.10);
+          position: relative;
+        }
+        .glassy-card:hover .glassy-card-inner, .glassy-card:focus .glassy-card-inner {
+          transform: rotateY(180deg);
+        }
+        .glassy-card-front, .glassy-card-back {
+          backface-visibility: hidden;
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          border-radius: 1rem;
+          overflow: hidden;
+        }
+        .glassy-card-back {
+          transform: rotateY(180deg);
+        }
+      `}</style>
+      <div className="mt-6 mb-8">
+        <h3 className="text-2xl font-extrabold text-center text-yellow-400 mb-6 tracking-wide drop-shadow-lg">Top 5 Ranked Tickets</h3>
+        <div className="flex justify-center gap-8 mb-8">
+          {top3.map((ticket, idx) => (
+            <div
+              key={idx}
+              className="flip-card min-w-[260px] max-w-[300px] flex-shrink-0 relative"
+              tabIndex={0}
+              style={{ zIndex: 10 - idx }}
+            >
+              <div className="flip-card-outer w-full h-full">
+                <div className="flip-card-inner w-full h-full" style={{ minHeight: 320 }}>
+                  {/* Front */}
+                  <div className={`flip-card-front bg-gradient-to-br ${rankColors[idx]} flex flex-col items-center justify-center p-8 w-full h-full`}>
+                    <div className={`text-5xl font-extrabold mb-3 ${rankTextColors[idx]} ${rankShadow[idx]}`}>{
+                      idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'
+                    }</div>
+                    <div className="text-2xl font-black text-white mb-2 tracking-wider drop-shadow-md">Ticket #{ticket.ticketNumber}</div>
+                    <div className={`text-lg font-bold mb-1 uppercase tracking-wide ${rankTextColors[idx]} ${rankShadow[idx]}`}>Rank: {ticket.rank}</div>
+                  </div>
+                  {/* Back */}
+                  <div className="flip-card-back bg-gradient-to-br from-black via-blue-900 to-blue-800 flex flex-col items-center justify-center p-8 w-full h-full">
+                    <div className="text-xs font-semibold text-white/80 mb-1 uppercase tracking-widest">Owner</div>
+                    <div className="text-lg font-mono text-white bg-blue-900/60 rounded px-3 py-2 mb-3 break-all text-center shadow-inner">{shorten(ticket.owner)}</div>
+                    <div className="text-lg font-bold text-white mb-2">Prize: {ticket.prize} TRDO</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {next2.length > 0 && (
+          <div className="flex justify-center gap-6 mt-2">
+            {next2.map((ticket, idx) => (
+              <div
+                key={idx}
+                className="glassy-card min-w-[170px] max-w-[200px] flex-shrink-0 relative"
+                tabIndex={0}
+                style={{ boxShadow: '0 4px 24px 0 rgba(0, 200, 255, 0.12)', minHeight: 220 }}
+              >
+                <div className="glassy-card-outer w-full h-full">
+                  <div className="glassy-card-inner w-full h-full">
+                    {/* Front */}
+                    <div className="glassy-card-front flex flex-col items-center justify-center w-full h-full">
+                      <div className="text-lg font-bold text-blue-700 mb-1 drop-shadow-md">Ticket #{ticket.ticketNumber}</div>
+                      <div className="text-base font-bold text-purple-700 mb-1">Rank: {ticket.rank}</div>
+                    </div>
+                    {/* Back */}
+                    <div className="glassy-card-back bg-gradient-to-br from-black via-blue-900 to-blue-800 flex flex-col items-center justify-center w-full h-full">
+                      <div className="text-xs font-semibold text-white/80 mb-1 uppercase tracking-widest">Owner</div>
+                      <div className="text-base font-mono text-white bg-blue-900/60 rounded px-2 py-1 mb-2 break-all text-center shadow-inner">{shorten(ticket.owner)}</div>
+                      <div className="text-base font-bold text-white mb-1">Prize: {ticket.prize} TRDO</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
