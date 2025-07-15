@@ -755,7 +755,7 @@ export default function Dashboard() {
       const refId = urlParams.get('refId');
       
       // Set section from URL parameter if valid
-      if (section && ['dashboard', 'registration', 'purchase', 'mytickets', 'claim', 'rankings'].includes(section)) {
+      if (section && ['dashboard', 'registration', 'purchase', 'mytickets', 'claim', 'rankings', 'community'].includes(section)) {
         setActiveSection(section);
       }
       
@@ -2255,53 +2255,100 @@ export default function Dashboard() {
 
       case 'community':
         return (
-          <div className="bg-white rounded-xl p-5 mt-8 mx-auto border shadow-2xl max-w-md w-full">
-            <h4 className="text-lg md:text-xl font-semibold mb-4 text-purple-700 text-center flex items-center justify-center gap-2">
-              <span role='img' aria-label='chart'>📊</span>
-              <span>Your Network Levels</span>
-            </h4>
+          <div className="space-y-3 md:space-y-4 lg:space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">🌐 My Community Network</h2>
+            </div>
+
             {levelCountsLoading ? (
-              <div className="flex items-center justify-center py-4">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500"></div>
-                <span className="ml-2 text-sm text-gray-500">Loading levels...</span>
+              <div className="text-center text-gray-400 py-8 md:py-12">
+                <div className="animate-spin rounded-full h-12 w-12 md:h-16 md:w-16 border-b-2 border-blue-500 mx-auto mb-4 md:mb-6"></div>
+                <p className="text-base md:text-lg lg:text-xl">Loading network data...</p>
+                <p className="text-xs md:text-sm lg:text-base text-gray-500 mt-2">Please wait while we fetch your community levels</p>
               </div>
             ) : userLevelCounts.length > 0 ? (
-              <div className="bg-gray-100 rounded-lg p-3 border border-gray-200">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs md:text-sm">
-                    <thead>
-                      <tr className="border-b border-gray-300">
-                        <th className="py-2 px-2 text-left text-gray-700 font-semibold">Level</th>
-                        <th className="py-2 px-2 text-left text-gray-700 font-semibold">Count</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {userLevelCounts.map((level: any, index: number) => (
-                        <tr key={index} className="border-b border-gray-200 hover:bg-purple-50">
-                          <td className="py-2 px-2 text-gray-800 font-medium">
-                            Level {level.level}
-                          </td>
-                          <td className="py-2 px-2 text-gray-800">
-                            {level.count}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+              <div className="space-y-4 md:space-y-6">
                 {/* Summary Cards */}
-                <div className="grid grid-cols-2 gap-3 mt-4">
-                  <div className="bg-white rounded-lg p-3 text-center border border-gray-200">
-                    <div className="text-lg md:text-xl font-bold text-blue-600">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 lg:gap-6">
+                  <div className="bg-gradient-to-br from-blue-900/50 to-blue-800/30 backdrop-blur-sm rounded-xl p-4 md:p-6 border border-blue-500/30 shadow-lg hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center justify-between mb-3 md:mb-4">
+                      <div className="text-xl md:text-2xl">👥</div>
+                      <div className="text-blue-400 text-xs md:text-sm font-medium">Total Network</div>
+                    </div>
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2">
                       {userLevelCounts.reduce((total, level) => total + level.count, 0)}
                     </div>
-                    <div className="text-xs text-gray-500">Total Network</div>
+                    <div className="text-blue-300 text-sm">Community Members</div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-purple-900/50 to-purple-800/30 backdrop-blur-sm rounded-xl p-4 md:p-6 border border-purple-500/30 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center justify-between mb-3 md:mb-4">
+                      <div className="text-xl md:text-2xl">🏆</div>
+                      <div className="text-purple-400 text-xs md:text-sm font-medium">Max Level</div>
+                    </div>
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2">
+                      {Math.max(...userLevelCounts.map(level => level.level))}
+                    </div>
+                    <div className="text-purple-300 text-sm">Network Depth</div>
+                  </div>
+                </div>
+
+                {/* Enhanced Table */}
+                <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/60 backdrop-blur-sm rounded-xl border border-gray-700/50 shadow-2xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[300px]">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-gray-800/80 to-gray-700/80 border-b border-gray-700/50">
+                          <th className="py-3 md:py-4 px-3 md:px-6 text-left text-gray-200 font-semibold text-xs md:text-sm lg:text-base">Level</th>
+                          <th className="py-3 md:py-4 px-3 md:px-6 text-left text-gray-200 font-semibold text-xs md:text-sm lg:text-base">Members</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {userLevelCounts.map((level: any, index: number) => {
+                          const isActive = level.count > 0;
+                          
+                          return (
+                            <tr 
+                              key={index} 
+                              className={`border-b border-gray-700/30 hover:bg-gray-800/50 transition-all duration-300 ${
+                                isActive ? 'bg-gray-800/20' : 'bg-gray-900/20'
+                              }`}
+                              style={{ animationDelay: `${index * 100}ms` }}
+                            >
+                              <td className="py-3 md:py-4 px-3 md:px-6">
+                                <div className="flex items-center gap-2 md:gap-3">
+                                  <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm font-bold ${
+                                    isActive 
+                                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' 
+                                      : 'bg-gray-600 text-gray-400'
+                                  }`}>
+                                    {level.level}
+                                  </div>
+                                  <div>
+                                    <div className="text-white font-medium text-xs md:text-sm lg:text-base">
+                                      Level {level.level}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-3 md:py-4 px-3 md:px-6">
+                                <div className="text-white font-semibold text-base md:text-lg lg:text-xl">
+                                  {level.count}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="text-gray-500 text-sm text-center py-4">
-                No level data available
+              <div className="text-center text-gray-400 py-8 md:py-12">
+                <div className="text-4xl md:text-6xl lg:text-8xl mb-3 md:mb-4">🌐</div>
+                <p className="text-base md:text-lg lg:text-xl mb-2">No Network Data Available</p>
+                <p className="text-xs md:text-sm lg:text-base text-gray-500">Your community network information will appear here</p>
               </div>
             )}
           </div>
