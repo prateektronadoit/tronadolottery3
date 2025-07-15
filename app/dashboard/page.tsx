@@ -48,8 +48,7 @@ const Sidebar = ({
   const menuItems = [
     { id: 'dashboard', icon: '🏠', label: 'Dashboard' },
     { id: 'registration', icon: '📝', label: 'Registration' },
-    { id: 'purchase', icon: '🎫', label: 'Purchase' },
-    { id: 'rankings', icon: '🏅', label: 'Rankings' },
+    // { id: 'purchase', icon: '🎫', label: 'Purchase' },
     { id: 'claim', icon: '🏆', label: 'Claim Prizes' },
     { id: 'community', icon: '👥', label: 'My Community' }, // new section
   ];
@@ -117,20 +116,20 @@ interface StatCardProps {
 
 const StatCard = ({ icon, iconImage, title, value, subtitle, bgClass = "bg-opacity-0", iconSize = 80 }: StatCardProps) => {
   return (
-    <div className={`relative rounded-xl p-6 border-2 border-blue-500 bg-blue-900/10 ${bgClass} group overflow-hidden transition-all duration-300 hover:border-blue-400 stat-card-fluid`}>
+    <div className={`relative rounded-xl p-4 md:p-6 border-2 border-blue-500 bg-blue-900/10 ${bgClass} group overflow-hidden transition-all duration-300 hover:border-blue-400 stat-card-fluid h-full min-h-[140px] md:min-h-[160px] flex flex-col justify-center`}>
       <div className="stat-card-background"></div>
       <div className="absolute inset-0 bg-gradient-to-r from-blue-700/20 via-blue-500/10 to-blue-600/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 animate-pulse"></div>
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 to-blue-600/20 opacity-0 group-hover:opacity-100 group-hover:animate-fluid transition-opacity duration-500 ease-in-out"></div>
-      <div className="flex items-center mb-4 gap-4">
+      <div className="flex items-center gap-3 md:gap-4 w-full">
         {iconImage ? (
-          <Image src={`/${iconImage}`} alt={title} width={iconSize} height={iconSize} className="flex-shrink-0" />
+          <Image src={`/${iconImage}`} alt={title} width={iconSize} height={iconSize} className="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20" />
         ) : (
-          <span className="text-3xl flex-shrink-0">{icon}</span>
+          <span className="text-2xl md:text-3xl flex-shrink-0">{icon}</span>
         )}
-        <div>
-          <div className="text-lg text-gray-200 font-medium">{title}</div>
-          <div className="text-5xl font-bold text-white mb-1">{value}</div>
-          <div className="text-sm text-gray-300">{subtitle}</div>
+        <div className="flex-1 min-w-0">
+          <div className="text-xs md:text-sm lg:text-base text-gray-200 font-medium leading-tight">{title}</div>
+          <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-white mb-1 leading-tight">{value}</div>
+          <div className="text-xs text-gray-300 leading-tight">{subtitle}</div>
         </div>
       </div>
     </div>
@@ -1532,19 +1531,116 @@ export default function Dashboard() {
 
         return (
           <>
-            {/* Timer Countdown Box */}
+            {/* Timer and Purchase Section */}
             {roundCreatedAt && (
-              <div className="flex justify-center mb-6">
-                <div className="bg-gray-900 border-2 border-blue-500 rounded-xl px-8 py-6 shadow-lg flex flex-col items-center">
-                  <div className="text-xs text-gray-400 mb-2">Time since round creation</div>
-                  <div className="text-4xl md:text-5xl font-mono font-bold text-green-400 tracking-widest">
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+                {/* Timer Countdown Box - Smaller and Left Aligned */}
+                <div className="bg-gray-900 border-2 border-blue-500 rounded-xl px-3 py-2 md:px-4 md:py-3 shadow-lg flex flex-col items-center w-full sm:w-auto">
+                  <div className="text-xs text-gray-400 mb-1">Time since round creation</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-mono font-bold text-green-400 tracking-wider">
                     {timeSince}
                   </div>
+                </div>
+
+                {/* Purchase Ticket Button or Ticket Card */}
+                <div className="w-full sm:flex-1 sm:max-w-xs">
+                  {!isConnected ? (
+                    <div className="bg-gray-800 rounded-xl p-4 text-center">
+                      <div className="text-gray-400 text-sm mb-2">Connect wallet to purchase tickets</div>
+                    </div>
+                  ) : !dashboardData.isRegistered ? (
+                    <div className="bg-gray-800 rounded-xl p-4 text-center">
+                      <div className="text-gray-400 text-sm mb-2">Register first to purchase tickets</div>
+                      <button
+                        onClick={() => navigateToSection('registration')}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm"
+                      >
+                        Register Now
+                      </button>
+                    </div>
+                  ) : hasPurchasedTicket ? (
+                    // Enhanced lottery-themed ticket card
+                    <div className="relative overflow-hidden bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-xl p-3 md:p-5 text-center shadow-2xl group hover:shadow-yellow-500/30 transition-all duration-500 transform hover:scale-105 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-yellow-300 before:via-orange-400 before:to-red-400 before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500 before:-z-10 before:blur-md">
+                      {/* Animated sparkles */}
+                      <div className="absolute top-1 right-1 md:top-2 md:right-2 text-yellow-200 animate-pulse text-sm md:text-base">✨</div>
+                      <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 text-yellow-200 animate-pulse text-sm md:text-base" style={{animationDelay: '0.3s'}}>✨</div>
+                      
+                      {/* Shine effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                      
+                      <div className="relative z-10">
+                        <div className="text-xl md:text-2xl lg:text-3xl font-mono font-black text-gray-900 mb-1 md:mb-2 tracking-wider">
+                          #{dashboardData.myTickets && dashboardData.myTickets.length > 0 ? dashboardData.myTickets[0] : 'N/A'}
+                        </div>
+                        <div className="text-gray-700 text-xs md:text-sm font-semibold">Round #{dashboardData.currentRound}</div>
+                      </div>
+                    </div>
+                  ) : (
+                    // Enhanced lottery-themed purchase section
+                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl p-4 md:p-6 text-center border border-gray-700 shadow-2xl group hover:shadow-blue-500/20 transition-all duration-500 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-yellow-400 before:via-orange-500 before:to-red-500 before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500 before:-z-10 before:blur-sm">
+                      {/* Animated background elements */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <div className="absolute -top-2 -right-2 w-3 h-3 md:w-4 md:h-4 bg-yellow-400 rounded-full animate-pulse opacity-60"></div>
+                      <div className="absolute -bottom-1 -left-1 w-2 h-2 md:w-3 md:h-3 bg-green-400 rounded-full animate-pulse opacity-60" style={{animationDelay: '0.5s'}}></div>
+                      
+                      {/* Main content */}
+                      <div className="relative z-10">
+                        
+                        <div className="text-gray-300 text-xs md:text-sm mb-3 md:mb-4">
+                        Are you ready to win big!
+                        </div>
+                        
+                        <button
+                          onClick={async () => {
+                            try {
+                              await purchaseTickets(1);
+                              setHasPurchasedTicket(true);
+                              setNotification({ type: 'success', message: 'Successfully purchased 1 ticket! 🎫' });
+                            } catch (error: any) {
+                              console.error('Purchase failed:', error);
+                              setNotification({ type: 'error', message: error.message || 'Ticket purchase failed' });
+                            }
+                          }}
+                          disabled={!isConnected || loading || isWalletSwitching || hasPurchasedTicket || (dashboardData.totalTickets <= dashboardData.ticketsSold) || dashboardData.drawExecuted}
+                          className="relative overflow-hidden bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 hover:from-yellow-300 hover:via-orange-400 hover:to-red-400 text-gray-900 px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold text-sm md:text-base transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/30 active:scale-95 w-full"
+                        >
+                          {/* Button shine effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                          
+                          <span className="relative z-10 flex items-center justify-center">
+                            {loading ? (
+                              <>
+                                <div className="animate-spin rounded-full h-3 w-3 md:h-4 md:w-4 border-b-2 border-gray-900 mr-2"></div>
+                                <span className="text-xs md:text-sm">Processing...</span>
+                              </>
+                            ) : isWalletSwitching ? (
+                              <>
+                                <div className="animate-spin rounded-full h-3 w-3 md:h-4 md:w-4 border-b-2 border-gray-900 mr-2"></div>
+                                <span className="text-xs md:text-sm">Switching Wallet...</span>
+                              </>
+                            ) : hasPurchasedTicket ? (
+                              <span className="text-xs md:text-sm">Already Purchased</span>
+                            ) : (dashboardData.totalTickets <= dashboardData.ticketsSold) ? (
+                              <span className="text-xs md:text-sm">Sold Out</span>
+                            ) : dashboardData.drawExecuted ? (
+                              <span className="text-xs md:text-sm">Draw Completed</span>
+                            ) : (
+                              <>
+                                <span className="text-xs md:text-sm">🎫 Purchase Ticket</span>
+                              </>
+                            )}
+                          </span>
+                        </button>
+                        
+                        
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-4 md:mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
               <StatCard 
                 icon=""
                 iconImage="18.png"
@@ -1567,16 +1663,16 @@ export default function Dashboard() {
                 value={dashboardData.ticketsSold || 0} 
                 subtitle={`${(dashboardData.totalTickets || 0) - (dashboardData.ticketsSold || 0)} remaining`} 
               />
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-4 md:mb-6">
               <StatCard 
                 icon=""
                 iconImage="11.png"
                 title="Prize Pool" 
                 value={formatUSDT(dashboardData.prizePool || '0')}
-                subtitle="TRDO total prizes" 
+                subtitle="TRDO" 
               />
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
               <StatCard 
                 icon=""
                 iconImage="19.png"
@@ -1586,16 +1682,6 @@ export default function Dashboard() {
               />
               <StatCard 
                 icon=""
-                iconImage="16.png"
-                title="My Tickets" 
-                value={dashboardData.myTicketsCount || 0} 
-                subtitle="In current round"
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 lg:gap-6 mb-6 md:mb-8">
-              <StatCard 
-                icon=""
                 iconImage="13.png"
                 title="Draw Status" 
                 value={dashboardData.drawExecuted ? "Completed" : "Pending"} 
@@ -1603,10 +1689,10 @@ export default function Dashboard() {
               />
               <StatCard 
                 icon=""
-                iconImage="17.png"
-                title="Total Tickets Count" 
-                value={dashboardData.totalTickets || 0} 
-                subtitle="Overall statistics" 
+                iconImage="16.png"
+                title="My Tickets" 
+                value={dashboardData.myTicketsCount || 0} 
+                subtitle="In current round"
               />
             </div>
 
@@ -1968,12 +2054,7 @@ export default function Dashboard() {
                       </div>
                       <div className="text-xs md:text-sm text-gray-300">Total Winnings</div>
                     </div>
-                    <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
-                      <div className="text-xl md:text-2xl font-bold text-yellow-400">
-                        {isClaimedFromContract === true ? '0' : prizeData.totalPendingClaims}
-                      </div>
-                      <div className="text-xs md:text-sm text-gray-300">Pending Claims</div>
-                    </div>
+                    
                     <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
                       <div className={`text-xl md:text-2xl font-bold ${dashboardData.drawExecuted ? 'text-green-400' : 'text-orange-400'}`}>
                         {dashboardData.drawExecuted ? '✅' : '⏳'}
@@ -2031,233 +2112,233 @@ export default function Dashboard() {
           </div>
         );
 
-      case 'rankings':
-        if (sectionLoading) {
-          return (
-            <div className="text-center text-gray-400 py-12">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
-              <p className="text-lg md:text-xl">Loading rankings data...</p>
-              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch ticket rankings</p>
-            </div>
-          );
-        }
-        return (
-          <div className="space-y-4 md:space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-white">🏅 Rankings & Winning Tickets</h2>
-              <button 
-                onClick={() => {
-                  loadPrizeData();
-                  setNotification({ type: 'info', message: 'Refreshing rankings data...' });
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300 flex items-center"
-              >
-                <span className="mr-2">🔄</span>
-                Refresh
-              </button>
-            </div>
-            {/* Test getTicketRank Button */}
-            <TestGetTicketRankButton />
+      // case 'rankings':
+      //   if (sectionLoading) {
+      //     return (
+      //       <div className="text-center text-gray-400 py-12">
+      //         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+      //         <p className="text-lg md:text-xl">Loading rankings data...</p>
+      //         <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch ticket rankings</p>
+      //       </div>
+      //     );
+      //   }
+      //   return (
+      //     <div className="space-y-4 md:space-y-6">
+      //       <div className="flex justify-between items-center">
+      //         <h2 className="text-2xl md:text-3xl font-bold text-white">🏅 Rankings & Winning Tickets</h2>
+      //         <button 
+      //           onClick={() => {
+      //             loadPrizeData();
+      //             setNotification({ type: 'info', message: 'Refreshing rankings data...' });
+      //           }}
+      //           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300 flex items-center"
+      //         >
+      //           <span className="mr-2">🔄</span>
+      //           Refresh
+      //         </button>
+      //       </div>
+      //       {/* Test getTicketRank Button */}
+      //       <TestGetTicketRankButton />
             
-            {sectionLoading ? (
-              <div className="text-center text-gray-400">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                <p className="text-sm md:text-base">Loading ticket rankings...</p>
-              </div>
-            ) : !dashboardData.drawExecuted ? (
-              <div className="text-center text-gray-400">
-                <p className="text-4xl md:text-6xl mb-3 md:mb-4">⏳</p>
-                <p className="text-sm md:text-base">Draw not executed yet. Please wait for the round to complete.</p>
-              </div>
-            ) : (!dashboardData.myTickets || dashboardData.myTickets.length === 0) ? (
-              <div className="text-center text-gray-400">
-                <p className="text-4xl md:text-6xl mb-3 md:mb-4">🎫</p>
-                <p className="text-sm md:text-base">No tickets to show rankings for</p>
-              </div>
-            ) : (
-              <div className="space-y-4 md:space-y-6">
-                {/* Rankings Summary */}
-                <div className="bg-gray-800 rounded-lg p-4 md:p-6 border border-gray-700">
-                  <h3 className="text-lg md:text-xl font-semibold mb-4 flex items-center">
-                    <span className="mr-2">📊</span>
-                    Rankings Summary
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl md:text-3xl font-bold text-blue-400">{dashboardData.myTickets.length}</div>
-                      <div className="text-sm text-gray-300">Total Tickets</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl md:text-3xl font-bold text-green-400">
-                        {prizeData.foundPrizes ? prizeData.prizes.reduce((total, prize) => total + prize.roundPrizes.length, 0) : 0}
-                      </div>
-                      <div className="text-sm text-gray-300">Winning Tickets</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl md:text-3xl font-bold text-yellow-400">
-                        {prizeData.foundPrizes && prizeData.prizes.length > 0 ? 
-                          Math.min(...prizeData.prizes[0].roundPrizes.map((p: any) => p.rank)) : 'N/A'}
-                      </div>
-                      <div className="text-sm text-gray-300">Best Rank</div>
-                    </div>
-                  </div>
-                </div>
+      //       {sectionLoading ? (
+      //         <div className="text-center text-gray-400">
+      //           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+      //           <p className="text-sm md:text-base">Loading ticket rankings...</p>
+      //         </div>
+      //       ) : !dashboardData.drawExecuted ? (
+      //         <div className="text-center text-gray-400">
+      //           <p className="text-4xl md:text-6xl mb-3 md:mb-4">⏳</p>
+      //           <p className="text-sm md:text-base">Draw not executed yet. Please wait for the round to complete.</p>
+      //         </div>
+      //       ) : (!dashboardData.myTickets || dashboardData.myTickets.length === 0) ? (
+      //         <div className="text-center text-gray-400">
+      //           <p className="text-4xl md:text-6xl mb-3 md:mb-4">🎫</p>
+      //           <p className="text-sm md:text-base">No tickets to show rankings for</p>
+      //         </div>
+      //       ) : (
+      //         <div className="space-y-4 md:space-y-6">
+      //           {/* Rankings Summary */}
+      //           <div className="bg-gray-800 rounded-lg p-4 md:p-6 border border-gray-700">
+      //             <h3 className="text-lg md:text-xl font-semibold mb-4 flex items-center">
+      //               <span className="mr-2">📊</span>
+      //               Rankings Summary
+      //             </h3>
+      //             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      //               <div className="text-center">
+      //                 <div className="text-2xl md:text-3xl font-bold text-blue-400">{dashboardData.myTickets.length}</div>
+      //                 <div className="text-sm text-gray-300">Total Tickets</div>
+      //               </div>
+      //               <div className="text-center">
+      //                 <div className="text-2xl md:text-3xl font-bold text-green-400">
+      //                   {prizeData.foundPrizes ? prizeData.prizes.reduce((total, prize) => total + prize.roundPrizes.length, 0) : 0}
+      //                 </div>
+      //                 <div className="text-sm text-gray-300">Winning Tickets</div>
+      //               </div>
+      //               <div className="text-center">
+      //                 <div className="text-2xl md:text-3xl font-bold text-yellow-400">
+      //                   {prizeData.foundPrizes && prizeData.prizes.length > 0 ? 
+      //                     Math.min(...prizeData.prizes[0].roundPrizes.map((p: any) => p.rank)) : 'N/A'}
+      //                 </div>
+      //                 <div className="text-sm text-gray-300">Best Rank</div>
+      //               </div>
+      //             </div>
+      //           </div>
 
-                {/* Detailed Rankings */}
-                  {prizeData.foundPrizes ? (
-                  <div className="space-y-4">
-                    <h3 className="text-lg md:text-xl font-semibold">🏆 Your Winning Tickets & Rankings</h3>
+      //           {/* Detailed Rankings */}
+      //             {prizeData.foundPrizes ? (
+      //             <div className="space-y-4">
+      //               <h3 className="text-lg md:text-xl font-semibold">🏆 Your Winning Tickets & Rankings</h3>
                       
-                      {prizeData.prizes.map((prize, index) => {
-                        const rankNames = {
-                          1: '1st Place', 2: '2nd Place', 3: '3rd Place',
-                          4: '4th Place', 5: '5th Place', 6: '6th Place',
-                          7: '7th Place', 8: '8th Place', 9: '9th Place', 10: '10th Place'
-                        };
+      //                 {prizeData.prizes.map((prize, index) => {
+      //                   const rankNames = {
+      //                     1: '1st Place', 2: '2nd Place', 3: '3rd Place',
+      //                     4: '4th Place', 5: '5th Place', 6: '6th Place',
+      //                     7: '7th Place', 8: '8th Place', 9: '9th Place', 10: '10th Place'
+      //                   };
                         
-                        const getColoredRankName = (rank: number) => {
-                          const rankName = rankNames[rank as keyof typeof rankNames];
-                          if (rank === 1) {
-                            return <span className="text-yellow-400 font-bold">{rankName}</span>;
-                          } else if (rank === 2) {
-                            return <span className="text-gray-300 font-bold">{rankName}</span>;
-                          } else if (rank === 3) {
-                            return <span className="text-amber-600 font-bold">{rankName}</span>;
-                          } else {
-                            return <span className="text-gray-300 font-semibold">{rankName}</span>;
-                          }
-                        };
+      //                   const getColoredRankName = (rank: number) => {
+      //                     const rankName = rankNames[rank as keyof typeof rankNames];
+      //                     if (rank === 1) {
+      //                       return <span className="text-yellow-400 font-bold">{rankName}</span>;
+      //                     } else if (rank === 2) {
+      //                       return <span className="text-gray-300 font-bold">{rankName}</span>;
+      //                     } else if (rank === 3) {
+      //                       return <span className="text-amber-600 font-bold">{rankName}</span>;
+      //                     } else {
+      //                       return <span className="text-gray-300 font-semibold">{rankName}</span>;
+      //                     }
+      //                   };
                         
-                        return (
-                        <div key={index} className="bg-gray-800 rounded-lg p-4 md:p-6 border border-gray-700">
-                          <div className="flex items-center justify-between mb-4">
-                            <h4 className="text-lg font-semibold text-blue-400">Round #{prize.roundId}</h4>
-                            <div className="text-sm text-gray-300">
-                              {prize.roundPrizes.length} winning ticket{prize.roundPrizes.length > 1 ? 's' : ''}
-                              </div>
-                            </div>
+      //                   return (
+      //                   <div key={index} className="bg-gray-800 rounded-lg p-4 md:p-6 border border-gray-700">
+      //                     <div className="flex items-center justify-between mb-4">
+      //                       <h4 className="text-lg font-semibold text-blue-400">Round #{prize.roundId}</h4>
+      //                       <div className="text-sm text-gray-300">
+      //                         {prize.roundPrizes.length} winning ticket{prize.roundPrizes.length > 1 ? 's' : ''}
+      //                         </div>
+      //                       </div>
                             
-                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-                                {prize.roundPrizes.map((ticketPrize, ticketIndex) => {
-                                  const getRankStyling = (rank: number) => {
-                                    switch (rank) {
-                                      case 1:
-                                        return {
-                                          bgClass: 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600',
-                                          textClass: 'text-yellow-900',
-                                          borderClass: 'border-yellow-300',
-                                          shadowClass: 'shadow-lg shadow-yellow-500/30'
-                                        };
-                                      case 2:
-                                        return {
-                                          bgClass: 'bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500',
-                                          textClass: 'text-gray-800',
-                                          borderClass: 'border-gray-200',
-                                          shadowClass: 'shadow-lg shadow-gray-400/30'
-                                        };
-                                      case 3:
-                                        return {
-                                          bgClass: 'bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800',
-                                          textClass: 'text-amber-100',
-                                          borderClass: 'border-amber-500',
-                                          shadowClass: 'shadow-lg shadow-amber-600/30'
-                                        };
-                                      default:
-                                        return {
-                                          bgClass: 'bg-gray-700',
-                                          textClass: 'text-gray-300',
-                                          borderClass: 'border-gray-600',
-                                          shadowClass: 'shadow-md'
-                                        };
-                                    }
-                                  };
+      //                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+      //                           {prize.roundPrizes.map((ticketPrize, ticketIndex) => {
+      //                             const getRankStyling = (rank: number) => {
+      //                               switch (rank) {
+      //                                 case 1:
+      //                                   return {
+      //                                     bgClass: 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600',
+      //                                     textClass: 'text-yellow-900',
+      //                                     borderClass: 'border-yellow-300',
+      //                                     shadowClass: 'shadow-lg shadow-yellow-500/30'
+      //                                   };
+      //                                 case 2:
+      //                                   return {
+      //                                     bgClass: 'bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500',
+      //                                     textClass: 'text-gray-800',
+      //                                     borderClass: 'border-gray-200',
+      //                                     shadowClass: 'shadow-lg shadow-gray-400/30'
+      //                                   };
+      //                                 case 3:
+      //                                   return {
+      //                                     bgClass: 'bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800',
+      //                                     textClass: 'text-amber-100',
+      //                                     borderClass: 'border-amber-500',
+      //                                     shadowClass: 'shadow-lg shadow-amber-600/30'
+      //                                   };
+      //                                 default:
+      //                                   return {
+      //                                     bgClass: 'bg-gray-700',
+      //                                     textClass: 'text-gray-300',
+      //                                     borderClass: 'border-gray-600',
+      //                                     shadowClass: 'shadow-md'
+      //                                   };
+      //                               }
+      //                             };
 
-                                  const styling = getRankStyling(ticketPrize.rank);
+      //                             const styling = getRankStyling(ticketPrize.rank);
                                   
-                                  return (
-                                    <div 
-                                      key={ticketIndex} 
-                                  className={`${styling.bgClass} ${styling.borderClass} ${styling.shadowClass} rounded-lg p-3 md:p-4 text-center border-2 transition-all duration-300 hover:scale-105 cursor-pointer`}
-                                  onClick={() => handleTicketClick(parseInt(ticketPrize.ticketNumber))}
-                                >
-                                  <div className={`text-lg md:text-xl font-bold ${styling.textClass} mb-2`}>
-                                      #{ticketPrize.ticketNumber}
-                                    </div>
-                                  <div className={`text-sm md:text-base font-semibold ${styling.textClass} mb-2`}>
-                                          {getColoredRankName(ticketPrize.rank)}
-                                    </div>
-                                  <div className={`text-sm md:text-base font-bold ${styling.textClass} mb-2`}>
-                                      {formatUSDT(formatEther(BigInt(ticketPrize.prize)))} TRDO
-                                    </div>
+      //                             return (
+      //                               <div 
+      //                                 key={ticketIndex} 
+      //                             className={`${styling.bgClass} ${styling.borderClass} ${styling.shadowClass} rounded-lg p-3 md:p-4 text-center border-2 transition-all duration-300 hover:scale-105 cursor-pointer`}
+      //                             onClick={() => handleTicketClick(parseInt(ticketPrize.ticketNumber))}
+      //                           >
+      //                             <div className={`text-lg md:text-xl font-bold ${styling.textClass} mb-2`}>
+      //                                 #{ticketPrize.ticketNumber}
+      //                               </div>
+      //                             <div className={`text-sm md:text-base font-semibold ${styling.textClass} mb-2`}>
+      //                                     {getColoredRankName(ticketPrize.rank)}
+      //                               </div>
+      //                             <div className={`text-sm md:text-base font-bold ${styling.textClass} mb-2`}>
+      //                                 {formatUSDT(formatEther(BigInt(ticketPrize.prize)))} TRDO
+      //                               </div>
                                         
-                                        {/* Rank indicator */}
-                                        {ticketPrize.rank <= 3 && (
-                                    <div className="text-2xl md:text-3xl">
-                                      {ticketPrize.rank === 1 && <span>🥇</span>}
-                                      {ticketPrize.rank === 2 && <span>🥈</span>}
-                                      {ticketPrize.rank === 3 && <span>🥉</span>}
-                                  </div>
-                                        )}
-                                    </div>
-                                  );
-                                })}
-                            </div>
+      //                                   {/* Rank indicator */}
+      //                                   {ticketPrize.rank <= 3 && (
+      //                               <div className="text-2xl md:text-3xl">
+      //                                 {ticketPrize.rank === 1 && <span>🥇</span>}
+      //                                 {ticketPrize.rank === 2 && <span>🥈</span>}
+      //                                 {ticketPrize.rank === 3 && <span>🥉</span>}
+      //                             </div>
+      //                                   )}
+      //                               </div>
+      //                             );
+      //                           })}
+      //                       </div>
                             
-                          <div className="mt-4 pt-4 border-t border-gray-700">
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <div className="text-lg md:text-xl font-bold text-green-400">
-                                    {formatUSDT(formatEther(BigInt(prize.totalRoundPrize)))} TRDO
-                                  </div>
-                                <div className="text-sm text-gray-300">Total Prize Value</div>
-                                </div>
-                              <div className="flex items-center gap-3">
-                                                              <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                                claimStatus[prize.roundId] 
-                                  ? 'bg-green-900 text-green-300' 
-                                  : 'bg-blue-900 text-blue-300'
-                              }`}>
-                                {claimStatus[prize.roundId] ? '✅ Claimed' : '💰 Claimable'}
-                              </div>
+      //                     <div className="mt-4 pt-4 border-t border-gray-700">
+      //                       <div className="flex justify-between items-center">
+      //                         <div>
+      //                           <div className="text-lg md:text-xl font-bold text-green-400">
+      //                               {formatUSDT(formatEther(BigInt(prize.totalRoundPrize)))} TRDO
+      //                             </div>
+      //                           <div className="text-sm text-gray-300">Total Prize Value</div>
+      //                           </div>
+      //                         <div className="flex items-center gap-3">
+      //                                                         <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
+      //                           claimStatus[prize.roundId] 
+      //                             ? 'bg-green-900 text-green-300' 
+      //                             : 'bg-blue-900 text-blue-300'
+      //                         }`}>
+      //                           {claimStatus[prize.roundId] ? '✅ Claimed' : '💰 Claimable'}
+      //                         </div>
                                 
-                                {/* Claim Button */}
-                                {/* {!claimStatus[prize.roundId] && (
-                                <button
-                                    onClick={() => !claimLoading && handleClaim(prize.roundId)}
-                                    disabled={claimLoading}
-                                    className={`px-4 py-2 rounded-lg font-semibold transition duration-300 text-sm ${
-                                      claimLoading
-                                      ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
-                                      : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
-                                  }`}
-                                >
-                                    {claimLoading ? '⏳ Claiming...' : '🏆 Claim'}
-                                </button>
-                                )} */}
-                              </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center text-gray-400 py-8 md:py-12">
-                    <div className="text-4xl md:text-6xl mb-3 md:mb-4">🏅</div>
-                    <div className="text-lg md:text-xl font-semibold mb-2">No rankings found</div>
-                      <div className="text-sm md:text-base">You haven't won any prizes in this round yet.</div>
-                    </div>
-                  )}
-                </div>
-              )}
-          </div>
-        );
+      //                           {/* Claim Button */}
+      //                           {/* {!claimStatus[prize.roundId] && (
+      //                           <button
+      //                               onClick={() => !claimLoading && handleClaim(prize.roundId)}
+      //                               disabled={claimLoading}
+      //                               className={`px-4 py-2 rounded-lg font-semibold transition duration-300 text-sm ${
+      //                                 claimLoading
+      //                                 ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
+      //                                 : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
+      //                             }`}
+      //                           >
+      //                               {claimLoading ? '⏳ Claiming...' : '🏆 Claim'}
+      //                           </button>
+      //                           )} */}
+      //                         </div>
+      //                         </div>
+      //                       </div>
+      //                     </div>
+      //                   );
+      //                 })}
+      //               </div>
+      //             ) : (
+      //               <div className="text-center text-gray-400 py-8 md:py-12">
+      //               <div className="text-4xl md:text-6xl mb-3 md:mb-4">🏅</div>
+      //               <div className="text-lg md:text-xl font-semibold mb-2">No rankings found</div>
+      //                 <div className="text-sm md:text-base">You haven't won any prizes in this round yet.</div>
+      //               </div>
+      //             )}
+      //           </div>
+      //         )}
+      //     </div>
+      //   );
 
       case 'community':
         return (
           <div className="space-y-3 md:space-y-4 lg:space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">🌐 My Community Network</h2>
+              <h2 className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-white">🌐 My Community Network</h2>
             </div>
 
             {levelCountsLoading ? (
@@ -2270,37 +2351,37 @@ export default function Dashboard() {
               <div className="space-y-4 md:space-y-6">
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 lg:gap-6">
-                  <div className="bg-gradient-to-br from-blue-900/50 to-blue-800/30 backdrop-blur-sm rounded-xl p-4 md:p-6 border border-blue-500/30 shadow-lg hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105">
-                    <div className="flex items-center justify-between mb-3 md:mb-4">
-                      <div className="text-xl md:text-2xl">👥</div>
+                  <div className="bg-gradient-to-br from-blue-900/50 to-blue-800/30 backdrop-blur-sm rounded-xl p-3 md:p-4 lg:p-6 border border-blue-500/30 shadow-lg hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center justify-between mb-2 md:mb-3 lg:mb-4">
+                      <div className="text-lg md:text-xl lg:text-2xl">👥</div>
                       <div className="text-blue-400 text-xs md:text-sm font-medium">Total Network</div>
                     </div>
-                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2">
+                    <div className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-white mb-1 md:mb-2">
                       {userLevelCounts.reduce((total, level) => total + level.count, 0)}
                     </div>
-                    <div className="text-blue-300 text-sm">Community Members</div>
+                    <div className="text-blue-300 text-xs md:text-sm">Community Members</div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-purple-900/50 to-purple-800/30 backdrop-blur-sm rounded-xl p-4 md:p-6 border border-purple-500/30 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105">
-                    <div className="flex items-center justify-between mb-3 md:mb-4">
-                      <div className="text-xl md:text-2xl">🏆</div>
+                  <div className="bg-gradient-to-br from-purple-900/50 to-purple-800/30 backdrop-blur-sm rounded-xl p-3 md:p-4 lg:p-6 border border-purple-500/30 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center justify-between mb-2 md:mb-3 lg:mb-4">
+                      <div className="text-lg md:text-xl lg:text-2xl">🏆</div>
                       <div className="text-purple-400 text-xs md:text-sm font-medium">Max Level</div>
                     </div>
-                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2">
+                    <div className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-white mb-1 md:mb-2">
                       {Math.max(...userLevelCounts.map(level => level.level))}
                     </div>
-                    <div className="text-purple-300 text-sm">Network Depth</div>
+                    <div className="text-purple-300 text-xs md:text-sm">Network Depth</div>
                   </div>
                 </div>
 
                 {/* Enhanced Table */}
                 <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/60 backdrop-blur-sm rounded-xl border border-gray-700/50 shadow-2xl overflow-hidden">
                   <div className="overflow-x-auto">
-                    <table className="w-full min-w-[300px]">
+                    <table className="w-full min-w-[280px]">
                       <thead>
                         <tr className="bg-gradient-to-r from-gray-800/80 to-gray-700/80 border-b border-gray-700/50">
-                          <th className="py-3 md:py-4 px-3 md:px-6 text-left text-gray-200 font-semibold text-xs md:text-sm lg:text-base">Level</th>
-                          <th className="py-3 md:py-4 px-3 md:px-6 text-left text-gray-200 font-semibold text-xs md:text-sm lg:text-base">Members</th>
+                          <th className="py-2 md:py-3 lg:py-4 px-2 md:px-3 lg:px-6 text-left text-gray-200 font-semibold text-xs md:text-sm lg:text-base">Level</th>
+                          <th className="py-2 md:py-3 lg:py-4 px-2 md:px-3 lg:px-6 text-left text-gray-200 font-semibold text-xs md:text-sm lg:text-base">Members</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2315,9 +2396,9 @@ export default function Dashboard() {
                               }`}
                               style={{ animationDelay: `${index * 100}ms` }}
                             >
-                              <td className="py-3 md:py-4 px-3 md:px-6">
-                                <div className="flex items-center gap-2 md:gap-3">
-                                  <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm font-bold ${
+                              <td className="py-2 md:py-3 lg:py-4 px-2 md:px-3 lg:px-6">
+                                <div className="flex items-center gap-1 md:gap-2 lg:gap-3">
+                                  <div className={`w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-xs md:text-sm font-bold ${
                                     isActive 
                                       ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' 
                                       : 'bg-gray-600 text-gray-400'
@@ -2331,8 +2412,8 @@ export default function Dashboard() {
                                   </div>
                                 </div>
                               </td>
-                              <td className="py-3 md:py-4 px-3 md:px-6">
-                                <div className="text-white font-semibold text-base md:text-lg lg:text-xl">
+                              <td className="py-2 md:py-3 lg:py-4 px-2 md:px-3 lg:px-6">
+                                <div className="text-white font-semibold text-sm md:text-base lg:text-lg xl:text-xl">
                                   {level.count}
                                 </div>
                               </td>
@@ -2458,36 +2539,37 @@ export default function Dashboard() {
         )}
 
         {/* Header */}
-        <header className="py-3 md:py-4 px-3 md:px-6 bg-gradient-to-r from-gray-900 to-blue-900 flex justify-between items-center">
-          <div className="flex items-center">
+        <header className="py-2 md:py-3 lg:py-4 px-2 md:px-4 lg:px-6 bg-gradient-to-r from-gray-900 to-blue-900 flex justify-between items-center shadow-lg">
+          <div className="flex items-center min-w-0 flex-1">
             <button 
-              className="mr-3 md:mr-4 text-gray-400 hover:text-white md:hidden"
+              className="mr-2 md:mr-3 lg:mr-4 text-gray-400 hover:text-white transition-colors duration-200 md:hidden flex-shrink-0"
               onClick={toggleSidebar}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-white flex items-center">
-              <span className="mr-2">🏆</span> 
-              {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
+            <h1 className="text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-white flex items-center truncate">
+              <span className="mr-1 md:mr-2 text-sm md:text-base lg:text-lg xl:text-xl">🏆</span> 
+              <span className="truncate">{activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}</span>
             </h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1 md:gap-2 lg:gap-4 flex-shrink-0">
             {dashboardData.drawExecuted && (
               <button
                 onClick={() => window.location.reload()}
-                className="flex items-center px-2 md:px-3 py-1.5 md:py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg border border-gray-600 hover:border-gray-500 transition-colors duration-200 mr-2 text-xs md:text-base"
+                className="flex items-center px-1.5 md:px-2 lg:px-3 py-1 md:py-1.5 lg:py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg border border-gray-600 hover:border-gray-500 transition-colors duration-200 text-xs md:text-sm lg:text-base"
                 title="Refresh Page"
               >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 md:w-4 md:h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582M20 20v-5h-.581M5.635 19.364A9 9 0 104.582 9m0 0V4m0 5h5" />
                 </svg>
-                <span className="hidden xs:inline">Refresh Round Data</span>
-                <span className="inline xs:hidden">Refresh</span>
+                <span className="hidden sm:inline">Refresh</span>
               </button>
             )}
-            <LanguageSwitcher />
+            <div className="hidden sm:block">
+              <LanguageSwitcher />
+            </div>
             <ConnectButton />
           </div>
         </header>
