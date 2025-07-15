@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { useWallet } from '../hooks/useWallet';
@@ -217,6 +217,10 @@ const ComprehensivePrizeDisplay = ({
   const [userLevelCounts, setUserLevelCounts] = useState<any[]>([]);
   const [levelCountsLoading, setLevelCountsLoading] = useState(false);
 
+  // Add ref to track if loading is in progress to prevent multiple simultaneous loads
+  const loadingRef = useRef(false);
+  const lastLoadTimeRef = useRef(0);
+
   // Fetch user level counts when popup opens (only once per open)
   useEffect(() => {
     if (showSponsorPopup && address && userLevelCounts.length === 0) {
@@ -284,26 +288,46 @@ const ComprehensivePrizeDisplay = ({
     }
   };
 
-  useEffect(() => {
-    const loadPrizeData = async () => {
-      if (!roundId || roundId === 0) return;
-      
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const data = await getUserPrizeData(roundId);
-        setPrizeData(data);
-      } catch (err: any) {
-        console.error('Error loading prize data:', err);
-        setError(err.message || 'Failed to load prize data');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Memoized loadPrizeData function to prevent recreation on every render
+  const loadPrizeData = useCallback(async () => {
+    if (!roundId || roundId === 0) return;
+    
+    // Prevent multiple simultaneous loads
+    if (loadingRef.current) {
+      console.log('🔄 Load already in progress, skipping...');
+      return;
+    }
 
-    loadPrizeData();
+    // Debounce: prevent loading more than once every 2 seconds
+    const now = Date.now();
+    if (now - lastLoadTimeRef.current < 2000) {
+      console.log('🔄 Debouncing load request...');
+      return;
+    }
+
+    loadingRef.current = true;
+    lastLoadTimeRef.current = now;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log('🔄 Loading prize data for round:', roundId);
+      const data = await getUserPrizeData(roundId);
+      setPrizeData(data);
+    } catch (err: any) {
+      console.error('Error loading prize data:', err);
+      setError(err.message || 'Failed to load prize data');
+    } finally {
+      setLoading(false);
+      loadingRef.current = false;
+    }
   }, [roundId, getUserPrizeData]);
+
+  // Use effect with proper dependencies and debouncing
+  useEffect(() => {
+    loadPrizeData();
+  }, [loadPrizeData]);
 
   if (loading) {
     return (
@@ -830,7 +854,11 @@ export default function Dashboard() {
   // Load prize data when component mounts or when relevant data changes
   useEffect(() => {
     if (isConnected && address && dashboardData.userInfo) {
-      loadPrizeData();
+      // Add a small delay for initial load to ensure all data is ready
+      const timeoutId = setTimeout(() => {
+        loadPrizeData();
+      }, 100);
+      return () => clearTimeout(timeoutId);
     }
   }, [isConnected, address, dashboardData.userInfo, dashboardData.drawExecuted, dashboardData.myTickets]);
 
@@ -912,11 +940,14 @@ export default function Dashboard() {
   useEffect(() => {
     if (isConnected && address) {
       setSectionLoading(true);
-      // Reset loading after a short delay to allow data to load
+      // Reset loading after a longer delay to ensure data is loaded properly
       const timer = setTimeout(() => {
         setSectionLoading(false);
-      }, 1500);
+      }, 2000);
       return () => clearTimeout(timer);
+    } else {
+      // Immediately hide loading when wallet is not connected
+      setSectionLoading(false);
     }
   }, [activeSection, address]);
 
@@ -1192,9 +1223,30 @@ export default function Dashboard() {
   };
 
   // Load Prize Data Function - Using exact logic from register.js but only current round
+  // Add ref to track if loadPrizeData is already running
+  const loadPrizeDataRef = useRef(false);
+  const lastLoadPrizeDataTimeRef = useRef(0);
+
   const loadPrizeData = async () => {
+    // Prevent multiple simultaneous loads
+    if (loadPrizeDataRef.current) {
+      console.log('🔄 loadPrizeData already in progress, skipping...');
+      return;
+    }
+
+    // Debounce: prevent loading more than once every 500ms (reduced from 3 seconds)
+    // But allow immediate load if this is the first time (lastLoadPrizeDataTimeRef.current is 0)
+    const now = Date.now();
+    if (lastLoadPrizeDataTimeRef.current > 0 && now - lastLoadPrizeDataTimeRef.current < 500) {
+      console.log('🔄 Debouncing loadPrizeData request...');
+      return;
+    }
+
     try {
       if (!address || !dashboardData.userInfo) return;
+      
+      loadPrizeDataRef.current = true;
+      lastLoadPrizeDataTimeRef.current = now;
       
       console.log('🏆 Loading current round pending claims...');
       
@@ -1444,6 +1496,9 @@ export default function Dashboard() {
       });
       // Mark data as refreshed even on error to prevent infinite loading
       setDataRefreshed(true);
+    } finally {
+      // Reset the loading flag
+      loadPrizeDataRef.current = false;
     }
   };
 
@@ -1455,10 +1510,26 @@ export default function Dashboard() {
             <div className="text-center text-gray-400 py-12">
               <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
               <p className="text-lg md:text-xl">Loading dashboard data...</p>
-              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your lottery information</p>
+              <p className="text-sm md:text-base text-gray-500 mt-2">
+                {isConnected && address 
+                  ? "Please wait while we fetch your lottery information" 
+                  : "Please connect your wallet to view dashboard data"
+                }
+              </p>
             </div>
           );
         }
+        // Check if user is connected but no dashboard data is available yet
+        if (isConnected && address && (!dashboardData.currentRound || !dashboardData.userInfo)) {
+          return (
+            <div className="text-center text-gray-400 py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+              <p className="text-lg md:text-xl">Initializing dashboard...</p>
+              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we load your data</p>
+            </div>
+          );
+        }
+
         return (
           <>
             {/* Timer Countdown Box */}
