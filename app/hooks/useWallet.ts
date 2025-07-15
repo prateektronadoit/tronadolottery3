@@ -62,7 +62,8 @@ export const useWallet = () => {
     myTickets: [],
     isRegistered: false,
     userInfo: null,
-    userPurchaseHistory: []
+    userPurchaseHistory: [],
+    totalPlayed: '0'
   });
 
   // Add state for transaction confirmation
@@ -126,6 +127,12 @@ export const useWallet = () => {
     query: {
       enabled: !!address && !!currentRoundId,
     },
+  });
+
+  const { data: totalPlayed } = useReadContract({
+    address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+    abi: LOTTERY_ABI,
+    functionName: 'TotalPlayed',
   });
 
 
@@ -247,6 +254,7 @@ export const useWallet = () => {
         drawExecuted: roundDataArray[4],
         allClaimed: roundDataArray[5],
         isSettled: roundDataArray[6],
+        totalPlayed: totalPlayed ? formatUSDT(formatEther(totalPlayed as bigint)) : '0',
         winningNumber: Number(roundDataArray[7] || BigInt(0)),
         myTicketsCount: tickets.length,
         myTickets: tickets,

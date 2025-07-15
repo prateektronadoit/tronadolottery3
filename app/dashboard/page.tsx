@@ -507,16 +507,7 @@ const ComprehensivePrizeDisplay = ({
 };
 
 // Confetti Celebration Component
-const ConfettiCelebration = ({ onClose, winningTicketInfo }: { onClose: () => void; winningTicketInfo: { ticketNumber: number; rank: number } | null }) => {
-  // Remove auto-close timer - make it persistent for winners
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     onClose();
-  //   }, 8000); // Auto close after 8 seconds
-  //   
-  //   return () => clearTimeout(timer);
-  // }, [onClose]);
-
+const ConfettiCelebration = ({ onClose, winningTicketInfo }: { onClose?: () => void; winningTicketInfo: { ticketNumber: number; rank: number } | null }) => {
   const getRankText = (rank: number) => {
     switch (rank) {
       case 1: return '1st Place 🥇';
@@ -532,6 +523,27 @@ const ConfettiCelebration = ({ onClose, winningTicketInfo }: { onClose: () => vo
     <div className="relative bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-2xl p-6 md:p-8 text-center shadow-xl border-4 border-yellow-300" style={{ 
       boxShadow: '0 0 30px rgba(255, 215, 0, 0.6), 0 0 60px rgba(255, 165, 0, 0.4), 0 0 90px rgba(255, 69, 0, 0.2)'
     }}>
+      {/* Falling Confetti Animation */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(50)].map((_, i) => (
+          <div
+            key={`falling-${i}`}
+            className="absolute animate-fall"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: '-10%',
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${3 + Math.random() * 2}s`,
+              color: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#FF8C00', '#FF1493'][Math.floor(Math.random() * 8)],
+              fontSize: `${12 + Math.random() * 8}px`,
+              transform: `rotate(${Math.random() * 360}deg)`
+            }}
+          >
+            {['🎉', '🎊', '✨', '💫', '🌟', '⭐', '🎈', '🎁', '🏆', '💎'][Math.floor(Math.random() * 10)]}
+          </div>
+        ))}
+      </div>
+
       {/* Celebration Strips */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(8)].map((_, i) => (
@@ -564,11 +576,11 @@ const ConfettiCelebration = ({ onClose, winningTicketInfo }: { onClose: () => vo
         ))}
       </div>
 
-      {/* Confetti Animation */}
+      {/* Floating Confetti Animation */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(30)].map((_, i) => (
           <div
-            key={i}
+            key={`floating-${i}`}
             className="absolute animate-bounce"
             style={{
               left: `${Math.random() * 100}%`,
@@ -597,12 +609,7 @@ const ConfettiCelebration = ({ onClose, winningTicketInfo }: { onClose: () => vo
             Check your prizes below.
           </p>
         )}
-        {/* <button
-          onClick={onClose}
-          className="bg-white text-orange-600 px-6 py-2 rounded-full font-bold text-sm md:text-base hover:bg-gray-100 transition-colors duration-300 shadow-lg"
-        >
-          🎯 View My Prizes
-        </button> */}
+       
       </div>
     </div>
   );
@@ -685,6 +692,7 @@ export default function Dashboard() {
   const [hasShownConfetti, setHasShownConfetti] = useState(false);
   const [winningTicketInfo, setWinningTicketInfo] = useState<{ ticketNumber: number; rank: number } | null>(null);
   const [dataRefreshed, setDataRefreshed] = useState(false);
+  const [confettiShownForRound, setConfettiShownForRound] = useState<number | null>(null);
 
   // Unified loading state for all sections
   const [sectionLoading, setSectionLoading] = useState(false);
@@ -924,18 +932,71 @@ export default function Dashboard() {
     // Only reset confetti if we're moving to a new round AND draw is not executed
     // This keeps confetti persistent for winners in the current round
     if (dashboardData.currentRound && !dashboardData.drawExecuted) {
-      setHasShownConfetti(false);
       setShowConfetti(false);
       setWinningTicketInfo(null);
       setDataRefreshed(false);
     }
   }, [dashboardData.currentRound, dashboardData.drawExecuted]);
 
-  // Immediately clear confetti when wallet address changes
+  // NEW EFFECT - Check for winning tickets and show confetti
   useEffect(() => {
+    const checkForWinningTickets = async () => {
+      if (!isConnected || !address || !dashboardData.currentRound || !dashboardData.drawExecuted || !dashboardData.myTickets || dashboardData.myTickets.length === 0) {
     setShowConfetti(false);
-    setHasShownConfetti(false);
     setWinningTicketInfo(null);
+        return;
+      }
+
+      try {
+        console.log('🎯 Checking for winning tickets in round', dashboardData.currentRound);
+        let hasWinningTicket = false;
+        let bestTicket: { ticketNumber: number; rank: number } | null = null;
+
+        // Check each of user's tickets for rank 1-5
+        for (const ticketNumber of dashboardData.myTickets) {
+          try {
+            const rank = await publicClient.readContract({
+              address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+              abi: LOTTERY_ABI,
+              functionName: 'getTicketRank',
+              args: [BigInt(dashboardData.currentRound), BigInt(ticketNumber)]
+            }) as number;
+
+            console.log(`Ticket #${ticketNumber} has rank: ${rank}`);
+
+            // Check if ticket has rank 1-5
+            if (rank >= 1 && rank <= 5) {
+              hasWinningTicket = true;
+              if (!bestTicket || rank < bestTicket.rank) {
+                bestTicket = { ticketNumber, rank };
+              }
+            }
+          } catch (error) {
+            console.warn(`Could not check rank for ticket ${ticketNumber}:`, error);
+          }
+        }
+
+        // Show confetti if user has a winning ticket
+        if (hasWinningTicket && bestTicket) {
+          console.log('🎉 User has winning ticket! Showing confetti for:', bestTicket);
+          setWinningTicketInfo(bestTicket);
+          setShowConfetti(true);
+        } else {
+          setShowConfetti(false);
+          setWinningTicketInfo(null);
+        }
+      } catch (error) {
+        console.error('Error checking for winning tickets:', error);
+        setShowConfetti(false);
+        setWinningTicketInfo(null);
+      }
+    };
+
+    checkForWinningTickets();
+  }, [isConnected, address, dashboardData.currentRound, dashboardData.drawExecuted, dashboardData.myTickets]);
+
+  // Reset data when wallet address changes
+  useEffect(() => {
     setDataRefreshed(false);
   }, [address]);
 
@@ -1551,7 +1612,7 @@ export default function Dashboard() {
                   {!isConnected ? (
                     <div className="bg-gray-800 rounded-xl p-4 text-center">
                       <div className="text-gray-400 text-sm mb-2">Connect wallet to purchase tickets</div>
-                    </div>
+              </div>
                   ) : !dashboardData.isRegistered ? (
                     <div className="bg-gray-800 rounded-xl p-4 text-center">
                       <div className="text-gray-400 text-sm mb-2">Register first to purchase tickets</div>
@@ -1643,8 +1704,8 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+            {/* Stats Grid - Mobile Vertical Layout */}
+            <div className="flex flex-col space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-4 lg:gap-6 mb-6 md:mb-8">
               <StatCard 
                 icon=""
                 iconImage="18.png"
@@ -1676,7 +1737,7 @@ export default function Dashboard() {
               />
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+            <div className="flex flex-col space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 lg:gap-6 mb-6 md:mb-8">
               <StatCard 
                 icon=""
                 iconImage="19.png"
@@ -1694,16 +1755,31 @@ export default function Dashboard() {
               <StatCard 
                 icon=""
                 iconImage="16.png"
-                title="My Tickets" 
-                value={dashboardData.myTicketsCount || 0} 
-                subtitle="In current round"
+                title="Total Played TRDO" 
+                value={formatUSDT(dashboardData.totalPlayed || '0')} 
+                subtitle="Total TRDO played"
               />
             </div>
 
             {/* Confetti Celebration - Show in dashboard section */}
             {showConfetti && (
               <div className="mb-6 md:mb-8">
-                <ConfettiCelebration onClose={() => setShowConfetti(false)} winningTicketInfo={winningTicketInfo} />
+          <style>{`
+            @keyframes fall {
+              0% {
+                transform: translateY(-10px) rotate(0deg);
+                opacity: 1;
+              }
+              100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+              }
+            }
+            .animate-fall {
+              animation: fall linear infinite;
+            }
+          `}</style>
+          <ConfettiCelebration winningTicketInfo={winningTicketInfo} />
               </div>
             )}
 
@@ -2000,17 +2076,17 @@ export default function Dashboard() {
           </div>
         );
 
-        case 'claim':
-          if (sectionLoading) {
-            return (
-              <div className="text-center text-gray-400 py-12">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
-                <p className="text-lg md:text-xl">Loading claim data...</p>
-                <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your prize information</p>
-              </div>
-            );
-          }
+      case 'claim':
+        if (sectionLoading) {
           return (
+            <div className="text-center text-gray-400 py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+              <p className="text-lg md:text-xl">Loading claim data...</p>
+              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your prize information</p>
+            </div>
+          );
+        }
+        return (
             <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
               {/* Premium Header Section */}
               <div className="relative overflow-hidden bg-gradient-to-br from-gray-900/90 via-gray-800/70 to-gray-900/90 backdrop-blur-sm rounded-2xl border border-gray-600/50 shadow-2xl p-6 md:p-8">
@@ -2034,19 +2110,19 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
-                    <button 
+                  <button 
                       className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 hover:from-blue-500 hover:via-purple-500 hover:to-blue-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-sm md:text-base transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/30 active:scale-95 group"
-                      onClick={() => {
-                        refreshDrawStatus();
-                      }}
-                    >
+                    onClick={() => {
+                      refreshDrawStatus();
+                    }}
+                  >
                       {/* Button shine effect */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                       <span className="relative z-10 flex items-center">
                         <span className="mr-2 text-lg">🎲</span>
-                        Check Draw Status
+                    Check Draw Status
                       </span>
-                    </button>
+                  </button>
                   </div>
                 </div>
               </div>
@@ -2074,7 +2150,7 @@ export default function Dashboard() {
                       <div className="relative z-10 p-4 md:p-6 text-center">
                         <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 bg-clip-text mb-2">
                           {dashboardData.userInfo?.totalTicketsPurchased || 0}
-                        </div>
+                    </div>
                         <div className="text-base md:text-lg font-bold text-blue-200 mb-1">Total Tickets</div>
                         <div className="text-xs md:text-sm text-blue-300/90">Purchased across all rounds</div>
                       </div>
@@ -2092,8 +2168,8 @@ export default function Dashboard() {
                       
                       <div className="relative z-10 p-4 md:p-6 text-center">
                         <div className="text-xl md:text-2xl lg:text-3xl font-black text-transparent bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text mb-2">
-                          {formatUSDT(dashboardData.userInfo?.totalEarnings || '0')}
-                        </div>
+                        {formatUSDT(dashboardData.userInfo?.totalEarnings || '0')}
+                      </div>
                         <div className="text-base md:text-lg font-bold text-green-200 mb-1">Total Winnings</div>
                         <div className="text-xs md:text-sm text-green-300/90">Earned in TRDO</div>
                         
@@ -2106,11 +2182,11 @@ export default function Dashboard() {
                               style={{ animationDelay: `${i * 0.2}s`, animationDuration: '1.5s' }}
                             >
                               💰
-                            </div>
+                    </div>
                           ))}
-                        </div>
                       </div>
                     </div>
+                      </div>
   
                     {/* Draw Status Card */}
                     <div className="relative group overflow-hidden rounded-xl bg-gradient-to-br from-purple-900/90 via-purple-800/80 to-pink-900/90 backdrop-blur-sm border-2 border-purple-500/50 shadow-xl hover:shadow-purple-500/40 transition-all duration-500 transform hover:scale-105">
@@ -2145,7 +2221,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </div>
-  
+
                   {/* Premium Prize Breakdown Section */}
                   <div className="relative overflow-hidden bg-gradient-to-br from-gray-900/90 via-gray-800/70 to-gray-900/90 backdrop-blur-sm rounded-2xl border border-gray-600/50 shadow-2xl p-6 md:p-8">
                     {/* Animated background elements */}
@@ -2161,35 +2237,35 @@ export default function Dashboard() {
                         <div className="text-2xl md:text-3xl">💰</div>
                         <div>
                           <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text">
-                            Prize Breakdown & Sponsor Income
-                          </h3>
+                      Prize Breakdown & Sponsor Income
+                    </h3>
                           <p className="text-sm md:text-base text-gray-300 mt-1">Detailed analysis of your earnings</p>
                         </div>
                       </div>
-                      
-                      {/* Current Round Prize Data */}
+                    
+                    {/* Current Round Prize Data */}
                       <div className="mb-6">
                         <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-sm md:text-base font-semibold mb-4">
                           <span className="mr-2">🎯</span>
-                          Round #{dashboardData.currentRound} - Current Round
+                        Round #{dashboardData.currentRound} - Current Round
                         </div>
-                        <ComprehensivePrizeDisplay 
-                          roundId={dashboardData.currentRound}
-                          getUserPrizeData={getUserPrizeData}
-                          getUserTotalPrize={getUserTotalPrize}
-                          getUserSponsorInfo={getUserSponsorInfo}
-                          setNotification={setNotification}
-                          myTicketsCount={dashboardData.myTicketsCount || 0}
-                          drawExecuted={dashboardData.drawExecuted || false}
-                        />
-                      </div>
+                      <ComprehensivePrizeDisplay 
+                        roundId={dashboardData.currentRound}
+                        getUserPrizeData={getUserPrizeData}
+                        getUserTotalPrize={getUserTotalPrize}
+                        getUserSponsorInfo={getUserSponsorInfo}
+                        setNotification={setNotification}
+                        myTicketsCount={dashboardData.myTicketsCount || 0}
+                        drawExecuted={dashboardData.drawExecuted || false}
+                      />
                     </div>
-                  </div>
+                        </div>
+                      </div>
                 </div>
               )}
-            </div>
-          );
-  
+          </div>
+        );
+
 
       // case 'rankings':
       //   if (sectionLoading) {
@@ -2647,7 +2723,7 @@ export default function Dashboard() {
               </button>
             )}
             <div className="hidden sm:block">
-              <LanguageSwitcher />
+            <LanguageSwitcher />
             </div>
             <ConnectButton />
           </div>
@@ -2995,11 +3071,11 @@ function TopRankedTicketsSection({ currentRound }: { currentRound: number }) {
       `}</style>
       <div className="mt-6 mb-8">
         <h3 className="text-2xl font-extrabold text-center text-yellow-400 mb-6 tracking-wide drop-shadow-lg">Top 5 Ranked Tickets</h3>
-        <div className="flex justify-center gap-8 mb-8">
+        <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-8 mb-8">
           {top3.map((ticket, idx) => (
             <div
               key={idx}
-              className="flip-card min-w-[260px] max-w-[300px] flex-shrink-0 relative"
+              className="flip-card w-full md:min-w-[260px] md:max-w-[300px] flex-shrink-0 relative"
               tabIndex={0}
               style={{ zIndex: 10 - idx }}
             >
@@ -3025,28 +3101,31 @@ function TopRankedTicketsSection({ currentRound }: { currentRound: number }) {
           ))}
         </div>
         {next2.length > 0 && (
-          <div className="flex justify-center gap-6 mt-2">
+          <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-6 mt-2">
             {next2.map((ticket, idx) => (
               <div
                 key={idx}
-                className="flip-card min-w-[170px] max-w-[200px] flex-shrink-0 relative"
+                className="flip-card w-full md:min-w-[200px] md:max-w-[240px] flex-shrink-0 relative"
                 tabIndex={0}
-                style={{ zIndex: 5 - idx, minHeight: 220 }}
+                style={{ zIndex: 5 - idx }}
               >
                 <div className="flip-card-outer w-full h-full">
-                  <div className="flip-card-inner w-full h-full">
-                    {/* Front */}
-                    <div className="flip-card-front bg-gradient-to-br from-amber-700 to-yellow-400 flex flex-col items-center justify-center p-6 w-full h-full">
-                      <div className="text-2xl font-black text-white mb-2 tracking-wider drop-shadow-md">Ticket #{ticket.ticketNumber}</div>
-                      <div className="text-base font-bold text-amber-900 mb-1 uppercase tracking-wide drop-shadow-[0_2px_8px_rgba(205,127,50,0.7)]">Rank: {ticket.rank}</div>
-                    </div>
-                    {/* Back */}
-                    <div className="flip-card-back bg-gradient-to-br from-black via-blue-900 to-blue-800 flex flex-col items-center justify-center p-6 w-full h-full">
-                      <div className="text-xs font-semibold text-white/80 mb-1 uppercase tracking-widest">Owner</div>
-                      <div className="text-base font-mono text-white bg-blue-900/60 rounded px-2 py-1 mb-2 break-all text-center shadow-inner">{shorten(ticket.owner)}</div>
-                      <div className="text-base font-bold text-white mb-1">Prize: {ticket.prize} TRDO</div>
-                    </div>
+                                                  <div className="flip-card-inner w-full h-full" style={{ minHeight: 320 }}>
+                  {/* Front */}
+                  <div className="flip-card-front bg-gradient-to-br from-amber-700 to-yellow-400 flex flex-col items-center justify-center p-6 md:p-8 w-full h-full">
+                    <div className="text-4xl md:text-5xl font-extrabold mb-2 md:mb-3 text-amber-900 drop-shadow-[0_2px_8px_rgba(205,127,50,0.7)]">{
+                      idx === 0 ? '4️⃣' : '5️⃣'
+                    }</div>
+                    <div className="text-xl md:text-2xl font-black text-white mb-1 md:mb-2 tracking-wider drop-shadow-md">Ticket #{ticket.ticketNumber}</div>
+                    <div className="text-base md:text-lg font-bold mb-1 uppercase tracking-wide text-amber-900 drop-shadow-[0_2px_8px_rgba(205,127,50,0.7)]">Rank: {ticket.rank}</div>
                   </div>
+                  {/* Back */}
+                  <div className="flip-card-back bg-gradient-to-br from-black via-blue-900 to-blue-800 flex flex-col items-center justify-center p-6 md:p-8 w-full h-full">
+                    <div className="text-xs font-semibold text-white/80 mb-1 uppercase tracking-widest">Owner</div>
+                    <div className="text-base md:text-lg font-mono text-white bg-blue-900/60 rounded px-2 md:px-3 py-1 md:py-2 mb-2 md:mb-3 break-all text-center shadow-inner">{shorten(ticket.owner)}</div>
+                    <div className="text-base md:text-lg font-bold text-white mb-1 md:mb-2">Prize: {ticket.prize} TRDO</div>
+                  </div>
+                </div>
                 </div>
               </div>
             ))}
