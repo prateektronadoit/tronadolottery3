@@ -354,43 +354,47 @@ const ComprehensivePrizeDisplay = ({
   }
 
   return (
-    <div className="space-y-3 md:space-y-4">
+    <div className="space-y-4 md:space-y-6">
       {/* Prize Breakdown Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
-          <div className="text-lg md:text-xl font-bold text-green-400">
-            {prizeData.sponsorIncome}
+        <div className="relative overflow-hidden bg-gradient-to-br from-green-900/80 via-green-800/60 to-green-900/80 rounded-xl p-4 md:p-5 text-center border-2 border-green-500/50 shadow-lg hover:shadow-green-500/20 transition-all duration-500 group before:absolute before:inset-0 before:bg-gradient-to-r before:from-green-400/20 before:via-transparent before:to-green-400/20 before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500 before:-z-10">
+          <div className="absolute top-2 right-2 text-green-300 animate-pulse text-sm">💰</div>
+          <div className="text-xl md:text-2xl font-bold text-green-300 mb-1">
+            {formatUSDT(prizeData.sponsorIncome || '0')}
           </div>
-          <div className="text-xs md:text-sm text-gray-300">Downline Income (Purchase Time)</div>
+          <div className="text-xs md:text-sm text-green-200">Downline Income (Purchase Time)</div>
         </div>
         
-        <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
-          <div className="text-lg md:text-xl font-bold text-purple-400">
-            {prizeData.rewardSponsorIncome}
+        <div className="relative overflow-hidden bg-gradient-to-br from-purple-900/80 via-purple-800/60 to-purple-900/80 rounded-xl p-4 md:p-5 text-center border-2 border-purple-500/50 shadow-lg hover:shadow-purple-500/20 transition-all duration-500 group before:absolute before:inset-0 before:bg-gradient-to-r before:from-purple-400/20 before:via-transparent before:to-purple-400/20 before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500 before:-z-10">
+          <div className="absolute top-2 right-2 text-purple-300 animate-pulse text-sm">🎁</div>
+          <div className="text-xl md:text-2xl font-bold text-purple-300 mb-1">
+            {formatUSDT(prizeData.rewardSponsorIncome || '0')}
           </div>
-          <div className="text-xs md:text-sm text-gray-300">Downline Income (Claim Time)</div>
+          <div className="text-xs md:text-sm text-purple-200">Downline Income (Claim Time)</div>
         </div>
         
-        <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
-          <div className="text-lg md:text-xl font-bold text-blue-400">
-            {prizeData.netPrize}
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-900/80 via-blue-800/60 to-blue-900/80 rounded-xl p-4 md:p-5 text-center border-2 border-blue-500/50 shadow-lg hover:shadow-blue-500/20 transition-all duration-500 group before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-400/20 before:via-transparent before:to-blue-400/20 before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500 before:-z-10">
+          <div className="absolute top-2 right-2 text-blue-300 animate-pulse text-sm">🏆</div>
+          <div className="text-xl md:text-2xl font-bold text-blue-300 mb-1">
+            {formatUSDT(prizeData.netPrize || '0')}
           </div>
-          <div className="text-xs md:text-sm text-gray-300">Winning Prize</div>
+          <div className="text-xs md:text-sm text-blue-200">Winning Prize</div>
         </div>
 
-
-        <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-center border border-gray-700">
-          <div className="text-lg md:text-xl font-bold text-blue-400">
-            {prizeData.totalReceived}
+        <div className="relative overflow-hidden bg-gradient-to-br from-yellow-900/80 via-yellow-800/60 to-yellow-900/80 rounded-xl p-4 md:p-5 text-center border-2 border-yellow-500/50 shadow-lg hover:shadow-yellow-500/20 transition-all duration-500 group before:absolute before:inset-0 before:bg-gradient-to-r before:from-yellow-400/20 before:via-transparent before:to-yellow-400/20 before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500 before:-z-10">
+          <div className="absolute top-2 right-2 text-yellow-300 animate-pulse text-sm">💎</div>
+          <div className="text-xl md:text-2xl font-bold text-yellow-300 mb-1">
+            {isClaimed === true ? formatUSDT('0') : formatUSDT(prizeData.totalReceived || '0')}
           </div>
-          <div className="text-xs md:text-sm text-gray-300">Total Claimable Amount</div>
+          <div className="text-xs md:text-sm text-yellow-200">Total Claimable Amount (Current Round)</div>
         </div>
       </div>
 
       {/* Participation Status */}
       {myTicketsCount > 0 && (
-        <div className="rounded-lg p-3 md:p-4 text-center bg-green-900 border border-green-600">
-          <div className="text-sm md:text-base font-semibold text-green-300">
+        <div className="relative overflow-hidden rounded-xl p-4 md:p-5 text-center bg-gradient-to-br from-green-900/80 via-green-800/60 to-green-900/80 border-2 border-green-500/50 shadow-lg hover:shadow-green-500/20 transition-all duration-500 group before:absolute before:inset-0 before:bg-gradient-to-r before:from-green-400/20 before:via-transparent before:to-green-400/20 before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500 before:-z-10">
+          <div className="absolute top-2 right-2 text-green-300 animate-pulse text-sm">🎫</div>
+          <div className="text-sm md:text-base font-bold text-green-300">
             ✅ Participated in Round
           </div>
         </div>
@@ -404,26 +408,26 @@ const ComprehensivePrizeDisplay = ({
               <button
                 onClick={handleClaimPrize}
                 disabled={claimLoading || isClaimed === true}
-                className={`font-bold px-6 py-2 rounded-lg text-base shadow-md transition duration-300 flex items-center gap-2 ${
+                className={`relative overflow-hidden font-bold px-6 md:px-8 py-3 md:py-4 rounded-xl text-base md:text-lg shadow-lg transition-all duration-300 flex items-center gap-2 transform hover:scale-105 active:scale-95 ${
                   claimLoading || isClaimed === true
-                    ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white'
-                }`}
+                    ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-gray-300 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 hover:from-yellow-400 hover:via-orange-400 hover:to-red-400 text-white shadow-yellow-500/30 hover:shadow-yellow-500/50'
+                } before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:-translate-x-full hover:before:translate-x-full before:transition-transform before:duration-1000`}
               >
                 {claimLoading ? (
                   <>
                     <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
-                    Claiming...
+                    <span className="text-sm md:text-base">Claiming...</span>
                   </>
                 ) : isClaimed === true ? (
                   <>
-                    <span className="mr-2">✅</span>
-                    Claimed
+                    <span className="mr-2 text-lg">✅</span>
+                    <span className="text-sm md:text-base">Claimed</span>
                   </>
                 ) : (
                   <>
-                    <span className="mr-2">🏆</span>
-                    Claim Prize
+                    <span className="mr-2 text-lg">🏆</span>
+                    <span className="text-sm md:text-base">Claim Prize</span>
                   </>
                 )}
               </button>
@@ -1996,41 +2000,54 @@ export default function Dashboard() {
           </div>
         );
 
-      case 'claim':
-        if (sectionLoading) {
+        case 'claim':
+          if (sectionLoading) {
+            return (
+              <div className="text-center text-gray-400 py-12">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+                <p className="text-lg md:text-xl">Loading claim data...</p>
+                <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your prize information</p>
+              </div>
+            );
+          }
           return (
-            <div className="text-center text-gray-400 py-12">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
-              <p className="text-lg md:text-xl">Loading claim data...</p>
-              <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your prize information</p>
-            </div>
-          );
-        }
-        return (
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-gray-900 rounded-lg p-4 md:p-6 border border-gray-700 mb-4 md:mb-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-2">
-                <h2 className="text-xl md:text-2xl font-bold">🏆 Claim Prizes</h2>
-                <div className="flex gap-2">
-                  <button 
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center text-sm md:text-base"
-                    onClick={() => {
-                      refreshDrawStatus();
-                    }}
-                  >
-                    <span className="mr-2">🎲</span>
-                    Check Draw Status
-                  </button>
-                  {/* <button 
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center text-sm md:text-base"
-                    onClick={() => {
-                      loadPrizeData();
-                      setNotification({ type: 'info', message: 'Refreshing prize data...' });
-                    }}
-                  >
-                    <span className="mr-2">🔄</span>
-                    Refresh
-                  </button> */}
+            <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
+              {/* Premium Header Section */}
+              <div className="relative overflow-hidden bg-gradient-to-br from-gray-900/90 via-gray-800/70 to-gray-900/90 backdrop-blur-sm rounded-2xl border border-gray-600/50 shadow-2xl p-6 md:p-8">
+                {/* Animated background elements */}
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-orange-500/5 to-red-500/5 opacity-0 hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute top-4 right-4 text-yellow-400 animate-pulse">🏆</div>
+                <div className="absolute bottom-4 left-4 text-orange-400 animate-pulse" style={{animationDelay: '0.5s'}}>✨</div>
+                
+                {/* Shine effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="text-3xl md:text-4xl">🏆</div>
+                      <div>
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text">
+                          Claim Prizes
+                        </h2>
+                        <p className="text-sm md:text-base text-gray-300 mt-1">Collect your lottery winnings</p>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 hover:from-blue-500 hover:via-purple-500 hover:to-blue-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-sm md:text-base transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/30 active:scale-95 group"
+                      onClick={() => {
+                        refreshDrawStatus();
+                      }}
+                    >
+                      {/* Button shine effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                      <span className="relative z-10 flex items-center">
+                        <span className="mr-2 text-lg">🎲</span>
+                        Check Draw Status
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </div>
               
@@ -2041,76 +2058,138 @@ export default function Dashboard() {
                   <p className="text-sm md:text-base text-gray-500 mt-2">Please wait while we fetch your prize information</p>
                 </div>
               ) : (
-                <div className="space-y-4 md:space-y-6">
-                  {/* Prize Statistics */}
-                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
-                    <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
-                      <div className="text-xl md:text-2xl font-bold text-blue-400">{dashboardData.userInfo?.totalTicketsPurchased || 0}</div>
-                      <div className="text-xs md:text-sm text-gray-300">Total Tickets</div>
-                    </div>
-                    <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
-                      <div className="text-xl md:text-2xl font-bold text-green-400">
-                        {formatUSDT(dashboardData.userInfo?.totalEarnings || '0')}
-                      </div>
-                      <div className="text-xs md:text-sm text-gray-300">Total Winnings</div>
-                    </div>
-                    
-                    <div className="bg-gray-800 rounded-lg p-3 md:p-4 text-center">
-                      <div className={`text-xl md:text-2xl font-bold ${dashboardData.drawExecuted ? 'text-green-400' : 'text-orange-400'}`}>
-                        {dashboardData.drawExecuted ? '✅' : '⏳'}
-                      </div>
-                      <div className="text-xs md:text-sm text-gray-300">
-                        {dashboardData.drawExecuted ? 'Draw Complete' : 'Draw Pending'}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Comprehensive Prize Data Section */}
-                  <div className="bg-gray-800 rounded-lg p-4 md:p-6 border border-gray-700 mb-4 md:mb-6">
-                    <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 flex items-center">
-                      <span className="mr-2">💰</span>
-                      Prize Breakdown & Sponsor Income
-                    </h3>
-                    
-                    {/* Current Round Prize Data */}
-                    <div className="mb-4 md:mb-6">
-                      <h4 className="text-base md:text-lg font-medium mb-2 md:mb-3 text-blue-400">
-                        Round #{dashboardData.currentRound} - Current Round
-                      </h4>
-                      <ComprehensivePrizeDisplay 
-                        roundId={dashboardData.currentRound}
-                        getUserPrizeData={getUserPrizeData}
-                        getUserTotalPrize={getUserTotalPrize}
-                        getUserSponsorInfo={getUserSponsorInfo}
-                        setNotification={setNotification}
-                        myTicketsCount={dashboardData.myTicketsCount || 0}
-                        drawExecuted={dashboardData.drawExecuted || false}
-                      />
-                    </div>
-
-                    {/* User Sponsor Income Summary */}
-                    {/* <div className="bg-gray-900 rounded-lg p-3 md:p-4 border border-gray-600">
-                      <h4 className="text-base md:text-lg font-medium mb-2 md:mb-3 text-purple-400">
-                        📊 Your Sponsor Income Summary
-                      </h4>
-                      <div className="text-center">
-                        <div className="text-lg md:text-xl font-bold text-purple-400">
-                          {dashboardData.userInfo?.sponsorIncome || '0.00'}
+                <div className="space-y-6 md:space-y-8">
+                  {/* Premium Prize Statistics - Symmetrical Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+                    {/* Total Tickets Card */}
+                    <div className="relative group overflow-hidden rounded-xl bg-gradient-to-br from-blue-900/90 via-blue-800/80 to-blue-900/90 backdrop-blur-sm border-2 border-blue-500/50 shadow-xl hover:shadow-blue-500/40 transition-all duration-500 transform hover:scale-105">
+                      {/* Animated background elements */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 via-cyan-600/30 to-blue-600/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <div className="absolute top-3 right-3 text-blue-300 animate-pulse text-lg">🎫</div>
+                      <div className="absolute bottom-3 left-3 text-cyan-300 animate-pulse text-lg" style={{animationDelay: '0.5s'}}>✨</div>
+                      
+                      {/* Shine effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                      
+                      <div className="relative z-10 p-4 md:p-6 text-center">
+                        <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 bg-clip-text mb-2">
+                          {dashboardData.userInfo?.totalTicketsPurchased || 0}
                         </div>
-                        <div className="text-xs md:text-sm text-gray-300">Total Sponsor Income</div>
+                        <div className="text-base md:text-lg font-bold text-blue-200 mb-1">Total Tickets</div>
+                        <div className="text-xs md:text-sm text-blue-300/90">Purchased across all rounds</div>
                       </div>
-                    </div> */}
+                    </div>
+  
+                    {/* Total Winnings Card */}
+                    <div className="relative group overflow-hidden rounded-xl bg-gradient-to-br from-green-900/90 via-emerald-800/80 to-teal-900/90 backdrop-blur-sm border-2 border-green-500/50 shadow-xl hover:shadow-green-500/40 transition-all duration-500 transform hover:scale-105">
+                      {/* Animated background elements */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-green-600/30 via-emerald-600/30 to-teal-600/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <div className="absolute top-3 right-3 text-green-300 animate-pulse text-lg">💰</div>
+                      <div className="absolute bottom-3 left-3 text-emerald-300 animate-pulse text-lg" style={{animationDelay: '0.5s'}}>🏆</div>
+                      
+                      {/* Shine effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                      
+                      <div className="relative z-10 p-4 md:p-6 text-center">
+                        <div className="text-xl md:text-2xl lg:text-3xl font-black text-transparent bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text mb-2">
+                          {formatUSDT(dashboardData.userInfo?.totalEarnings || '0')}
+                        </div>
+                        <div className="text-base md:text-lg font-bold text-green-200 mb-1">Total Winnings</div>
+                        <div className="text-xs md:text-sm text-green-300/90">Earned in TRDO</div>
+                        
+                        {/* Animated coins */}
+                        <div className="mt-3 flex justify-center space-x-1">
+                          {[...Array(3)].map((_, i) => (
+                            <div 
+                              key={i}
+                              className="text-green-400 animate-bounce text-sm"
+                              style={{ animationDelay: `${i * 0.2}s`, animationDuration: '1.5s' }}
+                            >
+                              💰
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+  
+                    {/* Draw Status Card */}
+                    <div className="relative group overflow-hidden rounded-xl bg-gradient-to-br from-purple-900/90 via-purple-800/80 to-pink-900/90 backdrop-blur-sm border-2 border-purple-500/50 shadow-xl hover:shadow-purple-500/40 transition-all duration-500 transform hover:scale-105">
+                      {/* Animated background elements */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600/30 via-pink-600/30 to-purple-600/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <div className="absolute top-3 right-3 text-purple-300 animate-pulse text-lg">🎯</div>
+                      <div className="absolute bottom-3 left-3 text-pink-300 animate-pulse text-lg" style={{animationDelay: '0.5s'}}>⚡</div>
+                      
+                      {/* Shine effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                      
+                      <div className="relative z-10 p-4 md:p-6 text-center">
+                        <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text mb-2">
+                          {dashboardData.drawExecuted ? "✅" : "⏳"}
+                        </div>
+                        <div className="text-base md:text-lg font-bold text-purple-200 mb-1">Draw Status</div>
+                        
+                        
+                        {/* Status indicator */}
+                        <div className="mt-3">
+                          <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${
+                            dashboardData.drawExecuted 
+                              ? 'bg-green-500/30 text-green-300 border border-green-400/50' 
+                              : 'bg-yellow-500/30 text-yellow-300 border border-yellow-400/50'
+                          }`}>
+                            <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                              dashboardData.drawExecuted ? 'bg-green-400 animate-pulse' : 'bg-yellow-400 animate-pulse'
+                            }`}></div>
+                            {dashboardData.drawExecuted ? "Completed" : "Pending"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-
-                  
-
-                  {/* Simplified Prize Claims Section */}
-                  
+  
+                  {/* Premium Prize Breakdown Section */}
+                  <div className="relative overflow-hidden bg-gradient-to-br from-gray-900/90 via-gray-800/70 to-gray-900/90 backdrop-blur-sm rounded-2xl border border-gray-600/50 shadow-2xl p-6 md:p-8">
+                    {/* Animated background elements */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-orange-500/5 to-red-500/5 opacity-0 hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="absolute top-4 right-4 text-yellow-400 animate-pulse">💰</div>
+                    <div className="absolute bottom-4 left-4 text-orange-400 animate-pulse" style={{animationDelay: '0.5s'}}>✨</div>
+                    
+                    {/* Shine effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="text-2xl md:text-3xl">💰</div>
+                        <div>
+                          <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text">
+                            Prize Breakdown & Sponsor Income
+                          </h3>
+                          <p className="text-sm md:text-base text-gray-300 mt-1">Detailed analysis of your earnings</p>
+                        </div>
+                      </div>
+                      
+                      {/* Current Round Prize Data */}
+                      <div className="mb-6">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-sm md:text-base font-semibold mb-4">
+                          <span className="mr-2">🎯</span>
+                          Round #{dashboardData.currentRound} - Current Round
+                        </div>
+                        <ComprehensivePrizeDisplay 
+                          roundId={dashboardData.currentRound}
+                          getUserPrizeData={getUserPrizeData}
+                          getUserTotalPrize={getUserTotalPrize}
+                          getUserSponsorInfo={getUserSponsorInfo}
+                          setNotification={setNotification}
+                          myTicketsCount={dashboardData.myTicketsCount || 0}
+                          drawExecuted={dashboardData.drawExecuted || false}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
-          </div>
-        );
+          );
+  
 
       // case 'rankings':
       //   if (sectionLoading) {
