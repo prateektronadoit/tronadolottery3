@@ -20,7 +20,7 @@ const features = [
   {
     icon: '/5.png',
     title: 'Low Fees',
-    description: 'Powered by BSC network for minimal transaction costs. More of your money goes toward prizes, not fees - maximizing your winning potential.'
+    description: 'Powered by Polygon network for minimal transaction costs. More of your money goes toward prizes, not fees - maximizing your winning potential.'
   },
   {
     icon: '/4.png',
