@@ -15,6 +15,13 @@ declare global {
       languages: LanguageDescriptor[];
       defaultLanguage: string;
     };
+    var googleTranslateElement: any;
+    var lastDetectedLanguage: string;
+  }
+  
+  interface Window {
+    googleTranslateElement: any;
+    lastDetectedLanguage: string;
   }
 }
 
@@ -36,34 +43,101 @@ function setCookie(name: string, value: string, days = 365) {
   document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
 }
 
+// Helper function to get current language from Google Translate cookie
+function getCurrentLanguageFromCookie() {
+  const cookies = parseCookies();
+  const cookieVal = cookies[COOKIE_NAME];
+  let lang = "";
+
+  if (cookieVal) {
+    const parts = cookieVal.split("/");
+    if (parts.length === 3) {
+      lang = parts[2];
+    }
+  }
+
+  if (global.__GOOGLE_TRANSLATION_CONFIG__ && !lang) {
+    lang = global.__GOOGLE_TRANSLATION_CONFIG__.defaultLanguage;
+  }
+
+  return lang;
+}
+
 export const LanguageSwitcher = () => {
   const [currentLanguage, setCurrentLanguage] = useState<string>();
   const [languageConfig, setLanguageConfig] = useState<any>();
   const [isOpen, setIsOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
-    const cookies = parseCookies();
-    const cookieVal = cookies[COOKIE_NAME];
-    let lang = "";
-
-    if (cookieVal) {
-      const parts = cookieVal.split("/");
-      if (parts.length === 3) {
-        lang = parts[2];
+    const updateLanguageFromCookie = () => {
+      const lang = getCurrentLanguageFromCookie();
+      if (lang !== currentLanguage) {
+        setIsSyncing(true);
+        setCurrentLanguage(lang);
+        // Clear syncing indicator after a short delay
+        setTimeout(() => setIsSyncing(false), 500);
       }
-    }
+    };
 
-    if (global.__GOOGLE_TRANSLATION_CONFIG__ && !lang) {
-      lang = global.__GOOGLE_TRANSLATION_CONFIG__.defaultLanguage;
-    }
-
-    setCurrentLanguage(lang);
+    // Initial setup
+    updateLanguageFromCookie();
     setLanguageConfig(global.__GOOGLE_TRANSLATION_CONFIG__);
-  }, []);
+
+    // Listen for Google Translate changes via custom event
+    const handleGoogleTranslateChange = (event: CustomEvent) => {
+      setIsSyncing(true);
+      setCurrentLanguage(event.detail.language);
+      setTimeout(() => setIsSyncing(false), 500);
+    };
+
+    // Listen for the custom event from translation.js
+    window.addEventListener('googleTranslateChanged', handleGoogleTranslateChange as EventListener);
+
+    // Watch for DOM changes that might indicate Google Translate updates
+    const observer = new MutationObserver(() => {
+      // Check if the language has changed after DOM mutations
+      setTimeout(() => {
+        const newLang = getCurrentLanguageFromCookie();
+        if (newLang !== currentLanguage) {
+          setIsSyncing(true);
+          setCurrentLanguage(newLang);
+          setTimeout(() => setIsSyncing(false), 500);
+        }
+      }, 100);
+    });
+
+    // Observe the entire document for changes
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'style']
+    });
+
+    // Also check for changes periodically as fallback
+    const checkForGoogleTranslateChanges = () => {
+      const newLang = getCurrentLanguageFromCookie();
+      if (newLang !== currentLanguage) {
+        setIsSyncing(true);
+        setCurrentLanguage(newLang);
+        setTimeout(() => setIsSyncing(false), 500);
+      }
+    };
+
+    const interval = setInterval(checkForGoogleTranslateChanges, 2000);
+
+    return () => {
+      window.removeEventListener('googleTranslateChanged', handleGoogleTranslateChange as EventListener);
+      observer.disconnect();
+      clearInterval(interval);
+    };
+  }, [currentLanguage]);
 
   if (!currentLanguage || !languageConfig) return null;
 
   const switchLanguage = (lang: string) => () => {
+    setIsSyncing(true);
     setCookie(COOKIE_NAME, `/auto/${lang}`);
     window.location.reload();
   };
@@ -77,10 +151,16 @@ export const LanguageSwitcher = () => {
     <div className="relative notranslate">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg transition-colors duration-200 border border-gray-600 hover:border-gray-500"
+        className={`flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg transition-colors duration-200 border border-gray-600 hover:border-gray-500 ${
+          isSyncing ? 'animate-pulse' : ''
+        }`}
+        disabled={isSyncing}
       >
         <span className="text-lg">🌐</span>
         <span className="text-sm font-medium">{getCurrentLanguageTitle()}</span>
+        {isSyncing && (
+          <span className="text-xs text-orange-400">🔄</span>
+        )}
         <svg 
           className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           fill="none" 

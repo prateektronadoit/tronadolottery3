@@ -86,7 +86,7 @@ export default function HomePage() {
               <button
                 className="flex-1 flex items-center justify-center bg-[#16072d] hover:bg-[#291352] text-white font-bold py-4 px-8 rounded-full text-xl shadow-[0_4px_16px_rgba(255,162,0,0.5)] border border-[#3d2b59] hover:border-yellow-500 transition-all duration-300 cursor-pointer max-w-xs group"
                 onClick={() => {
-                  window.location.href = '/dashboard?section=purchase';
+                  window.location.href = '/dashboard?section=dashboard';
                 }}
               >
                 <div className="w-10 h-10 mr-4 relative bg-[#ffa200] group-hover:bg-[#ffb733] rounded-full flex items-center justify-center transition-colors duration-300">
