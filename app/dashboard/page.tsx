@@ -9,6 +9,7 @@ import { useWallet } from '../hooks/useWallet';
 import { createPublicClient, http, formatEther } from 'viem';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { polygon } from 'wagmi/chains';
+import { retryWithBackoff, batchWithRateLimit, delay, isRateLimitError } from '../utils/rpc-helpers';
 // import { bscTestnet } from 'wagmi/chains';
 
 // Import contract data from useWallet
@@ -17,10 +18,17 @@ const CONTRACT_ADDRESSES = {
   USDT: '0x8d60f559C2461F193913afd10c2d09a09FBa0Bf3'
 };
 
-// Create public client for reading contract data
+// Create public client for reading contract data with fallback RPC endpoints
 const publicClient = createPublicClient({
   chain: polygon,
-  transport: http('https://polygon-rpc.com'),
+  transport: http('https://polygon-rpc.com', {
+    batch: {
+      batchSize: 10,
+      wait: 50
+    },
+    retryCount: 3,
+    retryDelay: 1000
+  }),
 });
 
 // Create public client for reading contract data
@@ -3049,39 +3057,39 @@ function TopRankedTicketsSection({ currentRound }: { currentRound: number }) {
 
       setLoading(true);
       try {
-        // Reduce from 100 to 50 tickets to check (most rounds won't have 100 tickets)
-        const maxTicketsToCheck = 50;
-        const ticketPromises = [];
+        // Reduce from 100 to 30 tickets to check to minimize RPC calls
+        const maxTicketsToCheck = 30;
         
-        // Add delay between batches to prevent rate limiting
-        const batchSize = 10;
+        // Smaller batch size and longer delays to prevent rate limiting
+        const batchSize = 5;
         const allTicketRanks: { ticketNumber: number; rank: number }[] = [];
         
-        for (let batch = 0; batch < Math.ceil(maxTicketsToCheck / batchSize); batch++) {
-          const batchPromises = [];
-          const startTicket = batch * batchSize + 1;
-          const endTicket = Math.min((batch + 1) * batchSize, maxTicketsToCheck);
-          
-          for (let ticketNumber = startTicket; ticketNumber <= endTicket; ticketNumber++) {
-            batchPromises.push(
-              publicClient.readContract({
-                address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
-                abi: LOTTERY_ABI,
-                functionName: 'getTicketRank',
-                args: [BigInt(currentRound), BigInt(ticketNumber)]
-              }).then((rank: any) => ({ ticketNumber, rank: Number(rank) }))
-              .catch(() => ({ ticketNumber, rank: 0 })) // Handle errors gracefully
-            );
-          }
-          
-          const batchResults = await Promise.all(batchPromises);
-          allTicketRanks.push(...batchResults);
-          
-          // Add delay between batches to prevent rate limiting
-          if (batch < Math.ceil(maxTicketsToCheck / batchSize) - 1) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-          }
-        }
+        // Use the utility function for batch processing with rate limiting
+        const ticketNumbers = Array.from({ length: maxTicketsToCheck }, (_, i) => i + 1);
+        
+        const ticketRanks = await batchWithRateLimit(
+          ticketNumbers,
+          batchSize,
+          async (ticketNumber) => {
+            try {
+              const rank = await retryWithBackoff(() =>
+                publicClient.readContract({
+                  address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+                  abi: LOTTERY_ABI,
+                  functionName: 'getTicketRank',
+                  args: [BigInt(currentRound), BigInt(ticketNumber)]
+                })
+              );
+              return { ticketNumber, rank: Number(rank) };
+            } catch (error) {
+              console.warn(`Failed to get rank for ticket ${ticketNumber}:`, error);
+              return { ticketNumber, rank: 0 };
+            }
+          },
+          800 // Longer delay between batches
+        );
+        
+        allTicketRanks.push(...ticketRanks);
         
         const rankedTickets = allTicketRanks
           .filter(t => t.rank > 0)
@@ -3106,62 +3114,70 @@ function TopRankedTicketsSection({ currentRound }: { currentRound: number }) {
           return;
         }
         
-        // Fetch details for top 5 with rate limiting
-        const detailedTickets = [];
-        for (const ticket of rankedTickets) {
-          try {
-            const [owner, rawPrize] = await Promise.all([
-              publicClient.readContract({
-                address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
-                abi: LOTTERY_ABI,
-                functionName: 'getTicketOwner',
-                args: [BigInt(currentRound), BigInt(ticket.ticketNumber)]
-              }),
-              publicClient.readContract({
-                address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
-                abi: LOTTERY_ABI,
-                functionName: 'calculateTicketPrize',
-                args: [BigInt(currentRound), BigInt(ticket.ticketNumber)]
-              })
-            ]);
-            
-            // Type guard for rawPrize
-            let safePrize: string | number | bigint = 0n;
-            if (typeof rawPrize === 'bigint' || typeof rawPrize === 'number' || typeof rawPrize === 'string') {
-              safePrize = rawPrize;
-            }
-            
-            detailedTickets.push({
-              ticketNumber: ticket.ticketNumber,
-              rank: ticket.rank,
-              owner,
-              prize: formatEther(BigInt(safePrize))
-            });
-            
-            // Add small delay between each ticket detail fetch
-            await new Promise(resolve => setTimeout(resolve, 50));
-          } catch (error) {
-            // Handle "Draw not executed yet" error gracefully
-            if (error && typeof error === 'object' && 'message' in error) {
-              const errorMessage = (error as any).message;
-              if (errorMessage.includes('Draw not executed yet')) {
-                console.warn(`Draw not executed yet for ticket ${ticket.ticketNumber}`);
-                // Skip this ticket and continue
-                continue;
+        // Fetch details for top 5 with improved rate limiting using utility functions
+        const detailedTickets = await batchWithRateLimit(
+          rankedTickets,
+          1, // Process one ticket at a time
+          async (ticket) => {
+            try {
+              // Sequential requests with retry logic
+              const owner = await retryWithBackoff(() =>
+                publicClient.readContract({
+                  address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+                  abi: LOTTERY_ABI,
+                  functionName: 'getTicketOwner',
+                  args: [BigInt(currentRound), BigInt(ticket.ticketNumber)]
+                })
+              );
+              
+              const rawPrize = await retryWithBackoff(() =>
+                publicClient.readContract({
+                  address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+                  abi: LOTTERY_ABI,
+                  functionName: 'calculateTicketPrize',
+                  args: [BigInt(currentRound), BigInt(ticket.ticketNumber)]
+                })
+              );
+              
+              // Type guard for rawPrize
+              let safePrize: string | number | bigint = 0n;
+              if (typeof rawPrize === 'bigint' || typeof rawPrize === 'number' || typeof rawPrize === 'string') {
+                safePrize = rawPrize;
               }
+              
+              return {
+                ticketNumber: ticket.ticketNumber,
+                rank: ticket.rank,
+                owner,
+                prize: formatEther(BigInt(safePrize))
+              };
+            } catch (error) {
+              // Handle "Draw not executed yet" error gracefully
+              if (error && typeof error === 'object' && 'message' in error) {
+                const errorMessage = (error as any).message;
+                if (errorMessage.includes('Draw not executed yet')) {
+                  console.warn(`Draw not executed yet for ticket ${ticket.ticketNumber}`);
+                  return null; // Skip this ticket
+                }
+              }
+              console.warn(`Error fetching details for ticket ${ticket.ticketNumber}:`, error);
+              return null; // Skip this ticket
             }
-            console.warn(`Error fetching details for ticket ${ticket.ticketNumber}:`, error);
-          }
-        }
+          },
+          500 // Delay between tickets
+        );
         
-        setTopTickets(detailedTickets);
+        // Filter out null results
+        const validDetailedTickets = detailedTickets.filter(ticket => ticket !== null);
+        
+        setTopTickets(validDetailedTickets);
         setLastFetchedRound(currentRound);
         setCacheKey(currentCacheKey);
         
         // Save to localStorage cache
         try {
           localStorage.setItem(currentCacheKey, JSON.stringify({
-            data: detailedTickets,
+            data: validDetailedTickets,
             round: currentRound,
             timestamp: Date.now()
           }));

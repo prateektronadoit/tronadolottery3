@@ -13,10 +13,17 @@ const CONTRACT_ADDRESSES = {
   USDT: '0x8d60f559C2461F193913afd10c2d09a09FBa0Bf3'  // USDT token address
 };
 
-// Create public client for reading contract data
+// Create public client for reading contract data with fallback RPC endpoints
 const publicClient = createPublicClient({
   chain: polygon,
-  transport: http('https://polygon-rpc.com'),
+  transport: http('https://polygon-rpc.com', {
+    batch: {
+      batchSize: 10,
+      wait: 50
+    },
+    retryCount: 3,
+    retryDelay: 1000
+  }),
 });
 
 // const publicClient = createPublicClient({

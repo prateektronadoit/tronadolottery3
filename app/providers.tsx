@@ -14,7 +14,7 @@ const RainbowKitProvider = dynamic(() => import('@rainbow-me/rainbowkit').then(m
   ssr: false,
 });
 
-// Polygon Mainnet configuration
+// Polygon Mainnet configuration with multiple RPC endpoints
 const polygon = {
   id: 137,
   name: 'Polygon',
@@ -26,7 +26,13 @@ const polygon = {
   },
   rpcUrls: {
     default: {
-      http: ['https://polygon-rpc.com'],
+      http: [
+        'https://polygon-rpc.com',
+        'https://rpc-mainnet.maticvigil.com',
+        'https://rpc-mainnet.matic.network',
+        'https://polygon.llamarpc.com',
+        'https://polygon.rpc.blxrbdn.com'
+      ],
     },
   },
   blockExplorers: {
@@ -76,15 +82,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
           const { createConfig } = await import('wagmi');
           const { getDefaultWallets } = await import('@rainbow-me/rainbowkit');
           const { polygon } = await import('wagmi/chains');
-          // const { bscTestnet } = await import('wagmi/chains');
-          const { http } = await import('viem');
+          const { http, fallback } = await import('viem');
 
           // Configure only Polygon mainnet
-          // const chains = [polygon] as const;
-
-          // Configure only BSC Testnet
           const chains = [polygon] as const;
-
 
           // Configure wallet connectors with custom options
           const { connectors } = getDefaultWallets({
@@ -92,12 +93,52 @@ export function Providers({ children }: { children: React.ReactNode }) {
             projectId: 'fc21f1d3bcd9c06bd3139b0046af7b70',
           });
 
-          // Configure RPC endpoint for Polygon mainnet
+          // Configure RPC endpoints with fallback for better reliability
           const config = createConfig({
             connectors,
             transports: {
-              // [bscTestnet.id]: http('https://data-seed-prebsc-1-s1.binance.org:8545'),
-              [polygon.id]: http('https://polygon-rpc.com'),
+              [polygon.id]: fallback([
+                http('https://polygon-rpc.com', { 
+                  batch: { 
+                    batchSize: 10,
+                    wait: 50 
+                  },
+                  retryCount: 3,
+                  retryDelay: 1000
+                }),
+                http('https://rpc-mainnet.maticvigil.com', { 
+                  batch: { 
+                    batchSize: 10,
+                    wait: 50 
+                  },
+                  retryCount: 3,
+                  retryDelay: 1000
+                }),
+                http('https://rpc-mainnet.matic.network', { 
+                  batch: { 
+                    batchSize: 10,
+                    wait: 50 
+                  },
+                  retryCount: 3,
+                  retryDelay: 1000
+                }),
+                http('https://polygon.llamarpc.com', { 
+                  batch: { 
+                    batchSize: 10,
+                    wait: 50 
+                  },
+                  retryCount: 3,
+                  retryDelay: 1000
+                }),
+                http('https://polygon.rpc.blxrbdn.com', { 
+                  batch: { 
+                    batchSize: 10,
+                    wait: 50 
+                  },
+                  retryCount: 3,
+                  retryDelay: 1000
+                })
+              ]),
             },
             chains,
           });
@@ -112,7 +153,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 3,
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        gcTime: 10 * 60 * 1000, // 10 minutes
+      },
+    },
+  });
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted || !wagmiConfig) {
