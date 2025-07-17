@@ -377,10 +377,24 @@ export const useWallet = () => {
   }, [isConnected, address]);
 
   // Polling mechanism to check for draw execution status
+  // Optimized polling with rate limiting and error handling
   useEffect(() => {
-    if (!isConnected || !address || !currentRoundId || currentRoundId === BigInt(0)) return;
+    // Don't poll if not connected, no address, no current round, or draw already executed
+    if (!isConnected || !address || !currentRoundId || currentRoundId === BigInt(0) || dashboardData.drawExecuted) {
+      return;
+    }
+
+    let isPolling = false;
+    let intervalId: NodeJS.Timeout | null = null;
 
     const pollDrawStatus = async () => {
+      // Prevent multiple simultaneous calls
+      if (isPolling) {
+        return;
+      }
+
+      isPolling = true;
+      
       try {
         const roundInfo = await publicClient.readContract({
           address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
@@ -406,20 +420,47 @@ export const useWallet = () => {
           
           // Show notification to user
           showNotification('🎉 Draw has been executed! You can now claim your prizes!', 'success');
+          
+          // Stop polling once draw is executed
+          if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+          }
         }
       } catch (error) {
-        console.error('Error polling draw status:', error);
+        // Handle rate limiting gracefully
+        if (error && typeof error === 'object' && 'message' in error) {
+          const errorMessage = (error as any).message;
+          if (errorMessage.includes('rate limit') || errorMessage.includes('429')) {
+            console.warn('Rate limit hit, increasing polling interval...');
+            // Increase interval to 60 seconds on rate limit
+            if (intervalId) {
+              clearInterval(intervalId);
+              intervalId = setInterval(pollDrawStatus, 60000); // 60 seconds
+            }
+          } else {
+            console.error('Error polling draw status:', error);
+          }
+        } else {
+          console.error('Error polling draw status:', error);
+        }
+      } finally {
+        isPolling = false;
       }
     };
 
-    // Poll every 10 seconds if draw is not yet executed
-    const interval = setInterval(pollDrawStatus, 10000);
+    // Start with a longer interval (30 seconds) to reduce API calls
+    intervalId = setInterval(pollDrawStatus, 30000);
     
-    // Also poll immediately
+    // Poll immediately once
     pollDrawStatus();
 
-    return () => clearInterval(interval);
-  }, [isConnected, address, currentRoundId, dashboardData.drawExecuted]);
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isConnected, address, currentRoundId]); // Removed dashboardData.drawExecuted from dependencies
 
   // Function to get user total prize for a specific round
   const getUserTotalPrize = async (roundId: number, userAddress?: string) => {
@@ -1039,31 +1080,7 @@ export const useWallet = () => {
     }
   };
 
-  useEffect(() => {
-    if (!isConnected || !address || !currentRoundId) return;
-
-    const pollDashboardData = async () => {
-      try {
-        // This will trigger all your useReadContract hooks to refetch,
-        // and your useEffect that updates dashboardData will run.
-        // If you want to force a manual fetch, you can call your data-fetching logic here.
-        // For example, you could call refreshDrawStatus() or any other manual refresh function.
-        // If you want to refetch all, you may need to trigger a state change or use a refetch function if available.
-        // Example:
-        // await refreshDrawStatus();
-      } catch (error) {
-        console.error('Error polling dashboard data:', error);
-      }
-    };
-
-    // Poll every 15 seconds
-    const interval = setInterval(pollDashboardData, 15000);
-
-    // Also poll immediately on mount
-    pollDashboardData();
-
-    return () => clearInterval(interval);
-  }, [isConnected, address, currentRoundId]);
+  // Removed redundant polling function to prevent excessive API calls
 
   return {
     // State

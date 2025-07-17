@@ -956,12 +956,12 @@ export default function Dashboard() {
     }
   }, [dashboardData.currentRound, dashboardData.drawExecuted]);
 
-  // NEW EFFECT - Check for winning tickets and show confetti
+  // NEW EFFECT - Check for winning tickets and show confetti (Optimized)
   useEffect(() => {
     const checkForWinningTickets = async () => {
       if (!isConnected || !address || !dashboardData.currentRound || dashboardData.currentRound === 0 || !dashboardData.drawExecuted || !dashboardData.myTickets || dashboardData.myTickets.length === 0) {
-    setShowConfetti(false);
-    setWinningTicketInfo(null);
+        setShowConfetti(false);
+        setWinningTicketInfo(null);
         return;
       }
 
@@ -970,27 +970,39 @@ export default function Dashboard() {
         let hasWinningTicket = false;
         let bestTicket: { ticketNumber: number; rank: number } | null = null;
 
-        // Check each of user's tickets for rank 1-5
-        for (const ticketNumber of dashboardData.myTickets) {
-          try {
-            const rank = await publicClient.readContract({
-              address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
-              abi: LOTTERY_ABI,
-              functionName: 'getTicketRank',
-              args: [BigInt(dashboardData.currentRound), BigInt(ticketNumber)]
-            }) as number;
+        // Batch API calls to reduce rate limiting
+        const ticketPromises = dashboardData.myTickets.map((ticketNumber: number) => 
+          publicClient.readContract({
+            address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+            abi: LOTTERY_ABI,
+            functionName: 'getTicketRank',
+            args: [BigInt(dashboardData.currentRound), BigInt(ticketNumber)]
+          }).then((rank: any) => ({ ticketNumber, rank: Number(rank) }))
+          .catch(() => ({ ticketNumber, rank: 0 })) // Handle errors gracefully
+        );
 
-            console.log(`Ticket #${ticketNumber} has rank: ${rank}`);
+        // Process in batches of 5 to prevent rate limiting
+        const batchSize = 5;
+        const results = [];
+        
+        for (let i = 0; i < ticketPromises.length; i += batchSize) {
+          const batch = ticketPromises.slice(i, i + batchSize);
+          const batchResults = await Promise.all(batch);
+          results.push(...batchResults);
+          
+          // Add delay between batches
+          if (i + batchSize < ticketPromises.length) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        }
 
-            // Check if ticket has rank 1-5
-            if (rank >= 1 && rank <= 5) {
-              hasWinningTicket = true;
-              if (!bestTicket || rank < bestTicket.rank) {
-                bestTicket = { ticketNumber, rank };
-              }
+        // Check for winning tickets
+        for (const result of results) {
+          if (result.rank >= 1 && result.rank <= 5) {
+            hasWinningTicket = true;
+            if (!bestTicket || result.rank < bestTicket.rank) {
+              bestTicket = { ticketNumber: result.ticketNumber, rank: result.rank };
             }
-          } catch (error) {
-            console.warn(`Could not check rank for ticket ${ticketNumber}:`, error);
           }
         }
 
@@ -1010,7 +1022,9 @@ export default function Dashboard() {
       }
     };
 
-    checkForWinningTickets();
+    // Add debouncing to prevent excessive calls
+    const timeoutId = setTimeout(checkForWinningTickets, 200);
+    return () => clearTimeout(timeoutId);
   }, [isConnected, address, dashboardData.currentRound, dashboardData.drawExecuted, dashboardData.myTickets]);
 
   // Reset data when wallet address changes
@@ -1763,13 +1777,38 @@ export default function Dashboard() {
                 value={formatUSDT(dashboardData.ticketPrice || '0')} 
                 subtitle="TRDO per ticket" 
               />
-              <StatCard 
-                icon=""
-                iconImage="13.png"
-                title="Draw Status" 
-                value={dashboardData.drawExecuted ? "Completed" : "Pending"} 
-                subtitle="Current round status" 
-              />
+              <div className="relative">
+                <StatCard 
+                  icon=""
+                  iconImage="13.png"
+                  title="Draw Status" 
+                  value={dashboardData.drawExecuted ? "Completed" : "Pending"} 
+                  subtitle="Current round status" 
+                />
+                {/* Manual refresh button for draw status */}
+                {!dashboardData.drawExecuted && (
+                  <button
+                    onClick={async () => {
+                      try {
+                        setNotification({ type: 'info', message: 'Checking draw status...' });
+                        await refreshDrawStatus();
+                      } catch (error) {
+                        console.error('Error refreshing draw status:', error);
+                        setNotification({ type: 'error', message: 'Failed to refresh draw status' });
+                      }
+                    }}
+                    disabled={loading}
+                    className="absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white p-1 rounded-full transition duration-300 text-xs"
+                    title="Refresh draw status"
+                  >
+                    {loading ? (
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                    ) : (
+                      '🔄'
+                    )}
+                  </button>
+                )}
+              </div>
               <StatCard 
                 icon=""
                 iconImage="16.png"
@@ -2919,60 +2958,228 @@ function TestGetTicketRankButton() {
 function TopRankedTicketsSection({ currentRound }: { currentRound: number }) {
   const [topTickets, setTopTickets] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [lastFetchedRound, setLastFetchedRound] = useState<number | null>(null);
+  const [cacheKey, setCacheKey] = useState<string>('');
+
+  // Create a cache key for this round
+  const currentCacheKey = `topTickets_${currentRound}`;
+
+  // Clean up old cache entries when round changes
+  useEffect(() => {
+    const cleanupOldCache = () => {
+      try {
+        // Get all localStorage keys
+        const keys = Object.keys(localStorage);
+        const topTicketsKeys = keys.filter(key => key.startsWith('topTickets_'));
+        
+        // Remove cache entries for rounds older than current round
+        topTicketsKeys.forEach(key => {
+          const roundFromKey = parseInt(key.replace('topTickets_', ''));
+          if (roundFromKey < currentRound) {
+            localStorage.removeItem(key);
+            console.log(`🧹 Cleaned up old cache for round ${roundFromKey}`);
+          }
+        });
+      } catch (error) {
+        console.warn('Error cleaning up old cache:', error);
+      }
+    };
+
+    if (currentRound > 0) {
+      cleanupOldCache();
+    }
+  }, [currentRound]);
+
+  const handleRefresh = () => {
+    setLastFetchedRound(null); // Force refresh
+    setTopTickets([]); // Clear existing data
+    setCacheKey(''); // Clear cache key
+    
+    // Clear localStorage cache for this round
+    try {
+      localStorage.removeItem(currentCacheKey);
+    } catch (error) {
+      console.warn('Error clearing cache:', error);
+    }
+  };
 
   useEffect(() => {
     async function fetchTopTickets() {
+      // Reset state when round changes to ensure fresh data
+      if (lastFetchedRound !== null && lastFetchedRound !== currentRound) {
+        setTopTickets([]);
+        setCacheKey('');
+        setLastFetchedRound(null);
+      }
+
+      // Check if we have cached data for this round
+      if (cacheKey === currentCacheKey && topTickets.length > 0) {
+        return;
+      }
+
+      // Check if we already fetched this round
+      if (lastFetchedRound === currentRound && topTickets.length > 0) {
+        return;
+      }
+
+      // Check localStorage cache first
+      try {
+        const cachedData = localStorage.getItem(currentCacheKey);
+        if (cachedData) {
+          const parsedData = JSON.parse(cachedData);
+          const cacheAge = Date.now() - parsedData.timestamp;
+          
+          // Cache is valid for 5 minutes, but invalidate if round has changed
+          const cacheRound = parsedData.round || 0;
+          const isCacheValid = cacheAge < 5 * 60 * 1000 && cacheRound === currentRound;
+          
+          if (isCacheValid) {
+            setTopTickets(parsedData.data);
+            setLastFetchedRound(currentRound);
+            setCacheKey(currentCacheKey);
+            return;
+          } else {
+            // Remove invalid cache
+            localStorage.removeItem(currentCacheKey);
+          }
+        }
+      } catch (error) {
+        console.warn('Error reading from cache:', error);
+      }
+
       setLoading(true);
       try {
+        // Reduce from 100 to 50 tickets to check (most rounds won't have 100 tickets)
+        const maxTicketsToCheck = 50;
         const ticketPromises = [];
-        for (let ticketNumber = 1; ticketNumber <= 100; ticketNumber++) {
-          ticketPromises.push(
-            publicClient.readContract({
-              address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
-              abi: LOTTERY_ABI,
-              functionName: 'getTicketRank',
-              args: [BigInt(currentRound), BigInt(ticketNumber)]
-            }).then((rank: any) => ({ ticketNumber, rank: Number(rank) }))
-          );
-        }
-        const ticketRanks = await Promise.all(ticketPromises);
-        const rankedTickets = ticketRanks.filter(t => t.rank > 0).sort((a, b) => a.rank - b.rank).slice(0, 5);
-        const detailedTickets = await Promise.all(rankedTickets.map(async (t) => {
-          const [owner, rawPrize] = await Promise.all([
-            publicClient.readContract({
-              address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
-              abi: LOTTERY_ABI,
-              functionName: 'getTicketOwner',
-              args: [BigInt(currentRound), BigInt(t.ticketNumber)]
-            }),
-            publicClient.readContract({
-              address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
-              abi: LOTTERY_ABI,
-              functionName: 'calculateTicketPrize',
-              args: [BigInt(currentRound), BigInt(t.ticketNumber)]
-            })
-          ]);
-          // Type guard for rawPrize
-          let safePrize: string | number | bigint = 0n;
-          if (typeof rawPrize === 'bigint' || typeof rawPrize === 'number' || typeof rawPrize === 'string') {
-            safePrize = rawPrize;
+        
+        // Add delay between batches to prevent rate limiting
+        const batchSize = 10;
+        const allTicketRanks: { ticketNumber: number; rank: number }[] = [];
+        
+        for (let batch = 0; batch < Math.ceil(maxTicketsToCheck / batchSize); batch++) {
+          const batchPromises = [];
+          const startTicket = batch * batchSize + 1;
+          const endTicket = Math.min((batch + 1) * batchSize, maxTicketsToCheck);
+          
+          for (let ticketNumber = startTicket; ticketNumber <= endTicket; ticketNumber++) {
+            batchPromises.push(
+              publicClient.readContract({
+                address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+                abi: LOTTERY_ABI,
+                functionName: 'getTicketRank',
+                args: [BigInt(currentRound), BigInt(ticketNumber)]
+              }).then((rank: any) => ({ ticketNumber, rank: Number(rank) }))
+              .catch(() => ({ ticketNumber, rank: 0 })) // Handle errors gracefully
+            );
           }
-          return {
-            ticketNumber: t.ticketNumber,
-            rank: t.rank,
-            owner,
-            prize: formatEther(BigInt(safePrize))
-          };
-        }));
+          
+          const batchResults = await Promise.all(batchPromises);
+          allTicketRanks.push(...batchResults);
+          
+          // Add delay between batches to prevent rate limiting
+          if (batch < Math.ceil(maxTicketsToCheck / batchSize) - 1) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        }
+        
+        const rankedTickets = allTicketRanks
+          .filter(t => t.rank > 0)
+          .sort((a, b) => a.rank - b.rank)
+          .slice(0, 5);
+        
+        if (rankedTickets.length === 0) {
+          setTopTickets([]);
+          setLastFetchedRound(currentRound);
+          setCacheKey(currentCacheKey);
+          
+          // Save empty result to cache
+          try {
+            localStorage.setItem(currentCacheKey, JSON.stringify({
+              data: [],
+              round: currentRound,
+              timestamp: Date.now()
+            }));
+          } catch (error) {
+            console.warn('Error saving to cache:', error);
+          }
+          return;
+        }
+        
+        // Fetch details for top 5 with rate limiting
+        const detailedTickets = [];
+        for (const ticket of rankedTickets) {
+          try {
+            const [owner, rawPrize] = await Promise.all([
+              publicClient.readContract({
+                address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+                abi: LOTTERY_ABI,
+                functionName: 'getTicketOwner',
+                args: [BigInt(currentRound), BigInt(ticket.ticketNumber)]
+              }),
+              publicClient.readContract({
+                address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
+                abi: LOTTERY_ABI,
+                functionName: 'calculateTicketPrize',
+                args: [BigInt(currentRound), BigInt(ticket.ticketNumber)]
+              })
+            ]);
+            
+            // Type guard for rawPrize
+            let safePrize: string | number | bigint = 0n;
+            if (typeof rawPrize === 'bigint' || typeof rawPrize === 'number' || typeof rawPrize === 'string') {
+              safePrize = rawPrize;
+            }
+            
+            detailedTickets.push({
+              ticketNumber: ticket.ticketNumber,
+              rank: ticket.rank,
+              owner,
+              prize: formatEther(BigInt(safePrize))
+            });
+            
+            // Add small delay between each ticket detail fetch
+            await new Promise(resolve => setTimeout(resolve, 50));
+          } catch (error) {
+            // Handle "Draw not executed yet" error gracefully
+            if (error && typeof error === 'object' && 'message' in error) {
+              const errorMessage = (error as any).message;
+              if (errorMessage.includes('Draw not executed yet')) {
+                console.warn(`Draw not executed yet for ticket ${ticket.ticketNumber}`);
+                // Skip this ticket and continue
+                continue;
+              }
+            }
+            console.warn(`Error fetching details for ticket ${ticket.ticketNumber}:`, error);
+          }
+        }
+        
         setTopTickets(detailedTickets);
+        setLastFetchedRound(currentRound);
+        setCacheKey(currentCacheKey);
+        
+        // Save to localStorage cache
+        try {
+          localStorage.setItem(currentCacheKey, JSON.stringify({
+            data: detailedTickets,
+            round: currentRound,
+            timestamp: Date.now()
+          }));
+        } catch (error) {
+          console.warn('Error saving to cache:', error);
+        }
       } catch (err) {
+        console.error('Error fetching top tickets:', err);
         setTopTickets([]);
       } finally {
         setLoading(false);
       }
     }
-    if (currentRound) fetchTopTickets();
-  }, [currentRound]);
+    
+    if (currentRound && currentRound > 0) {
+      fetchTopTickets();
+    }
+  }, [currentRound, cacheKey, currentCacheKey]);
 
   if (loading) {
     return <div className="text-center text-gray-400 py-4">Loading top tickets...</div>;
@@ -3088,7 +3295,26 @@ function TopRankedTicketsSection({ currentRound }: { currentRound: number }) {
         }
       `}</style>
       <div className="mt-6 mb-8">
-        <h3 className="text-2xl font-extrabold text-center text-yellow-400 mb-6 tracking-wide drop-shadow-lg">Top 5 Ranked Tickets</h3>
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-extrabold text-yellow-400 tracking-wide drop-shadow-lg">Top 5 Ranked Tickets</h3>
+          <button
+            onClick={handleRefresh}
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-3 py-2 rounded-lg transition duration-300 flex items-center text-sm"
+          >
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Loading...
+              </>
+            ) : (
+              <>
+                <span className="mr-1">🔄</span>
+                Refresh
+              </>
+            )}
+          </button>
+        </div>
         <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-8 mb-8">
           {top3.map((ticket, idx) => (
             <div
