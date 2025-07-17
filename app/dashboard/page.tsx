@@ -742,9 +742,22 @@ export default function Dashboard() {
       isRegistered: dashboardData.isRegistered,
       userInfo: dashboardData.userInfo,
       currentRound: dashboardData.currentRound,
-      address: address
+      totalTickets: dashboardData.totalTickets,
+      ticketsSold: dashboardData.ticketsSold,
+      totalPlayed: dashboardData.totalPlayed,
+      address: address,
+      isConnected: isConnected
     });
-  }, [dashboardData, address]);
+  }, [dashboardData, address, isConnected]);
+
+  // Add debugging for wallet connection
+  useEffect(() => {
+    console.log('🔗 Wallet connection changed:', {
+      isConnected,
+      address,
+      currentRound: dashboardData.currentRound
+    });
+  }, [isConnected, address, dashboardData.currentRound]);
 
   // Track wallet switching
   useEffect(() => {
@@ -877,11 +890,15 @@ export default function Dashboard() {
   // Combined effect for user-specific data loading with debouncing
   useEffect(() => {
     const loadUserData = async () => {
-      if (isConnected && address && dashboardData.currentRound) {
+      if (isConnected && address && dashboardData.currentRound !== undefined) {
         try {
-          // Check if user has purchased tickets
-          const hasPurchased = await hasUserPurchasedTicket(dashboardData.currentRound);
-          setHasPurchasedTicket(hasPurchased);
+          // Check if user has purchased tickets (only if round > 0)
+          if (dashboardData.currentRound > 0) {
+            const hasPurchased = await hasUserPurchasedTicket(dashboardData.currentRound);
+            setHasPurchasedTicket(hasPurchased);
+          } else {
+            setHasPurchasedTicket(false);
+          }
           
           // Load user level counts if registered
           if (dashboardData.isRegistered) {
@@ -942,7 +959,7 @@ export default function Dashboard() {
   // NEW EFFECT - Check for winning tickets and show confetti
   useEffect(() => {
     const checkForWinningTickets = async () => {
-      if (!isConnected || !address || !dashboardData.currentRound || !dashboardData.drawExecuted || !dashboardData.myTickets || dashboardData.myTickets.length === 0) {
+      if (!isConnected || !address || !dashboardData.currentRound || dashboardData.currentRound === 0 || !dashboardData.drawExecuted || !dashboardData.myTickets || dashboardData.myTickets.length === 0) {
     setShowConfetti(false);
     setWinningTicketInfo(null);
         return;
@@ -1005,10 +1022,10 @@ export default function Dashboard() {
   useEffect(() => {
     if (isConnected && address) {
       setSectionLoading(true);
-      // Reset loading after a longer delay to ensure data is loaded properly
+      // Reset loading after a shorter delay to ensure data is loaded properly
       const timer = setTimeout(() => {
         setSectionLoading(false);
-      }, 2000);
+      }, 1000);
       return () => clearTimeout(timer);
     } else {
       // Immediately hide loading when wallet is not connected
@@ -1025,7 +1042,7 @@ export default function Dashboard() {
 
   // Function to get total prize amount for current round
   const getTotalPrizeAmount = async () => {
-    if (!isConnected || !address || !dashboardData.currentRound) {
+    if (!isConnected || !address || !dashboardData.currentRound || dashboardData.currentRound === 0) {
       setTotalPrizeAmount('0');
       return;
     }
@@ -1036,7 +1053,7 @@ export default function Dashboard() {
       const totalPrize = await getUserTotalPrize(dashboardData.currentRound, address);
       const prizeValue = parseFloat(formatEther(BigInt(totalPrize || '0')));
       
-      console.log(`💰 Total prize found: ${prizeValue} TRDO`);
+      console.log(`💰 Total prize found: ${prizeValue} USDT`);
       setTotalPrizeAmount(prizeValue.toFixed(4));
     } catch (error) {
       console.error('❌ Error getting total prize:', error);
@@ -1085,7 +1102,7 @@ export default function Dashboard() {
   // NEW EFFECT - Check claim status from contract for current round
   useEffect(() => {
     const checkContractClaimStatus = async () => {
-      if (isConnected && address && dashboardData.currentRound) {
+      if (isConnected && address && dashboardData.currentRound && dashboardData.currentRound > 0) {
         try {
           console.log('🔍 Checking contract claim status for current round...');
           const isClaimed = await publicClient.readContract({
@@ -1109,7 +1126,7 @@ export default function Dashboard() {
 
   // Function to handle ticket click and show details
   const handleTicketClick = async (ticketNumber: number) => {
-    if (!dashboardData.currentRound) {
+    if (!dashboardData.currentRound || dashboardData.currentRound === 0) {
       alert('No active round available');
       return;
     }
@@ -1585,7 +1602,7 @@ export default function Dashboard() {
           );
         }
         // Check if user is connected but no dashboard data is available yet
-        if (isConnected && address && (!dashboardData.currentRound || !dashboardData.userInfo)) {
+        if (isConnected && address && (dashboardData.currentRound === undefined || dashboardData.currentRound === null || !dashboardData.userInfo)) {
           return (
             <div className="text-center text-gray-400 py-12">
               <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>

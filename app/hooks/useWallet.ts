@@ -92,9 +92,9 @@ export const useWallet = () => {
     address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
     abi: LOTTERY_ABI,
     functionName: 'getRoundInfo',
-    args: [currentRoundId || BigInt('1')],
+    args: [currentRoundId || BigInt('0')],
     query: {
-      enabled: !!currentRoundId,
+      enabled: !!currentRoundId || currentRoundId === BigInt(0),
     },
   });
 
@@ -122,9 +122,9 @@ export const useWallet = () => {
     address: CONTRACT_ADDRESSES.LOTTERY as `0x${string}`,
     abi: LOTTERY_ABI,
     functionName: 'getUserTickets',
-    args: [currentRoundId || BigInt('1'), address],
+    args: [currentRoundId || BigInt('0'), address],
     query: {
-      enabled: !!address && !!currentRoundId,
+      enabled: !!address && (!!currentRoundId || currentRoundId === BigInt(0)),
     },
   });
 
@@ -221,7 +221,38 @@ export const useWallet = () => {
 
   // Update dashboard data when contract data changes
   useEffect(() => {
-    if (currentRoundId && roundData) {
+    console.log('🔄 Dashboard data effect triggered:', {
+      currentRoundId,
+      roundData,
+      userTickets,
+      userTicketsError
+    });
+
+    // Handle case when no rounds are created yet (currentRoundId === 0)
+    if (currentRoundId === BigInt(0)) {
+      console.log('📊 No rounds created yet, setting default dashboard data');
+      setDashboardData((prevData: any) => ({
+        ...prevData,
+        currentRound: 0,
+        totalTickets: 0,
+        ticketPrice: '0',
+        ticketsSold: 0,
+        prizePool: '0',
+        isActive: false,
+        drawExecuted: false,
+        allClaimed: false,
+        isSettled: false,
+        totalPlayed: totalPlayed ? formatUSDT(formatEther(totalPlayed as bigint)) : '0',
+        winningNumber: 0,
+        myTicketsCount: 0,
+        myTickets: [],
+        userPurchaseHistory: []
+      }));
+      return;
+    }
+
+    // Handle case when we have valid round data
+    if ((currentRoundId !== undefined && currentRoundId !== null) && roundData) {
       let tickets: number[] = [];
       
       // Handle userTickets with error fallback
@@ -242,6 +273,7 @@ export const useWallet = () => {
       const totalRevenue = (roundDataArray[1] || BigInt(0)) * BigInt(ticketsSold);
       const prizePool = (totalRevenue * BigInt(75)) / BigInt(100);
       
+      console.log('📊 Setting dashboard data for round:', Number(currentRoundId));
       setDashboardData((prevData: any) => ({
         ...prevData,
         currentRound: Number(currentRoundId),
@@ -264,12 +296,14 @@ export const useWallet = () => {
           status: roundDataArray[4] ? 'Draw Complete' : 'Active'
         }] : []
       }));
+    } else {
+      console.log('📊 Dashboard data not set - currentRoundId:', currentRoundId, 'roundData:', roundData);
     }
-  }, [currentRoundId, roundData, userTickets, userTicketsError]);
+  }, [currentRoundId, roundData, userTickets, userTicketsError, totalPlayed]);
 
   // Memoize expensive calculations
   const memoizedDashboardData = useMemo(() => {
-    if (!currentRoundId || !roundData) return null;
+    if ((currentRoundId === undefined || currentRoundId === null) || !roundData) return null;
     
     const roundDataArray = roundData as any[];
     const ticketPrice = formatUSDT(formatEther(roundDataArray[1] || BigInt(0)));
@@ -334,7 +368,8 @@ export const useWallet = () => {
         myTickets: [],
         isRegistered: false,
         userInfo: null,
-        userPurchaseHistory: []
+        userPurchaseHistory: [],
+        totalPlayed: '0'
       });
       setLoading(false);
       setNotification(null);
@@ -343,7 +378,7 @@ export const useWallet = () => {
 
   // Polling mechanism to check for draw execution status
   useEffect(() => {
-    if (!isConnected || !address || !currentRoundId) return;
+    if (!isConnected || !address || !currentRoundId || currentRoundId === BigInt(0)) return;
 
     const pollDrawStatus = async () => {
       try {
